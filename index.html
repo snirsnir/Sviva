@@ -8,28 +8,76 @@
     <script src="https://rawgit.com/mayognaise/aframe-gif-shader/master/dist/aframe-gif-shader.min.js"></script>
 </head>
 <body>
-    <a-scene>
+    <a-scene cursor="rayOrigin: mouse" raycaster="objects: .clickable">
         <!-- Panoramic Background -->
         <a-sky src="3d/img.jpg" id="image360"></a-sky>
 
-        <!-- Info Spot or Clickable Area -->
-        <a-image id="infoSpot" src="/3d/.png" position="0 1.6 -3"
-                 rotation="0 180 0" scale="0.5 0.5 0.5"
-                 event-set__click="_event: click; _target: #modal; visible: true"></a-image>
+
+        <!-- White Box (clickable) -->
+        <a-box position="-3.5 1.6 -8" rotation="0 0 0" scale="2 1 1" color="white" material="color: white; opacity: 0"
+               class="clickable" 
+               event-set__click="_event: click" 
+               onclick="document.getElementById('hospitalModal').style.display='block'">
+        </a-box>
+        <a-box position="-19.5 -0.6 -15" rotation="0 0 0" scale="3 4 1" color="white" material="color: white; opacity: 0"
+        class="clickable" 
+        event-set__click="_event: click" 
+        onclick="document.getElementById('treeModal').style.display='block'">
+ </a-box>
+ <a-box position="-9 2 5" rotation="0 90 0" scale="8 2 1" color="white" material="color: white; opacity: 0"
+ class="clickable" 
+ event-set__click="_event: click" 
+ onclick="document.getElementById('factoryModal').style.display='block'">
+</a-box>
+<a-box position="-15 -2 20" rotation="0 90 0" scale="38 1 1" color="white" material="color: white; opacity: 0"
+class="clickable" 
+event-set__click="_event: click" 
+onclick="document.getElementById('trafficModal').style.display='block'">
+</a-box>
+<a-box position="26 7 30" rotation="0 40 0" scale="65 30 1" color="white" material="color: white; opacity: 0"
+class="clickable" 
+event-set__click="_event: click" 
+onclick="document.getElementById('powerModal').style.display='block'">
+</a-box>
 
         <!-- Camera -->
-        <a-camera>
-           
-        </a-camera>
+        <a-camera></a-camera>
     </a-scene>
 
-    <!-- Modal for displaying iframe content -->
-    <div id="modal" class="modal" style="display:none;">
-        <div class="modal-content">
-            <span class="close" onclick="document.getElementById('modal').style.display='none'">&times;</span>
-            <iframe src="https://example.com" frameborder="0" style="width:100%; height:100%;"></iframe>
+    <!-- Modal for displaying iframe content when clicking the white box -->
+    <div id="hospitalModal" class="modal" style="display:none;" onclick="closeModalOnClickOutside(event, 'hospitalModal')">
+        <div class="modal-content" onclick="event.stopPropagation();">
+            <span class="close" onclick="document.getElementById('hospitalModal').style.display='none'">&times;</span>
+            <iframe src="https://view.genial.ly/660b38578d6c2800149dc56e" frameborder="0" style="width:100%; height:100%;"></iframe>
         </div>
     </div>
+
+    <div id="treeModal" class="modal" style="display:none;" onclick="closeModalOnClickOutside(event, 'treeModal')">
+        <div class="modal-content" onclick="event.stopPropagation();">
+            <span class="close" onclick="document.getElementById('treeModal').style.display='none'">&times;</span>
+            <iframe src="https://one.co.il" frameborder="0" style="width:100%; height:100%;"></iframe>
+        </div>
+    </div>
+    <div id="factoryModal" class="modal" style="display:none;" onclick="closeModalOnClickOutside(event, 'factoryModal')">
+        <div class="modal-content" onclick="event.stopPropagation();">
+            <span class="close" onclick="document.getElementById('factoryModal').style.display='none'">&times;</span>
+            <iframe src="https://walla.co.il" frameborder="0" style="width:100%; height:100%;"></iframe>
+        </div>
+    </div>
+    <div id="trafficModal" class="modal" style="display:none;" onclick="closeModalOnClickOutside(event, 'trafficModal')">
+        <div class="modal-content" onclick="event.stopPropagation();">
+            <span class="close" onclick="document.getElementById('trafficModal').style.display='none'">&times;</span>
+            <iframe src="https://amazon.com" frameborder="0" style="width:100%; height:100%;"></iframe>
+        </div>
+    </div>
+    <div id="powerModal" class="modal" style="display:none;" onclick="closeModalOnClickOutside(event, 'powerModal')">
+        <div class="modal-content" onclick="event.stopPropagation();">
+            <span class="close" onclick="document.getElementById('powerModal').style.display='none'">&times;</span>
+            <iframe src="https://n12.co.il" frameborder="0" style="width:100%; height:100%;"></iframe>
+        </div>
+    </div>
+
+    <!-- Original Modal -->
 
     <style>
         .modal {
@@ -43,18 +91,33 @@
             background-color: rgba(0,0,0,0.5);
         }
         .modal-content {
-            background-color: #fefefe;
-            margin: 15% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 50%;
-        }
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
+    position: relative;
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 0; /* ביטול ה-padding הפנימי כדי לאפשר יותר שטח ל-iframe */
+    border: 10px solid #ffffff;
+    width: 75%;
+    height: 70%; /* הגובה של המודל */
+    box-sizing: border-box;
+    overflow: hidden; /* למנוע גלישה של תוכן */
+}
+
+iframe {
+    width: 100%;
+    height: calc(100% - 40px); /* התאמת גובה ה-iframe כך שיכלול את כפתור הסגירה */
+    border: none;
+}
+
+.close {
+    color: #aaa;
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 28px;
+    font-weight: bold;
+    z-index: 1; /* ודא שהכפתור מעל כל התוכן */
+}
+
         .close:hover,
         .close:focus {
             color: black;
@@ -62,6 +125,15 @@
             cursor: pointer;
         }
     </style>
+
+    <script>
+        function closeModalOnClickOutside(event, modalId) {
+            const modal = document.getElementById(modalId);
+            if (event.target === modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
 
 </body>
 </html>
