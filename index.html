@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html>
 <head>
@@ -137,3 +138,72 @@ iframe {
 
 </body>
 </html>
+=======
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>360° View with Modal</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://rawgit.com/mayognaise/aframe-gif-shader/master/dist/aframe-gif-shader.min.js"></script>
+</head>
+<body>
+    <a-scene>
+        <!-- Panoramic Background -->
+        <a-sky src="3d/img.jpg" id="image360"></a-sky>
+
+        <!-- Info Spot or Clickable Area -->
+        <a-image id="infoSpot" src="/3d/.png" position="0 1.6 -3"
+                 rotation="0 180 0" scale="0.5 0.5 0.5"
+                 event-set__click="_event: click; _target: #modal; visible: true"></a-image>
+
+        <!-- Camera -->
+        <a-camera>
+           
+        </a-camera>
+    </a-scene>
+
+    <!-- Modal for displaying iframe content -->
+    <div id="modal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <span class="close" onclick="document.getElementById('modal').style.display='none'">&times;</span>
+            <iframe src="https://example.com" frameborder="0" style="width:100%; height:100%;"></iframe>
+        </div>
+    </div>
+
+    <style>
+        .modal {
+            position: fixed;
+            z-index: 999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 50%;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+
+</body>
+</html>
+>>>>>>> 38f03cb9c7410655186451444b1874df2f8ad3d5
