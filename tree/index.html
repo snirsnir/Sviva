@@ -3,21 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>360° Panoramic AR Forest</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <!-- הוספת הספרייה של ml5.js מ-jsdelivr -->
+    <title>360° Panoramic Tree and Bird Detection</title>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/ml5@1.0.2/dist/ml5.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-
+    <script src="https://unpkg.com/aframe-htmlembed-component@1.0.0/dist/aframe-htmlembed-component.min.js"></script>
+    <style>
+        body { margin: 0; }
+        canvas { display: block; }
+        #cameraView {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            opacity: 0.7; /* Set transparency for the camera view */
+        }
+    </style>
 </head>
 <body>
-    <div id="container">
-        <canvas id="threeCanvas"></canvas>
-        <video id="cameraView" autoplay playsinline></video>
-    </div>
-    <button id="openCameraButton">Open Camera and Detect Tree</button>
+    <!-- A-Frame Scene -->
+    <a-scene cursor="rayOrigin: mouse" raycaster="objects: .clickable">
+        <!-- 360° Panoramic Background -->
+        <a-sky src="base.jpg" id="image360"></a-sky>
 
-    <!-- הוספת הקוד שלך אחרי טעינת ml5.js -->
-    <script src="script.js"></script>
+        <!-- Button to open the camera for tree detection -->
+        <a-box position="-4 2 -3" rotation="0 40 0" scale="1 1 0.1" color="green" opacity="0.3" class="clickable" 
+               event-set__click="_event: click" onclick="detectTree()">
+            <a-text value="" align="center" position="0 0.5 0.1" color="black"></a-text>
+        </a-box>
+
+        <!-- Purple Button to open the camera for bird detection -->
+        <a-box position="1.5 2 -3" rotation="0 0 0" scale="1 1 0.1" color="purple" opacity="0.3" class="clickable" 
+               event-set__click="_event: click" onclick="detectBirds()">
+            <a-text value="" align="center" position="0 0.5 0.1" color="white"></a-text>
+        </a-box>
+
+        <!-- Camera -->
+        <a-camera></a-camera>
+    </a-scene>
+
+    <!-- Video element for camera view -->
+    <video id="cameraView" autoplay playsinline></video>
+
+    <!-- Script included at the end to ensure everything is loaded -->
+    <script src="script.js"></script> <!-- External JavaScript -->
 </body>
 </html>
