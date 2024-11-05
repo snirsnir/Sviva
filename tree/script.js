@@ -1,25 +1,33 @@
 let videoElement = document.getElementById('cameraView');
 let classifier;
 let detecting = true;
-let detectionInterval = null; // To keep track of the interval
+let detectionInterval = null;
+
+// Define handleError function that was missing
+function handleError(error) {
+    console.error('Error during detection:', error);
+    if (error.name === 'NotAllowedError') {
+        alert('Camera access denied. Please allow camera access to use this feature.');
+    } else {
+        alert('An error occurred during detection. Please try again.');
+    }
+}
 
 // Function to open the camera and start detecting trees
 async function detectTree() {
-    clearInterval(detectionInterval); // Stop any ongoing detection intervals
-    detecting = true; // Enable detection
-    videoElement.style.display = 'block'; // Show camera view
+    clearInterval(detectionInterval);
+    detecting = true;
+    videoElement.style.display = 'block';
 
     try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true });
         videoElement.srcObject = stream;
-
-        // Load the MobileNet classifier with the video input
         classifier = await ml5.imageClassifier('MobileNet', videoElement);
         console.log('Model loaded for tree detection');
-        
-        detectionInterval = setInterval(classifyVideoForTree, 3000); // Check every 3 seconds for tree detection
+        detectionInterval = setInterval(classifyVideoForTree, 3000);
     } catch (error) {
         console.error("Error accessing camera or loading model:", error);
+        handleError(error);
     }
 }
 
@@ -141,26 +149,109 @@ function addTreeModel() {
     scene.appendChild(tree);
 }
 
+
+document.querySelector('a-scene').addEventListener('loaded', function () {
+    console.log('Scene loaded');
+});
+
+// מוסיף מאזין לטעינת הנכסים
+document.querySelector('a-assets').addEventListener('loaded', function () {
+    console.log('Assets loaded');
+});
+
 function addBirdModel() {
     const scene = document.querySelector('a-scene');
-    const bird = document.createElement('a-entity');
-    bird.innerHTML = `
-        <a-sphere position="0 0.5 0" radius="0.3" color="white"></a-sphere>
-        <a-sphere position="0 0.75 0" radius="0.15" color="grey"></a-sphere>
-        <a-cone position="0 0.75 0.3" rotation="0 0 0" radius-bottom="0.05" height="0.2" color="orange"></a-cone>
-        <a-cone position="-0.35 0.5 0" rotation="0 0 -90" radius-bottom="0.15" height="0.4" color="grey"></a-cone>
-        <a-cone position="0.35 0.5 0" rotation="0 0 90" radius-bottom="0.15" height="0.4" color="white"></a-cone>
-        <a-cone position="0 0.35 -0.3" rotation="0 0 0" radius-bottom="0.1" height="0.3" color="orange"></a-cone>
-        <a-image src="text/bird-text.png" position="0 1.5 0" width="2" height="0.5"></a-image>
-    `;
-    bird.setAttribute('position', { x: 2, y: 2, z: -4 });
-    scene.appendChild(bird);
-}
+    
+    // מערך של קונפיגורציות לכל ציפור
+    const birdConfigs = [
+        {
+            position: { x: 1, y: 1, z: -4 },
+            rotation: { x: 270, y: 220, z: 180 },
+            scale: { x: 0.1, y: 0.1, z: 0.1 }
+        },
+        {
+            position: { x: 4, y: 1, z: -4 },
+            rotation: { x: 270, y: 220, z: 120 },
+            scale: { x: 0.1, y: 0.1, z: 0.1  }
+        },
+        {
+            position: { x: 6, y: 1, z: -4 },
+            rotation: { x: 270, y: 220, z: 140 },
+            scale: { x: 0.1, y: 0.1, z: 0.1  }
+        },
+        {
+            position: { x: 8, y: 1, z: -4 },
+            rotation: { x: 270, y: 220, z: 190 },
+            scale: { x: 0.1, y: 0.1, z: 0.1  }
+        }
+    ];
+    // יצירת כל הציפורים
+    birdConfigs.forEach((config, index) => {
+        // יצירת container לכל ציפור
+        const container = document.createElement('a-entity');
+        container.setAttribute('position', config.position);
+        container.setAttribute('rotation', config.rotation);
+        container.setAttribute('scale', config.scale);
 
+        // יצירת הציפור עצמה
+        const birdEntity = document.createElement('a-entity');
+        
+        birdEntity.setAttribute('obj-model', {
+            obj: '#bird-obj'
+        });
 
+        birdEntity.setAttribute('material', {
+            shader: 'standard',
+            src: '#bird-diffuse',
+            normalMap: '#bird-normal',
+            normalScale: { x: 1, y: 1 },
+            roughness: 0.5,
+            metalness: 0.1
+        });
 
+        // אירועי דיבוג
+        birdEntity.addEventListener('model-loaded', (ev) => {
+            console.log(`Bird ${index + 1} loaded successfully`);
+            
+            // עדכון המטריאל אחרי טעינת המודל
+            const mesh = birdEntity.getObject3D('mesh');
+            if (mesh) {
+                mesh.traverse((node) => {
+                    if (node.isMesh) {
+                        node.material = new THREE.MeshStandardMaterial({
+                            map: new THREE.TextureLoader().load(document.querySelector('#bird-diffuse').src),
+                            normalMap: new THREE.TextureLoader().load(document.querySelector('#bird-normal').src),
+                            normalScale: new THREE.Vector2(1, 1),
+                            roughness: 0.5,
+                            metalness: 0.1
+                        });
+                        node.material.needsUpdate = true;
+                    }
+                });
+            }
+        });
 
-// Handle errors during classification
-function handleError(error) {
-    console.error('Error during classification:', error);
+        birdEntity.addEventListener('materialtextureloaded', () => {
+            console.log(`Texture loaded for bird ${index + 1}`);
+        });
+
+        birdEntity.addEventListener('model-error', (error) => {
+            console.error(`Error loading bird ${index + 1}:`, error);
+        });
+
+        // הוספת טקסט מעל כל ציפור
+        const textEntity = document.createElement('a-entity');
+        textEntity.setAttribute('position', { x: 0, y: 1.5, z: 0 });
+        textEntity.setAttribute('text', {
+            value: `Bird ${index + 1}`,
+            align: 'center',
+            width: 2,
+            color: 'white'
+        });
+
+        // הרכבת המודל
+        container.appendChild(birdEntity);
+        container.appendChild(textEntity);
+        scene.appendChild(container);
+    });
 }
