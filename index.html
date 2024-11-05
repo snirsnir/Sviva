@@ -6,8 +6,36 @@
     <link rel="stylesheet" href="style.css">
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <script src="https://rawgit.com/mayognaise/aframe-gif-shader/master/dist/aframe-gif-shader.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
 </head>
 <body>
+    <div class="env-meter-container">
+        <div class="env-meter-label">מדד איכות הסביבה</div>
+        <div class="env-meter">
+            <div class="env-meter-fill"></div>
+            <div class="env-meter-markers">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </div>
+    <div class="help-icon">
+        <button id="helpButton" class="help-button">
+            <i class="fas fa-question"></i>
+        </button>
+    </div>
+
+    <!-- נעדכן את ה-Modal -->
+    <div id="autoModal" class="modal auto-modal" style="display:none;"> <!-- הסרנו את ה-onclick -->
+        <div class="modal-content auto-modal-content" onclick="event.stopPropagation();">
+            <!-- הסרנו את כפתור הסגירה -->
+            <iframe src="https://view.genially.com/67294f0b424eb8305b08fc89" frameborder="0"></iframe>
+        </div>
+    </div>
     <div class="audio-control">
         <button id="audioToggle" class="audio-button">
             <span class="audio-icon">🔊</span>

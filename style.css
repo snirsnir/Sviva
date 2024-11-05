@@ -1,24 +1,48 @@
-.modal {
-    position: fixed;
-    z-index: 999;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0,0,0,0.5);
+/* עדכון סגנונות למניעת גלילה מוחלטת */
+html.modal-open,
+body.modal-open {
+    overflow: hidden !important;
+    position: fixed !important;
+    width: 100% !important;
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    touch-action: none !important;
+    overscroll-behavior: none !important;
+    -webkit-overflow-scrolling: touch !important;
 }
 
-.modal-content {
+.modal, 
+.auto-modal {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    overflow: hidden !important;
+    overscroll-behavior: none !important;
+    touch-action: none !important;
+    -webkit-overflow-scrolling: touch !important;
+    background-color: rgba(0,0,0,0.8);
+}
+
+.modal-content,
+.auto-modal-content {
     position: relative;
-    background-color: #fefefe;
-    margin: 5% auto;
+    width: 85% !important;
+    height: 80% !important;
+    margin: 8% auto !important;
     padding: 0;
-    border: 10px solid #ffffff;
-    width: 75%;
-    height: 70%;
+    border: none;
+    background-color: black;
+    overflow: hidden !important;
     box-sizing: border-box;
-    overflow: hidden;
+}
+
+/* נקה הגדרות גלילה מתנגשות */
+.modal[style*="display: block"],
+.auto-modal[style*="display: block"] {
+    overflow: hidden !important;
 }
 
 iframe {
@@ -114,4 +138,104 @@ iframe {
 
 .audio-button.muted .audio-icon {
     opacity: 0.5;
+}
+
+.help-icon {
+    position: fixed;
+    top: 80px; /* מתחת לכפתור האודיו */
+    right: 20px;
+    z-index: 1000;
+}
+
+.help-button {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: white;
+    border: 2px solid #333;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    font-size: 20px;
+}
+
+.help-button:hover {
+    transform: scale(1.1);
+    background-color: #f0f0f0;
+}
+
+.help-button i {
+    color: #333;
+}
+.env-meter-container {
+    position: fixed;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 60px;
+    height: 400px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 30px;
+    padding: 10px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.env-meter-label {
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: #333;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    transform: rotate(-90deg);
+    margin-bottom: 20px;
+}
+
+.env-meter {
+    width: 50px;
+    height: 350px;
+    background: #ddd;
+    border-radius: 15px;
+    position: relative;
+    overflow: hidden;
+    border: 2px solid #666;
+}
+
+.env-meter-fill {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to top, #ff4444, #ff4444);
+    transition: height 0.5s ease-in-out, background 0.5s ease-in-out;
+}
+
+.env-meter-markers {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 10px 0;
+}
+
+.env-meter-markers span {
+    width: 8px;
+    height: 2px;
+    background: rgba(0, 0, 0, 0.3);
+    margin-left: 5px;
+}
+.a-enter-vr {
+    display: none !important;
 }
