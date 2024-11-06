@@ -24,25 +24,67 @@
 <body>
     <a-scene cursor="rayOrigin: mouse" raycaster="objects: .clickable">
         <a-assets timeout="30000">
+            <a-asset-item id="tree-obj" src="model/tree/Tree1.obj" crossorigin="anonymous"></a-asset-item>
+            <img id="tree-bark" src="model/tree/BarkDecidious0143_5_S.jpg" crossorigin="anonymous">
+            <img id="tree-leaves" src="model/tree/Leaves0120_35_S.png" crossorigin="anonymous">
             <!-- Model -->
             <a-asset-item id="bird-obj" src="model/bird/bird.obj" crossorigin="anonymous"></a-asset-item>
             
             <!-- Textures -->
             <img id="bird-diffuse" src="model/bird/bird.jpg" crossorigin="anonymous">
             <img id="bird-normal" src="model/bird/Map__7_Normal Bump.jpg" crossorigin="anonymous">
+
+            <a-asset-item id="monkey-obj" src="model/monkey/model.obj" crossorigin="anonymous"></a-asset-item>
+            <img id="monkey-diffuse" src="model/monkey/diffuse.png" crossorigin="anonymous">
+            <img id="monkey-normal" src="model/monkey/normal.jpeg" crossorigin="anonymous">
+            <img id="monkey-opacity" src="model/monkey/opacity.jpeg" crossorigin="anonymous">
+            
+            <a-asset-item id="deer-obj" src="model/deer/deer.obj" crossorigin="anonymous"></a-asset-item>
+            <a-asset-item id="deer-mtl" src="model/deer/deer.mtl" crossorigin="anonymous"></a-asset-item>
+            <img id="deer-texture" src="model/deer/deer.jpg" crossorigin="anonymous">
+
+            <a-asset-item id="boar-obj" src="model/boar/boar.obj" crossorigin="anonymous"></a-asset-item>
+            <a-asset-item id="boar-mtl" src="model/boar/boar.mtl" crossorigin="anonymous"></a-asset-item>
+            <img id="boar-texture" src="model/boar/boar.jpg" crossorigin="anonymous">
+
+            <a-asset-item id="fox-obj" src="model/fox/fox.obj" crossorigin="anonymous"></a-asset-item>
+            <a-asset-item id="fox-mtl" src="model/fox/fox.mtl" crossorigin="anonymous"></a-asset-item>
+            <img id="fox-texture" src="model/fox/fox.jpg" crossorigin="anonymous">
         </a-assets>
 
         <a-sky src="base.jpg" id="image360"></a-sky>
 
         <a-box position="-4 2 -3" rotation="0 40 0" scale="1 1 0.1" color="green" opacity="0.3" class="clickable" 
                event-set__click="_event: click" onclick="detectTree()">
-            <a-text value="Find Tree" align="center" position="0 0.5 0.1" color="black"></a-text>
+            <a-text value="Find Tree" align="center" position="0 0.5 0.1" color="'white"></a-text>
         </a-box>
 
         <a-box position="1.5 2 -3" rotation="0 0 0" scale="1 1 0.1" color="purple" opacity="0.3" class="clickable" 
                event-set__click="_event: click" onclick="detectBirds()">
             <a-text value="Find Bird" align="center" position="0 0.5 0.1" color="white"></a-text>
         </a-box>
+
+        <a-box position="-1 1.5 3" rotation="0 140 0" scale="1 1 0.1" color="orange" opacity="0.3" class="clickable" 
+        event-set__click="_event: click" onclick="detectMonkey()">
+     <a-text value="Find Monkey" align="center" position="0 0.5 0.1" color="white"></a-text>
+    </a-box>
+ <a-box position="4 1.5 3" rotation="0 -140 0" scale="1 1 0.1" color="brown" opacity="0.3" 
+       class="clickable" data-animal="deer"
+       event-set__click="_event: click" onclick="detectDeer()">
+    <a-text value="Find Deer" align="center" position="0 0.5 0.1" color="white"></a-text>
+     
+ </a-box>
+ <a-box position="-13 1.5 3" rotation="0 120 0" scale="2 2 0.2" color="darkbrown" opacity="0.3" 
+ class="clickable" data-animal="boar"
+ event-set__click="_event: click" onclick="detectBoar()">
+<a-text value="Find Boar" align="center" position="0 0.5 0.1" color="white"></a-text>
+</a-box>
+
+<a-box position="20 2 -8" rotation="0 -80 0" scale="4 4 0.6" color="orange" opacity="0.3" 
+class="clickable" data-animal="fox"
+event-set__click="_event: click" onclick="detectFox()">
+<a-text value="Find Fox" align="center" position="0 0.5 0.1" color="white"></a-text>
+</a-box>
 
         <a-camera></a-camera>
     </a-scene>
