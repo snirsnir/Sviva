@@ -162,7 +162,15 @@ window.addEventListener("message", (event) => {
     }
 })
 window.addEventListener("message", (event) => {
+    
     if (event.data.message === "closeTable") {
-        document.getElementById('powerModal').style.display = 'none';
+        console.log("מנסה לסגור את המודל..."); // לוג לבדיקה
+        const modal = document.getElementById('powerModal');
+        if (modal) {
+            modal.style.display = 'none';
+            console.log("המודל נסגר"); // לוג לבדיקה
+        } else {
+            console.error("לא נמצא אלמנט עם ID 'powerModal'");
+        }
     }
-})
+});

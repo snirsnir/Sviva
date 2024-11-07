@@ -256,12 +256,20 @@ document.querySelectorAll('input[type="number"]').forEach(input => {
     });
 });
 
-function goBack(){
-
-window.parent.postMessage({ message: "closeTable" }, "*");
-
-
+function goBack() {
+    console.log("מנסה לסגור את המודל..."); // לוג לבדיקה
+    try {
+        window.parent.postMessage({ message: "closeTable" }, "*");
+        console.log("הודעת סגירה נשלחה"); // לוג לבדיקה
+    } catch (error) {
+        console.error("שגיאה בשליחת ההודעה:", error);
+    }
 }
+
+// בדיקה שההודעה התקבלה
+window.addEventListener("message", (event) => {
+    console.log("התקבלה הודעה:", event.data); // לוג לבדיקה
+});
 
     </script>
 </body>
