@@ -257,11 +257,10 @@ document.querySelectorAll('input[type="number"]').forEach(input => {
 });
 
 function goBack(){
-button.addEventListener("click", function() {
+
 window.parent.postMessage({ message: "closeTable" }, "*");
 this.style.display = 'none';
 
-    });
 }
 
     </script>
