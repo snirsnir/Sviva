@@ -157,12 +157,35 @@ function closeModalOnClickOutside(event, modalId) {
     }
 }
 window.addEventListener("message", (event) => {
-    if (event.data.message === "closeTut") {
-        document.getElementById('autoModal').style.display = 'none';
-    }
-})
-window.addEventListener("message", (event) => {
     if (event.data.message === "closeTable") {
         document.getElementById('powerModal').style.display = 'none';
+        
+        const energyImg = document.getElementById('energyImg');
+        if (energyImg) {
+            energyImg.src = "img/energyV.png";
+        }
+
+        // הפוך את ה-GIF לגלוי
+        const arubaGif = document.getElementById('arubaGif');
+        if (arubaGif) {
+            arubaGif.setAttribute('visible', 'true');
+        }
+
+        const powerBox = document.querySelector('a-box[position="26 7 30"]');
+        if (powerBox) {
+            powerBox.classList.remove('clickable');
+            powerBox.removeAttribute('onclick');
+            powerBox.removeAttribute('event-set__click');
+        }
+
+        // עדכון מד איכות הסביבה
+        const envMeterFill = document.querySelector('.env-meter-fill');
+        if (envMeterFill) {
+            const currentHeight = parseFloat(getComputedStyle(envMeterFill).height);
+            const newHeight = currentHeight * 0.8;
+            envMeterFill.style.height = `${newHeight}px`;
+            // נשים צבע כתום עם גרדיאנט קל לאפקט יותר מעניין
+            envMeterFill.style.background = 'linear-gradient(to top, #FFA500, #FFB833)';
+        }
     }
-})
+});

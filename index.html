@@ -14,7 +14,8 @@
         <div class="env-meter-label">מדד איכות הסביבה</div>
         <div class="env-meter">
             <div class="env-meter-fill"></div>
-            <div class="env-meter-markers">
+         
+                <div class="env-meter-waves"></div>
                 <span></span>
                 <span></span>
                 <span></span>
@@ -46,21 +47,22 @@
     </div>
     <div class="progress-circles">
         <div class="circle">
-            <img src="img/hospital.png" alt="Hospital">
+            <img id="hospitalImg" src="img/hospital.png" alt="Hospital">
         </div>
         <div class="circle">
-            <img src="img/trees.png" alt="Trees">
+            <img id="treesImg" src="img/trees.png" alt="Trees">
         </div>
         <div class="circle">
-            <img src="img/mifal.png" alt="Mifal">
+            <img id="mifalImg" src="img/mifal.png" alt="Mifal">
         </div>
         <div class="circle">
-            <img src="img/traffic.png" alt="Traffic">
+            <img id="trafficImg" src="img/traffic.png" alt="Traffic">
         </div>
         <div class="circle">
-            <img src="img/energy.png" alt="Energy">
+            <img id="energyImg" src="img/energy.png" alt="Energy">
         </div>
-    </div>
+    </div>  <!-- סגירת ה-div של progress-circles -->
+    
     <a-scene cursor="rayOrigin: mouse" raycaster="objects: .clickable">
         <!-- Panoramic Background -->
         <a-sky src="3d/img.jpg" id="image360"></a-sky>
@@ -91,7 +93,22 @@
                event-set__click="_event: click" 
                onclick="document.getElementById('powerModal').style.display='block'">
         </a-box>
-
+        <a-scene cursor="rayOrigin: mouse" raycaster="objects: .clickable">
+            <!-- שאר האלמנטים... -->
+            
+            <a-image 
+                id="arubaGif"
+                material="shader:gif;src:url(https://i.ibb.co/pfqCJjF/aruba.gif)"
+                position="15 5.5 4.5"
+                rotation="-2 80 0"
+                scale="8 9 0.5"
+                autoplay="true"
+                loop="true"
+                visible="false">  <!-- מתחיל כלא גלוי -->
+            </a-image>
+        
+            <!-- שאר האלמנטים... -->
+        </a-scene>
         <!-- Camera -->
         <a-camera></a-camera>
     </a-scene>
@@ -107,21 +124,21 @@
     <div id="treeModal" class="modal" style="display:none;" onclick="closeModalOnClickOutside(event, 'treeModal')">
         <div class="modal-content" onclick="event.stopPropagation();">
             <span class="close" onclick="document.getElementById('treeModal').style.display='none'">&times;</span>
-            <iframe src="https://one.co.il" frameborder="0"></iframe>
+            <iframe src="" frameborder="0"></iframe>
         </div>
     </div>
 
     <div id="factoryModal" class="modal" style="display:none;" onclick="closeModalOnClickOutside(event, 'factoryModal')">
         <div class="modal-content" onclick="event.stopPropagation();">
             <span class="close" onclick="document.getElementById('factoryModal').style.display='none'">&times;</span>
-            <iframe src="https://walla.co.il" frameborder="0"></iframe>
+            <iframe src="" frameborder="0"></iframe>
         </div>
     </div>
 
     <div id="trafficModal" class="modal" style="display:none;" onclick="closeModalOnClickOutside(event, 'trafficModal')">
         <div class="modal-content" onclick="event.stopPropagation();">
             <span class="close" onclick="document.getElementById('trafficModal').style.display='none'">&times;</span>
-            <iframe src="https://amazon.com" frameborder="0"></iframe>
+            <iframe src="" frameborder="0"></iframe>
         </div>
     </div>
 
@@ -131,6 +148,8 @@
             <iframe src="https://view.genially.com/66db8202d805be0a58831769?idSlide=2d9ed499-3597-428d-89a2-42488056d089" frameborder="0"></iframe>
         </div>
     </div>
+
+    
 
     <script src="script.js"></script>
 </body>
