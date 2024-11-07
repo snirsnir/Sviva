@@ -190,6 +190,7 @@
 
 </div>
     <script>
+        const modalChannel = new BroadcastChannel("modalChannel");
 function validateData() {
     const pm25Values = Array.from(document.querySelectorAll('.pm25')).map(input => Number(input.value));
     const pm10Values = Array.from(document.querySelectorAll('.pm10')).map(input => Number(input.value));
@@ -257,8 +258,7 @@ document.querySelectorAll('input[type="number"]').forEach(input => {
 });
 
 function goBack() {
-    localStorage.setItem('closeModal', 'true');
-    console.log("Modal close request sent");
+    modalChannel.postMessage("closeModal");
 }
     </script>
 </body>

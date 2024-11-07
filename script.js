@@ -161,10 +161,15 @@ window.addEventListener("message", (event) => {
         document.getElementById('autoModal').style.display = 'none';
     }
 })
-setInterval(() => {
-    if (localStorage.getItem('closeModal') === 'true') {
-        document.getElementById('powerModal').style.display = 'none';
-        localStorage.removeItem('closeModal'); // ניקוי אחרי הסגירה
-        console.log("Modal closed");
+const modalChannel = new BroadcastChannel("modalChannel");
+
+// האזנה להודעות מהערוץ
+modalChannel.onmessage = (event) => {
+  if (event.data === "closeModal") {
+    const elecModal = document.getElementById("powerModal");
+    if (elecModal) {
+        elecModal.style.display = "none"; // סגירת המודל
+      console.log("powerModal has been closed.");
     }
-}, 500);
+  }
+};
