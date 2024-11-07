@@ -257,20 +257,9 @@ document.querySelectorAll('input[type="number"]').forEach(input => {
 });
 
 function goBack() {
-    console.log("מנסה לסגור את המודל..."); // לוג לבדיקה
-    try {
-        window.parent.postMessage({ message: "closeTable" }, "*");
-        console.log("הודעת סגירה נשלחה"); // לוג לבדיקה
-    } catch (error) {
-        console.error("שגיאה בשליחת ההודעה:", error);
-    }
+    localStorage.setItem('closeModal', 'true');
+    console.log("Modal close request sent");
 }
-
-// בדיקה שההודעה התקבלה
-window.addEventListener("message", (event) => {
-    console.log("התקבלה הודעה:", event.data); // לוג לבדיקה
-});
-
     </script>
 </body>
 </html>

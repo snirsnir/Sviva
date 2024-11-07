@@ -161,16 +161,10 @@ window.addEventListener("message", (event) => {
         document.getElementById('autoModal').style.display = 'none';
     }
 })
-window.addEventListener("message", (event) => {
-    
-    if (event.data.message === "closeTable") {
-        console.log("מנסה לסגור את המודל..."); // לוג לבדיקה
-        const modal = document.getElementById('powerModal');
-        if (modal) {
-            modal.style.display = 'none';
-            console.log("המודל נסגר"); // לוג לבדיקה
-        } else {
-            console.error("לא נמצא אלמנט עם ID 'powerModal'");
-        }
+setInterval(() => {
+    if (localStorage.getItem('closeModal') === 'true') {
+        document.getElementById('powerModal').style.display = 'none';
+        localStorage.removeItem('closeModal'); // ניקוי אחרי הסגירה
+        console.log("Modal closed");
     }
-});
+}, 500);
