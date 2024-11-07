@@ -255,6 +255,15 @@ document.querySelectorAll('input[type="number"]').forEach(input => {
         this.value = this.value.replace(/[^0-9]/g, '');
     });
 });
+
+function goBack(){
+button.addEventListener("click", function() {
+window.parent.postMessage({ message: "closeTable" }, "*");
+this.style.display = 'none';
+
+    });
+}
+
     </script>
 </body>
 </html>

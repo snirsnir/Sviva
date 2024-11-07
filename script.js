@@ -161,3 +161,8 @@ window.addEventListener("message", (event) => {
         document.getElementById('autoModal').style.display = 'none';
     }
 })
+window.addEventListener("message", (event) => {
+    if (event.data.message === "closeTable") {
+        document.getElementById('powerModal').style.display = 'none';
+    }
+})
