@@ -15,11 +15,45 @@
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: relative;  /* Added for absolute positioning of back button */
+        }
+        
+        /* New Back Button Styles */
+        .round-back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #3498db;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            transition: background-color 0.3s ease;
+        }
+
+        .round-back-button:hover {
+            background-color: #2980b9;
+        }
+
+        /* Arrow icon styles */
+        .arrow-icon {
+            width: 20px;
+            height: 20px;
+            border-right: 3px solid white;
+            border-bottom: 3px solid white;
+            transform: rotate(135deg);
+            margin-right: -4px;
         }
         
         h1 {
             color: #2c3e50;
             text-align: center;
+            margin-top: 50px;  /* Added to accommodate the back button */
         }
         
         table {
@@ -72,12 +106,14 @@
             margin: 10px 0;
             display: none;
         }
+        
         .next-button {
-    background-color: #27ae60;
-    display: none;
-    margin-right: 10px;
-}
-.summary {
+            background-color: #27ae60;
+            display: none;
+            margin-right: 10px;
+        }
+        
+        .summary {
             display: none;
             text-align: center;
             padding: 20px;
@@ -110,156 +146,157 @@
         }
         
         .experiment-content {
-    opacity: 1;
-    transition: opacity 0.3s ease;
-}
+            opacity: 1;
+            transition: opacity 0.3s ease;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="experiment-content">
-        <h1>מדידת איכות אוויר</h1>
-        <table>
-            <thead>
-                <tr>
-                    <th>זמן המדידה</th>
-                    <th>חלקיקים PM2.5</th>
-                    <th>חלקיקים PM10</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>לפני הדלקת הנר</td>
-                    <td><input type="number" class="pm25" min="0"></td>
-                    <td><input type="number" class="pm10" min="0"></td>
-                </tr>
-                <tr>
-                    <td>דקה 1</td>
-                    <td><input type="number" class="pm25" min="0"></td>
-                    <td><input type="number" class="pm10" min="0"></td>
-                </tr>
-                <tr>
-                    <td>דקה 2</td>
-                    <td><input type="number" class="pm25" min="0"></td>
-                    <td><input type="number" class="pm10" min="0"></td>
-                </tr>
-                <tr>
-                    <td>דקה 3</td>
-                    <td><input type="number" class="pm25" min="0"></td>
-                    <td><input type="number" class="pm10" min="0"></td>
-                </tr>
-                <tr>
-                    <td>דקה 4</td>
-                    <td><input type="number" class="pm25" min="0"></td>
-                    <td><input type="number" class="pm10" min="0"></td>
-                </tr>
-                <tr>
-                    <td>דקה 5</td>
-                    <td><input type="number" class="pm25" min="0"></td>
-                    <td><input type="number" class="pm10" min="0"></td>
-                </tr>
-                <tr>
-                    <td>לאחר אוורור (2 דקות)</td>
-                    <td><input type="number" class="pm25" min="0"></td>
-                    <td><input type="number" class="pm10" min="0"></td>
-                </tr>
-            </tbody>
-        </table>
+        <!-- New Back Button -->
+        <a href="https://view.genially.com/66db8202d805be0a58831769?idSlide=2d9ed499-3597-428d-89a2-42488056d089" class="round-back-button">
+            <span class="arrow-icon"></span>
+        </a>
         
-        <div class="error">יש לוודא שכל הערכים ממולאים ותקינים!</div>
-        <div class="success">הניסוי הושלם בהצלחה!</div>
-        <button onclick="validateData()">לחצו לבדיקה</button>
-        <button onclick="goToNextStep()" class="next-button">המשך לשלב הבא</button>
+        <div class="experiment-content">
+            <h1>מדידת איכות אוויר</h1>
+            <!-- Rest of the content remains the same -->
+            <table>
+                <thead>
+                    <tr>
+                        <th>זמן המדידה</th>
+                        <th>חלקיקים PM2.5</th>
+                        <th>חלקיקים PM10</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>לפני הדלקת הנר</td>
+                        <td><input type="number" class="pm25" min="0"></td>
+                        <td><input type="number" class="pm10" min="0"></td>
+                    </tr>
+                    <tr>
+                        <td>דקה 1</td>
+                        <td><input type="number" class="pm25" min="0"></td>
+                        <td><input type="number" class="pm10" min="0"></td>
+                    </tr>
+                    <tr>
+                        <td>דקה 2</td>
+                        <td><input type="number" class="pm25" min="0"></td>
+                        <td><input type="number" class="pm10" min="0"></td>
+                    </tr>
+                    <tr>
+                        <td>דקה 3</td>
+                        <td><input type="number" class="pm25" min="0"></td>
+                        <td><input type="number" class="pm10" min="0"></td>
+                    </tr>
+                    <tr>
+                        <td>דקה 4</td>
+                        <td><input type="number" class="pm25" min="0"></td>
+                        <td><input type="number" class="pm10" min="0"></td>
+                    </tr>
+                    <tr>
+                        <td>דקה 5</td>
+                        <td><input type="number" class="pm25" min="0"></td>
+                        <td><input type="number" class="pm10" min="0"></td>
+                    </tr>
+                    <tr>
+                        <td>לאחר אוורור (2 דקות)</td>
+                        <td><input type="number" class="pm25" min="0"></td>
+                        <td><input type="number" class="pm10" min="0"></td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="error">יש לוודא שכל הערכים ממולאים ותקינים!</div>
+            <div class="success">הניסוי הושלם בהצלחה!</div>
+            <button onclick="validateData()">לחצו לבדיקה</button>
+            <button onclick="goToNextStep()" class="next-button">המשך לשלב הבא</button>
         </div>
-       <div class="summary">
-        <h2>סיכום הניסוי</h2>
-        <p>
-            בניסוי זה בדקנו את השפעת שריפת נר על איכות האוויר בסביבה.<br>
-            ראינו כיצד רמת החלקיקים באוויר עולה בהדרגה כאשר הנר דולק,<br>
-            וכיצד אוורור טוב מסייע להחזיר את איכות האוויר למצבה הראשוני.<br><br>
-            
-            זוהי המחשה פשוטה לתהליך שמתרחש בקנה מידה גדול בהרבה בתחנות כוח,<br>
-            כאשר שורפים דלקים פוסיליים כמו פחם ונפט.<br><br>
-            
-            המסקנה החשובה היא שפליטת מזהמים משפיעה על איכות האוויר,<br>
-            אך ניתן לצמצם את ההשפעה על ידי אמצעים מתאימים.
-        </p>
-        <button class="back-button" onclick="goBack()">סיימתם! לחצו לחזרה לטכנולנד</button>
-    </div>
+        <div class="summary">
+            <h2>סיכום הניסוי</h2>
+            <p>
+                בניסוי זה בדקנו את השפעת שריפת נר על איכות האוויר בסביבה.<br>
+                ראינו כיצד רמת החלקיקים באוויר עולה בהדרגה כאשר הנר דולק,<br>
+                וכיצד אוורור טוב מסייע להחזיר את איכות האוויר למצבה הראשוני.<br><br>
+                
+                זוהי המחשה פשוטה לתהליך שמתרחש בקנה מידה גדול בהרבה בתחנות כוח,<br>
+                כאשר שורפים דלקים פוסיליים כמו פחם ונפט.<br><br>
+                
+                המסקנה החשובה היא שפליטת מזהמים משפיעה על איכות האוויר,<br>
+                אך ניתן לצמצם את ההשפעה על ידי אמצעים מתאימים.
+            </p>
+            <button class="back-button" onclick="goBack()">סיימתם! לחצו לחזרה לטכנולנד</button>
+        </div>
     </div>
 
-</div>
     <script>
         const modalChannel = new BroadcastChannel("modalChannel");
-function validateData() {
-    const pm25Values = Array.from(document.querySelectorAll('.pm25')).map(input => Number(input.value));
-    const pm10Values = Array.from(document.querySelectorAll('.pm10')).map(input => Number(input.value));
-    
-    const errorDiv = document.querySelector('.error');
-    const successDiv = document.querySelector('.success');
-    const nextButton = document.querySelector('.next-button');
-    
-    // בדיקה שכל השדות מלאים
-    if (pm25Values.some(isNaN) || pm10Values.some(isNaN)) {
-        errorDiv.style.display = 'block';
-        successDiv.style.display = 'none';
-        nextButton.style.display = 'none';
-        errorDiv.textContent = 'יש למלא את כל השדות!';
-        return;
-    }
-    
-    // בדיקה שהערכים עולים (חוץ מהאחרון)
-    for (let i = 1; i < pm25Values.length - 1; i++) {
-        if (pm25Values[i] <= pm25Values[i-1] || pm10Values[i] <= pm10Values[i-1]) {
-            errorDiv.style.display = 'block';
-            successDiv.style.display = 'none';
-            nextButton.style.display = 'none';
-            errorDiv.textContent = 'ישנם ערכים ריקים / לא הגיוניים';
-            return;
+        
+        function validateData() {
+            const pm25Values = Array.from(document.querySelectorAll('.pm25')).map(input => Number(input.value));
+            const pm10Values = Array.from(document.querySelectorAll('.pm10')).map(input => Number(input.value));
+            
+            const errorDiv = document.querySelector('.error');
+            const successDiv = document.querySelector('.success');
+            const nextButton = document.querySelector('.next-button');
+            
+            if (pm25Values.some(isNaN) || pm10Values.some(isNaN)) {
+                errorDiv.style.display = 'block';
+                successDiv.style.display = 'none';
+                nextButton.style.display = 'none';
+                errorDiv.textContent = 'יש למלא את כל השדות!';
+                return;
+            }
+            
+            for (let i = 1; i < pm25Values.length - 1; i++) {
+                if (pm25Values[i] <= pm25Values[i-1] || pm10Values[i] <= pm10Values[i-1]) {
+                    errorDiv.style.display = 'block';
+                    successDiv.style.display = 'none';
+                    nextButton.style.display = 'none';
+                    errorDiv.textContent = 'ישנם ערכים ריקים / לא הגיוניים';
+                    return;
+                }
+            }
+            
+            if (pm25Values[pm25Values.length-1] >= pm25Values[pm25Values.length-2] || 
+                pm10Values[pm10Values.length-1] >= pm10Values[pm10Values.length-2]) {
+                errorDiv.style.display = 'block';
+                successDiv.style.display = 'none';
+                nextButton.style.display = 'none';
+                errorDiv.textContent = 'הערך האחרון (אחרי אוורור) לא הגיוני!';
+                return;
+            }
+            
+            errorDiv.style.display = 'none';
+            successDiv.style.display = 'block';
+            nextButton.style.display = 'inline-block';
+            successDiv.textContent = 'הניסוי הושלם בהצלחה! הערכים תקינים.';
         }
-    }
-    
-    // בדיקה שהערך האחרון נמוך מהערך שלפניו
-    if (pm25Values[pm25Values.length-1] >= pm25Values[pm25Values.length-2] || 
-        pm10Values[pm10Values.length-1] >= pm10Values[pm10Values.length-2]) {
-        errorDiv.style.display = 'block';
-        successDiv.style.display = 'none';
-        nextButton.style.display = 'none';
-        errorDiv.textContent = 'הערך האחרון (אחרי אוורור) לא הגיוני!';
-        return;
-    }
-    
-    // אם הגענו לכאן, הכל תקין
-    errorDiv.style.display = 'none';
-    successDiv.style.display = 'block';
-    nextButton.style.display = 'inline-block';
-    successDiv.textContent = 'הניסוי הושלם בהצלחה! הערכים תקינים.';
-}
 
-function goToNextStep() {
-    const experimentContent = document.querySelector('.experiment-content');
-    const summary = document.querySelector('.summary');
-    
-    // הסתרת התוכן הקודם
-    experimentContent.style.opacity = '0';
-    
-    setTimeout(() => {
-        experimentContent.style.display = 'none';
-        summary.style.display = 'block';
-        summary.style.opacity = '1';
-    }, 300);
-}
+        function goToNextStep() {
+            const experimentContent = document.querySelector('.experiment-content');
+            const summary = document.querySelector('.summary');
+            
+            experimentContent.style.opacity = '0';
+            
+            setTimeout(() => {
+                experimentContent.style.display = 'none';
+                summary.style.display = 'block';
+                summary.style.opacity = '1';
+            }, 300);
+        }
 
-// הוספת אירוע לכל שדות הקלט שמאפשר רק מספרים
-document.querySelectorAll('input[type="number"]').forEach(input => {
-    input.addEventListener('input', function() {
-        this.value = this.value.replace(/[^0-9]/g, '');
-    });
-});
+        document.querySelectorAll('input[type="number"]').forEach(input => {
+            input.addEventListener('input', function() {
+                this.value = this.value.replace(/[^0-9]/g, '');
+            });
+        });
 
-function goBack() {
-    modalChannel.postMessage("closeModal");
-}
+        function goBack() {
+            window.parent.postMessage({ type: "closeModal", message: "closeTable" }, "*");
+            console.log("הודעת סגירה נשלחה בהצלחה");
+        }
     </script>
 </body>
 </html>

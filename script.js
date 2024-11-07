@@ -161,15 +161,8 @@ window.addEventListener("message", (event) => {
         document.getElementById('autoModal').style.display = 'none';
     }
 })
-const modalChannel = new BroadcastChannel("modalChannel");
-
-// האזנה להודעות מהערוץ
-modalChannel.onmessage = (event) => {
-  if (event.data === "closeModal") {
-    const elecModal = document.getElementById("powerModal");
-    if (elecModal) {
-        elecModal.style.display = "none"; // סגירת המודל
-      console.log("powerModal has been closed.");
+window.addEventListener("message", (event) => {
+    if (event.data.message === "closeTable") {
+        document.getElementById('powerModal').style.display = 'none';
     }
-  }
-};
+})
