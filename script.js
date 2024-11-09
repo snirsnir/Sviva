@@ -20,24 +20,20 @@ document.addEventListener('DOMContentLoaded', function() {
         const body = document.body;
 
         if (show) {
-            // שמור את מיקום הגלילה הנוכחי
             const scrollY = window.scrollY;
             html.style.top = `-${scrollY}px`;
             
             html.classList.add('modal-open');
             body.classList.add('modal-open');
 
-            // הוסף מאזינים לכל אירועי הגלילה
             scrollEvents.forEach(event => {
                 window.addEventListener(event, preventScroll, { passive: false });
             });
         } else {
-            // הסר את כל המאזינים
             scrollEvents.forEach(event => {
                 window.removeEventListener(event, preventScroll);
             });
 
-            // שחזר את מיקום הגלילה
             html.classList.remove('modal-open');
             body.classList.remove('modal-open');
             
@@ -47,46 +43,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // עדכון פתיחת המודל האוטומטי
-    setTimeout(() => {
-        document.getElementById('autoModal').style.display = 'block';
-        toggleModalState(true);
-    }, 3000);
-
-    // עדכון כפתור העזרה
-    const helpButton = document.getElementById('helpButton');
-    helpButton.addEventListener('click', function() {
-        const autoModal = document.getElementById('autoModal');
-        const modalIframe = autoModal.querySelector('iframe');
-        modalIframe.src = modalIframe.src;
-        autoModal.style.display = 'block';
-        toggleModalState(true);
-    });
-
-    // הוסף את הטיפול בהודעת הסגירה
-    window.addEventListener("message", (event) => {
-        if (event.data.message === "closeTut") {
-            document.getElementById('autoModal').style.display = 'none';
-            toggleModalState(false);
-        }
-    });
-
-    // מנע גלילה גם על אלמנט ה-body עצמו
-    document.body.addEventListener('wheel', preventScroll, { passive: false });
-    document.body.addEventListener('touchmove', preventScroll, { passive: false });
-});
-
-
-    // פתיחה אוטומטית של המודל בטעינה ראשונית
-    setTimeout(() => {
-        document.getElementById('autoModal').style.display = 'block';
-    }, 3000);
-
+    // טיפול באודיו
     const audioToggle = document.getElementById('audioToggle');
     const audio = document.getElementById('bgAudio');
-    let isPlaying = true; // מתחילים עם מצב מופעל
+    let isPlaying = true;
 
-    // פונקציה להפעלת האודיו
     function playAudio() {
         audio.muted = false;
         audio.play()
@@ -101,24 +62,14 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
 
-    // פונקציה לעדכון הכפתור
     function updateButtonState() {
         const icon = audioToggle.querySelector('.audio-icon');
         icon.textContent = isPlaying ? '🔊' : '🔇';
         audioToggle.classList.toggle('muted', !isPlaying);
     }
 
-    // ניסיון להפעיל אוטומטית בטעינה
     playAudio();
 
-    // הפעלה אוטומטית בכל אינטראקציה של המשתמש עם העמוד
-    document.addEventListener('click', function() {
-        if (!isPlaying) {
-            playAudio();
-        }
-    }, { once: true }); // רק פעם אחת
-
-    // טיפול בלחיצה על הכפתור
     audioToggle.addEventListener('click', function() {
         if (isPlaying) {
             audio.pause();
@@ -130,62 +81,93 @@ document.addEventListener('DOMContentLoaded', function() {
         updateButtonState();
     });
 
-    // טיפול במקרה שהאודיו נגמר
-    audio.addEventListener('ended', function() {
-        if (!audio.loop) {
-            isPlaying = false;
-            updateButtonState();
+    let environmentalDrops = 0;
+
+    // פונקציה מעודכנת לעדכון צבע המד
+    function updateEnvMeterColor(envMeterFill) {
+        switch(environmentalDrops) {
+            case 0:
+                newColor = 'linear-gradient(to top, #ff0000, #ff4444)'; // אדום
+                break;
+            case 1:
+                newColor = 'linear-gradient(to top, #FFA500, #FFB833)'; // כתום
+                break;
+            case 2:
+                newColor = 'linear-gradient(to top, #FFB833, #FFD700)'; // כתום בהיר
+                break;
+            case 3:
+                newColor = 'linear-gradient(to top, #FFD700, #FFFF00)'; // צהבהב
+                break;
+            case 4:
+                newColor = 'linear-gradient(to top, #90EE90, #ADFF2F)'; // צהבהב-ירקרק
+                break;
+            case 5:
+                newColor = 'linear-gradient(to top, #32CD32, #00FF00)'; // ירוק
+                break;
+            default:
+                newColor = 'linear-gradient(to top, #32CD32, #00FF00)'; // ירוק כברירת מחדל
         }
-    });
-
-    // ניסיון נוסף להפעיל את האודיו באירועי משתמש שונים
-    const userActions = ['mousedown', 'keydown', 'touchstart', 'scroll'];
-    userActions.forEach(action => {
-        document.addEventListener(action, function() {
-            if (!isPlaying) {
-                playAudio();
-            }
-        }, { once: true });
-    });
-
-
-// המשך הקוד הקיים
-function closeModalOnClickOutside(event, modalId) {
-    const modal = document.getElementById(modalId);
-    if (event.target === modal) {
-        modal.style.display = "none";
-    }
-}
-window.addEventListener("message", (event) => {
-    if (event.data.message === "closeTable") {
-        document.getElementById('powerModal').style.display = 'none';
         
-        const energyImg = document.getElementById('energyImg');
-        if (energyImg) {
-            energyImg.src = "img/energyV.png";
-        }
-
-        // הפוך את ה-GIF לגלוי
-        const arubaGif = document.getElementById('arubaGif');
-        if (arubaGif) {
-            arubaGif.setAttribute('visible', 'true');
-        }
-
-        const powerBox = document.querySelector('a-box[position="26 7 30"]');
-        if (powerBox) {
-            powerBox.classList.remove('clickable');
-            powerBox.removeAttribute('onclick');
-            powerBox.removeAttribute('event-set__click');
-        }
-
-        // עדכון מד איכות הסביבה
+        envMeterFill.style.background = newColor;
+    }
+    // האזנה להודעות מהמשימות השונות
+    window.addEventListener("message", (event) => {
         const envMeterFill = document.querySelector('.env-meter-fill');
-        if (envMeterFill) {
+
+        switch(event.data.message) {
+            case "closeCar":
+                document.getElementById('trafficModal').style.display = 'none';
+                const trafficImg = document.getElementById('trafficImg');
+                if (trafficImg) trafficImg.src = "img/trafficV.png";
+                
+                const busImage = document.getElementById('busImage');
+                if (busImage) busImage.setAttribute('visible', 'true');
+                
+                const carBox = document.querySelector('a-box[position="-15 -2 20"]');
+                if (carBox) {
+                    carBox.classList.remove('clickable');
+                    carBox.removeAttribute('onclick');
+                    carBox.removeAttribute('event-set__click');
+                }
+                break;
+
+            case "closeTable":
+                document.getElementById('powerModal').style.display = 'none';
+                const energyImg = document.getElementById('energyImg');
+                if (energyImg) energyImg.src = "img/energyV.png";
+                
+                const arubaGif = document.getElementById('arubaGif');
+                if (arubaGif) arubaGif.setAttribute('visible', 'true');
+                
+                const powerBox = document.querySelector('a-box[position="26 7 30"]');
+                if (powerBox) {
+                    powerBox.classList.remove('clickable');
+                    powerBox.removeAttribute('onclick');
+                    powerBox.removeAttribute('event-set__click');
+                }
+                break;
+
+            // הוסף כאן case נוספים לפי הצורך
+        }
+
+        if (envMeterFill && event.data.message.startsWith('close')) {
             const currentHeight = parseFloat(getComputedStyle(envMeterFill).height);
             const newHeight = currentHeight * 0.8;
             envMeterFill.style.height = `${newHeight}px`;
-            // נשים צבע כתום עם גרדיאנט קל לאפקט יותר מעניין
-            envMeterFill.style.background = 'linear-gradient(to top, #FFA500, #FFB833)';
+            
+            // מעלים את מספר הירידות ומעדכנים את הצבע
+            environmentalDrops++;
+            updateEnvMeterColor(envMeterFill);
+        }
+    });
+
+    // סגירת מודל בלחיצה מחוץ לתוכן
+    function closeModalOnClickOutside(event, modalId) {
+        const modal = document.getElementById(modalId);
+        if (event.target === modal) {
+            modal.style.display = "none";
         }
     }
+
+    window.closeModalOnClickOutside = closeModalOnClickOutside;
 });

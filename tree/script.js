@@ -1,49 +1,285 @@
+// Global Variables
 let videoElement = document.getElementById('cameraView');
 let classifier;
 let detecting = true;
 let detectionInterval = null;
 
-// Define handleError function that was missing
+// מאזיני טעינת הדף
+window.addEventListener('load', () => {
+    setTimeout(() => {
+        document.getElementById('guideModal').style.display = 'block';
+    }, 2000);
+
+    // הוספת מאזיני אירועים למצלמה
+    document.getElementById('closeCamera').addEventListener('click', function(e) {
+        e.stopPropagation();
+        closeCamera();
+    });
+    
+    document.getElementById('cameraOverlay').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeCamera();
+        }
+    });
+});
+
+// Character Modal Configuration
+const characters = {
+    monkey: {
+        question: "מי אני? אני אוהב לקפץ מעץ לעץ ולאכול בננות 🍌",
+        info: "יצור חברתי וחכם זה חיוני ליער! הוא מפיץ זרעים דרך תזונתו, שומר על האיזון האקולוגי ועוזר לעצים להתרבות דרך אכילת הפירות והפצתם.",
+        answer: "קוף"
+    },
+    bird: {
+        question: "מי אני? אני עף בשמיים ושר שירים מקסימים 🎵",
+        info: "יצורי הכנף האלה חיוניים למערכת האקולוגית! הם מפיצים זרעים למרחקים ארוכים, מבקרים פרחים ושומרים על איזון אוכלוסיית החרקים.",
+        answer: "ציפור"
+    },
+    tree: {
+        question: "מי אני? אני גבוה וירוק, נותן צל ומייצר חמצן 🌳",
+        info: "הענקים הירוקים האלה הם הריאות של כדור הארץ! הם מייצרים חמצן, סופגים פחמן דו-חמצני ומספקים בית למגוון רחב של יצורים חיים.",
+        answer: "עץ"
+    },
+    deer: {
+        question: "מי אני? אני מדלג ביער בעדינות עם קרניים מרשימות 🦌",
+        info: "יצורי הבר העדינים האלה חיוניים למערכת האקולוגית! הם עוזרים בהפצת זרעים דרך הפרווה והצואה ושומרים על איזון הצמחייה ביער.",
+        answer: "אייל"
+    },
+    boar: {
+        question: "מי אני? אני חופר באדמה ומחפש מזון עם האף שלי 🐗",
+        info: "החופרים החרוצים האלה חיוניים לבריאות היער! הם מערבבים את האדמה, מפיצים זרעים ושומרים על איזון אוכלוסיות החרקים והצמחים.",
+        answer: "חזיר בר"
+    },
+    fox: {
+        question: "מי אני? אני ערמומי וחכם, עם זנב ארוך ואדמוני 🦊",
+        info: "הטורפים החכמים האלה חיוניים לשמירה על איזון ביער! הם עוזרים בבקרת אוכלוסיות המכרסמים ומפיצים זרעים באופן טבעי.",
+        answer: "שועל"
+    }
+};
+
+// Modal Functions
+function showGuideModal() {
+    document.getElementById('guideModal').style.display = 'block';
+    const iframe = document.querySelector('.modal-iframe');
+    iframe.contentWindow.showSection(1);
+}
+
+function closeModal() {
+    document.getElementById('guideModal').style.display = 'none';
+}
+
+function showCharacterModal(characterType) {
+    const modal = document.getElementById('characterModal');
+    const character = characters[characterType];
+    
+    document.getElementById('characterQuestion').textContent = character.question;
+    document.getElementById('characterInfo').textContent = character.info;
+    
+    const input = document.getElementById('characterInput');
+    input.value = '';
+    document.querySelector('.validation-mark').style.display = 'none';
+    document.getElementById('scanBtn').classList.remove('active');
+    
+    modal.style.display = 'block';
+    input.focus();
+
+    modal.dataset.characterType = characterType;
+}
+
+// Camera Functions
+async function openCamera() {
+    videoElement.style.display = 'block';
+    document.getElementById('cameraOverlay').style.display = 'block';
+    document.getElementById('closeCamera').style.display = 'flex';
+}
+
+function closeCamera() {
+    videoElement.style.display = 'none';
+    document.getElementById('cameraOverlay').style.display = 'none';
+    document.getElementById('closeCamera').style.display = 'none';
+    detecting = false;
+    const stream = videoElement.srcObject;
+    if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+    }
+    clearInterval(detectionInterval);
+}
+
+// Error Handler
 function handleError(error) {
     console.error('Error during detection:', error);
     if (error.name === 'NotAllowedError') {
-        alert('Camera access denied. Please allow camera access to use this feature.');
+        alert('נדרשת גישה למצלמה כדי להשתמש בתכונה זו.');
     } else {
-        alert('An error occurred during detection. Please try again.');
+        alert('אירעה שגיאה. אנא נסו שוב.');
+    }
+    closeCamera();
+}
+
+// Input Validation
+document.getElementById('characterInput').addEventListener('input', function(e) {
+    const modal = document.getElementById('characterModal');
+    const characterType = modal.dataset.characterType;
+    const correctAnswer = characters[characterType].answer;
+    
+    const isCorrect = e.target.value.trim().toLowerCase() === correctAnswer.toLowerCase();
+    document.querySelector('.validation-mark').style.display = isCorrect ? 'block' : 'none';
+    document.getElementById('scanBtn').classList.toggle('active', isCorrect);
+});
+
+// Scanning Functions
+function startScanning() {
+    const modal = document.getElementById('characterModal');
+    const characterType = modal.dataset.characterType;
+    modal.style.display = 'none';
+    
+    switch(characterType) {
+        case 'monkey': detectMonkey(); break;
+        case 'bird': detectBirds(); break;
+        case 'tree': detectTree(); break;
+        case 'deer': detectDeer(); break;
+        case 'boar': detectBoar(); break;
+        case 'fox': detectFox(); break;
     }
 }
 
-// Function to open the camera and start detecting trees
+// Detection Functions
 async function detectTree() {
     clearInterval(detectionInterval);
     detecting = true;
-    videoElement.style.display = 'block';
+    await openCamera();
 
     try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true });
         videoElement.srcObject = stream;
         classifier = await ml5.imageClassifier('MobileNet', videoElement);
-        console.log('Model loaded for tree detection');
         detectionInterval = setInterval(classifyVideoForTree, 3000);
     } catch (error) {
-        console.error("Error accessing camera or loading model:", error);
         handleError(error);
     }
 }
 
-// Function to classify the video input for trees
-function classifyVideoForTree() {
-    if (!detecting) return; // Stop if detection is disabled
+async function detectBirds() {
+    clearInterval(detectionInterval);
+    detecting = true;
+    await openCamera();
 
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        videoElement.srcObject = stream;
+        classifier = await ml5.imageClassifier('MobileNet', videoElement);
+        detectionInterval = setInterval(classifyVideoForBirds, 3000);
+    } catch (error) {
+        handleError(error);
+    }
+}
+
+async function detectMonkey() {
+    clearInterval(detectionInterval);
+    detecting = true;
+    await openCamera();
+
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        videoElement.srcObject = stream;
+        classifier = await ml5.imageClassifier('MobileNet', videoElement);
+        detectionInterval = setInterval(classifyVideoForMonkey, 3000);
+    } catch (error) {
+        handleError(error);
+    }
+}
+
+async function detectDeer() {
+    clearInterval(detectionInterval);
+    detecting = true;
+    await openCamera();
+
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        videoElement.srcObject = stream;
+        classifier = await ml5.imageClassifier('MobileNet', videoElement);
+        detectionInterval = setInterval(classifyVideoForDeer, 3000);
+    } catch (error) {
+        handleError(error);
+    }
+}
+
+async function detectBoar() {
+    clearInterval(detectionInterval);
+    detecting = true;
+    await openCamera();
+
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        videoElement.srcObject = stream;
+        classifier = await ml5.imageClassifier('MobileNet', videoElement);
+        detectionInterval = setInterval(classifyVideoForBoar, 3000);
+    } catch (error) {
+        handleError(error);
+    }
+}
+
+async function detectFox() {
+    clearInterval(detectionInterval);
+    detecting = true;
+    await openCamera();
+
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        videoElement.srcObject = stream;
+        classifier = await ml5.imageClassifier('MobileNet', videoElement);
+        detectionInterval = setInterval(classifyVideoForFox, 3000);
+    } catch (error) {
+        handleError(error);
+    }
+}
+
+// Classification Functions
+function classifyVideoForTree() {
+    if (!detecting) return;
     classifier.classify(videoElement)
         .then(handleTreeResults)
         .catch(handleError);
 }
 
-// Handle classification results for trees
-function handleTreeResults(results) {
-    console.log('Classification results for trees:', results);
+function classifyVideoForBirds() {
+    if (!detecting) return;
+    classifier.classify(videoElement)
+        .then(handleBirdResults)
+        .catch(handleError);
+}
 
+function classifyVideoForMonkey() {
+    if (!detecting) return;
+    classifier.classify(videoElement)
+        .then(handleMonkeyResults)
+        .catch(handleError);
+}
+
+function classifyVideoForDeer() {
+    if (!detecting) return;
+    classifier.classify(videoElement)
+        .then(handleDeerResults)
+        .catch(handleError);
+}
+
+function classifyVideoForBoar() {
+    if (!detecting) return;
+    classifier.classify(videoElement)
+        .then(handleBoarResults)
+        .catch(handleError);
+}
+
+function classifyVideoForFox() {
+    if (!detecting) return;
+    classifier.classify(videoElement)
+        .then(handleFoxResults)
+        .catch(handleError);
+}
+
+// Result Handlers
+function handleTreeResults(results) {
+    if (!detecting) return;
     if (Array.isArray(results) && results.length > 0) {
         const treeFound = results.some(result => {
             const label = result.label ? result.label.toLowerCase() : '';
@@ -52,48 +288,16 @@ function handleTreeResults(results) {
         });
 
         if (treeFound) {
-            alert('Tree found!');
-            detecting = false; // Stop further detections
+            detecting = false;
             closeCamera();
-            removeTreeButton(); // Remove the tree button from the scene
-            addTreeModel(); // Add a small tree model in the 3D scene
+            removeTreeButton();
+            addTreeModel();
         }
     }
 }
 
-// Function to open the camera and start detecting birds
-async function detectBirds() {
-    clearInterval(detectionInterval); // Stop any ongoing detection intervals
-    detecting = true; // Enable detection
-    videoElement.style.display = 'block'; // Show camera view
-
-    try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-        videoElement.srcObject = stream;
-
-        // Load the MobileNet classifier for bird detection
-        classifier = await ml5.imageClassifier('MobileNet', videoElement);
-        console.log('Model loaded for bird detection');
-        
-        detectionInterval = setInterval(classifyVideoForBirds, 3000); // Check every 3 seconds for bird detection
-    } catch (error) {
-        console.error("Error accessing camera or loading model:", error);
-    }
-}
-
-// Function to classify the video input for birds
-function classifyVideoForBirds() {
-    if (!detecting) return; // Stop if detection is disabled
-
-    classifier.classify(videoElement)
-        .then(handleBirdResults)
-        .catch(handleError);
-}
-
-// Handle classification results for birds
 function handleBirdResults(results) {
-    console.log('Classification results for birds:', results);
-
+    if (!detecting) return;
     if (Array.isArray(results) && results.length > 0) {
         const birdFound = results.some(result => {
             const label = result.label ? result.label.toLowerCase() : '';
@@ -102,41 +306,118 @@ function handleBirdResults(results) {
         });
 
         if (birdFound) {
-            alert('Bird found!');
-            detecting = false; // Stop further detections
+            detecting = false;
             closeCamera();
-            removeBirdButton(); // Remove the bird button from the scene
-            addBirdModel(); // Add a bird model in the 3D scene
+            removeBirdButton();
+            addBirdModel();
         }
     }
 }
 
-// Function to close the camera and hide the video element
-function closeCamera() {
-    videoElement.style.display = 'none'; // Hide the video feed
-    const stream = videoElement.srcObject;
-    if (stream) {
-        stream.getTracks().forEach(track => track.stop()); // Stop the camera stream
+function handleMonkeyResults(results) {
+    if (!detecting) return;
+    if (Array.isArray(results) && results.length > 0) {
+        const monkeyFound = results.some(result => {
+            const label = result.label ? result.label.toLowerCase() : '';
+            const confidence = result.confidence || 0;
+            return (label.includes('monkey') || label.includes('ape') || label.includes('dough')) && confidence > 0.05;
+        });
+
+        if (monkeyFound) {
+            detecting = false;
+            closeCamera();
+            removeMonkeyButton();
+            addMonkeyModel();
+        }
     }
-    clearInterval(detectionInterval); // Stop the current detection interval
 }
 
-// Function to remove the tree button after detection
+function handleDeerResults(results) {
+    if (!detecting) return;
+    if (Array.isArray(results) && results.length > 0) {
+        const deerFound = results.some(result => {
+            const label = result.label ? result.label.toLowerCase() : '';
+            const confidence = result.confidence || 0;
+            return (label.includes('deer') || label.includes('corn') || label.includes('hotdog')) && confidence > 0.05;
+        });
+
+        if (deerFound) {
+            detecting = false;
+            closeCamera();
+            removeDeerButton();
+            addDeerModel();
+        }
+    }
+}
+
+function handleBoarResults(results) {
+    if (!detecting) return;
+    if (Array.isArray(results) && results.length > 0) {
+        const boarFound = results.some(result => {
+            const label = result.label ? result.label.toLowerCase() : '';
+            const confidence = result.confidence || 0;
+            return (label.includes('barbershop') || label.includes('polecat') || label.includes('fitch')) && confidence > 0.05;
+        });
+
+        if (boarFound) {
+            detecting = false;
+            closeCamera();
+            removeBoarButton();
+            addBoarModel();
+        }
+    }
+}
+
+function handleFoxResults(results) {
+    if (!detecting) return;
+    if (Array.isArray(results) && results.length > 0) {
+        const foxFound = results.some(result => {
+            const label = result.label ? result.label.toLowerCase() : '';
+            const confidence = result.confidence || 0;
+            return (label.includes('fox') || label.includes('canine') || label.includes('wolf')) && confidence > 0.05;
+        });
+
+        if (foxFound) {
+            detecting = false;
+            closeCamera();
+            removeFoxButton();
+            addFoxModel();
+        }
+    }
+}
+
+// Remove Button Functions
 function removeTreeButton() {
-    const treeButton = document.querySelector('a-box[color="green"]');
-    if (treeButton) {
-        treeButton.parentNode.removeChild(treeButton); // Remove the tree button
-    }
+    const button = document.querySelector('a-box[color="green"]');
+    if (button) button.parentNode.removeChild(button);
 }
 
-// Function to remove the bird button after detection
 function removeBirdButton() {
-    const birdButton = document.querySelector('a-box[color="purple"]');
-    if (birdButton) {
-        birdButton.parentNode.removeChild(birdButton); // Remove the bird button
-    }
+    const button = document.querySelector('a-box[color="purple"]');
+    if (button) button.parentNode.removeChild(button);
 }
 
+function removeMonkeyButton() {
+    const button = document.querySelector('a-box[color="orange"]');
+    if (button) button.parentNode.removeChild(button);
+}
+
+function removeDeerButton() {
+    const button = document.querySelector('a-box[data-animal="deer"]');
+    if (button) button.parentNode.removeChild(button);
+}
+
+function removeBoarButton() {
+    const button = document.querySelector('a-box[data-animal="boar"]');
+    if (button) button.parentNode.removeChild(button);
+}
+
+function removeFoxButton() {
+    const button = document.querySelector('a-box[data-animal="fox"]');
+    if (button) button.parentNode.removeChild(button);
+}
+
+// Add Model Functions
 function addTreeModel() {
     const scene = document.querySelector('a-scene');
     
@@ -157,7 +438,6 @@ function addTreeModel() {
             rotation: { x: 0, y: 15, z: 0 },
             scale: { x: 0.21, y: 0.21, z: 0.21 }
         },
-
         // קבוצה שנייה - אמצעית
         {
             position: { x: -12, y: -2, z: -5 },
@@ -173,32 +453,9 @@ function addTreeModel() {
             position: { x: 5, y: -2, z: -5 },
             rotation: { x: 0, y: 90, z: 0 },
             scale: { x: 0.2, y: 0.2, z: 0.2 }
-        },
-
-        // קבוצה שלישית - רחוקה
-        {
-            position: { x: -18, y: -2, z: -8 },
-            rotation: { x: 0, y: 60, z: 0 },
-            scale: { x: 0.24, y: 0.24, z: 0.24 }
-        },
-        {
-            position: { x: -10, y: -2, z: -9 },
-            rotation: { x: 0, y: -75, z: 0 },
-            scale: { x: 0.22, y: 0.22, z: 0.22 }
-        },
-        {
-            position: { x: -2, y: -2, z: -8 },
-            rotation: { x: 0, y: 30, z: 0 },
-            scale: { x: 0.21, y: 0.21, z: 0.21 }
-        },
-        {
-            position: { x: 8, y: -2, z: -7 },
-            rotation: { x: 0, y: -15, z: 0 },
-            scale: { x: 0.23, y: 0.23, z: 0.23 }
         }
     ];
 
-    // יצירת העצים
     treeConfigs.forEach((config, index) => {
         const container = document.createElement('a-entity');
         container.setAttribute('position', config.position);
@@ -211,9 +468,7 @@ function addTreeModel() {
         });
 
         treeEntity.addEventListener('model-loaded', (ev) => {
-            console.log(`Tree ${index + 1} loaded, applying materials...`);
             const mesh = treeEntity.getObject3D('mesh');
-            
             if (mesh) {
                 const barkMaterial = new THREE.MeshStandardMaterial({
                     map: new THREE.TextureLoader().load(document.querySelector('#tree-bark').src),
@@ -233,29 +488,20 @@ function addTreeModel() {
 
                 mesh.traverse((node) => {
                     if (node.isMesh) {
-                        if (node.name.toLowerCase().includes('tree')) {
-                            node.material = barkMaterial;
-                        } else {
-                            node.material = leavesMaterial;
-                        }
+                        node.material = node.name.toLowerCase().includes('tree') ? barkMaterial : leavesMaterial;
                         node.material.needsUpdate = true;
                     }
                 });
             }
         });
 
-        treeEntity.addEventListener('model-error', (error) => {
-            console.error(`Error loading tree ${index + 1}:`, error);
-        });
-
         container.appendChild(treeEntity);
         scene.appendChild(container);
     });
 }
+
 function addBirdModel() {
     const scene = document.querySelector('a-scene');
-    
-    // מערך של קונפיגורציות לכל ציפור
     const birdConfigs = [
         {
             position: { x: 1, y: 1, z: -4 },
@@ -265,48 +511,32 @@ function addBirdModel() {
         {
             position: { x: 4, y: 1, z: -4 },
             rotation: { x: 270, y: 220, z: 120 },
-            scale: { x: 0.1, y: 0.1, z: 0.1  }
+            scale: { x: 0.1, y: 0.1, z: 0.1 }
         },
         {
             position: { x: 6, y: 1, z: -4 },
             rotation: { x: 270, y: 220, z: 140 },
-            scale: { x: 0.1, y: 0.1, z: 0.1  }
+            scale: { x: 0.1, y: 0.1, z: 0.1 }
         },
         {
             position: { x: 8, y: 1, z: -4 },
             rotation: { x: 270, y: 220, z: 190 },
-            scale: { x: 0.1, y: 0.1, z: 0.1  }
+            scale: { x: 0.1, y: 0.1, z: 0.1 }
         }
     ];
-    // יצירת כל הציפורים
+
     birdConfigs.forEach((config, index) => {
-        // יצירת container לכל ציפור
         const container = document.createElement('a-entity');
         container.setAttribute('position', config.position);
         container.setAttribute('rotation', config.rotation);
         container.setAttribute('scale', config.scale);
 
-        // יצירת הציפור עצמה
         const birdEntity = document.createElement('a-entity');
-        
         birdEntity.setAttribute('obj-model', {
             obj: '#bird-obj'
         });
 
-        birdEntity.setAttribute('material', {
-            shader: 'standard',
-            src: '#bird-diffuse',
-            normalMap: '#bird-normal',
-            normalScale: { x: 1, y: 1 },
-            roughness: 0.5,
-            metalness: 0.1
-        });
-
-        // אירועי דיבוג
         birdEntity.addEventListener('model-loaded', (ev) => {
-            console.log(`Bird ${index + 1} loaded successfully`);
-            
-            // עדכון המטריאל אחרי טעינת המודל
             const mesh = birdEntity.getObject3D('mesh');
             if (mesh) {
                 mesh.traverse((node) => {
@@ -324,109 +554,29 @@ function addBirdModel() {
             }
         });
 
-        birdEntity.addEventListener('materialtextureloaded', () => {
-            console.log(`Texture loaded for bird ${index + 1}`);
-        });
-
-        birdEntity.addEventListener('model-error', (error) => {
-            console.error(`Error loading bird ${index + 1}:`, error);
-        });
-
-        // הוספת טקסט מעל כל ציפור
-        const textEntity = document.createElement('a-entity');
-        textEntity.setAttribute('position', { x: 0, y: 1.5, z: 0 });
-        textEntity.setAttribute('text', {
-            value: `Bird ${index + 1}`,
-            align: 'center',
-            width: 2,
-            color: 'white'
-        });
-
-        // הרכבת המודל
         container.appendChild(birdEntity);
-        container.appendChild(textEntity);
         scene.appendChild(container);
     });
 }
-// Function to detect monkey
-async function detectMonkey() {
-    clearInterval(detectionInterval);
-    detecting = true;
-    videoElement.style.display = 'block';
 
-    try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-        videoElement.srcObject = stream;
-        classifier = await ml5.imageClassifier('MobileNet', videoElement);
-        console.log('Model loaded for monkey detection');
-        detectionInterval = setInterval(classifyVideoForMonkey, 3000);
-    } catch (error) {
-        console.error("Error accessing camera or loading model:", error);
-        handleError(error);
-    }
-}
-
-// Function to classify video for monkey
-function classifyVideoForMonkey() {
-    if (!detecting) return;
-    classifier.classify(videoElement)
-        .then(handleMonkeyResults)
-        .catch(handleError);
-}
-
-// Handle monkey detection results
-function handleMonkeyResults(results) {
-    console.log('Classification results for monkey:', results);
-
-    if (Array.isArray(results) && results.length > 0) {
-        const monkeyFound = results.some(result => {
-            const label = result.label ? result.label.toLowerCase() : '';
-            const confidence = result.confidence || 0;
-            return (label.includes('monkey') || label.includes('ape') || label.includes('dough')) && confidence > 0.05;
-        });
-
-        if (monkeyFound) {
-            alert('Monkey found!');
-            detecting = false;
-            closeCamera();
-            removeMonkeyButton();
-            addMonkeyModel();
-        }
-    }
-}
-
-// Remove monkey button
-function removeMonkeyButton() {
-    const monkeyButton = document.querySelector('a-box[color="orange"]');
-    if (monkeyButton) {
-        monkeyButton.parentNode.removeChild(monkeyButton);
-    }
-}
-
-// Add monkey model
 function addMonkeyModel() {
     const scene = document.querySelector('a-scene');
-    
     const monkeyConfigs = [
-        // קוף ראשון - שמאל
         {
             position: { x: -10, y: -1.8, z: 3 },
             rotation: { x: 270, y: 0, z: 275 },
-            scale: { x: 0.02, y: 0.02, z: 0.02 }    // הקטנה משמעותית
+            scale: { x: 0.02, y: 0.02, z: 0.02 }
         },
-        // קוף שני - שמאל מרכז
         {
             position: { x: -9, y: -1.8, z: 3.2 },
             rotation: { x: 270, y: 0, z: 295 },
             scale: { x: 0.018, y: 0.018, z: 0.018 }
         },
-        // קוף שלישי - מרכז
         {
             position: { x: -8, y: -1.8, z: 3.4 },
             rotation: { x: 270, y: 0, z: 255 },
             scale: { x: 0.022, y: 0.022, z: 0.022 }
         },
-        // קוף רביעי - ימין
         {
             position: { x: -7, y: -1.8, z: 3.6 },
             rotation: { x: 270, y: 0, z: 285 },
@@ -446,9 +596,7 @@ function addMonkeyModel() {
         });
 
         monkeyEntity.addEventListener('model-loaded', (ev) => {
-            console.log(`Monkey ${index + 1} loaded successfully`);
             const mesh = monkeyEntity.getObject3D('mesh');
-            
             if (mesh) {
                 mesh.traverse((node) => {
                     if (node.isMesh) {
@@ -467,15 +615,6 @@ function addMonkeyModel() {
             }
         });
 
-        // Add debug events
-        monkeyEntity.addEventListener('materialtextureloaded', () => {
-            console.log(`Texture loaded for monkey ${index + 1}`);
-        });
-
-        monkeyEntity.addEventListener('model-error', (error) => {
-            console.error(`Error loading monkey ${index + 1}:`, error);
-        });
-
         container.appendChild(monkeyEntity);
         scene.appendChild(container);
     });
@@ -483,30 +622,22 @@ function addMonkeyModel() {
 
 function addDeerModel() {
     const scene = document.querySelector('a-scene');
-    
     const deerConfigs = [
         {
             position: { x: -5, y: -1.8, z: 3 },
-            rotation: { x: 0, y: 0, z: 0 },  // התאמה ראשונית לכיוון
-            scale: { x: 0.1, y: 0.1, z: 0.1 }  // התחלה עם סקייל קטן
+            rotation: { x: 0, y: 0, z: 0 },
+            scale: { x: 0.1, y: 0.1, z: 0.1 }
         },
         {
             position: { x: -9, y: -1.8, z: 3.5 },
             rotation: { x: 0, y: 30, z: 0 },
             scale: { x: 0.1, y: 0.1, z: 0.1 }
         },
-        // אפשר להוסיף עוד קונפיגורציות לאיילים נוספים
         {
             position: { x: -13, y: -1.8, z: 3 },
-            rotation: { x: 0, y: 0, z: 0 },  // התאמה ראשונית לכיוון
-            scale: { x: 0.1, y: 0.1, z: 0.1 }  // התחלה עם סקייל קטן
-        },
-        {
-            position: { x: -26, y: -1.8, z: 3.5 },
-            rotation: { x: 0, y: 30, z: 0 },
+            rotation: { x: 0, y: 0, z: 0 },
             scale: { x: 0.1, y: 0.1, z: 0.1 }
-        },
-        // אפשר להוסיף עוד קונפיגורציות לאיילים נוספים
+        }
     ];
 
     deerConfigs.forEach((config, index) => {
@@ -521,18 +652,14 @@ function addDeerModel() {
         });
 
         deerEntity.addEventListener('model-loaded', (ev) => {
-            console.log(`Deer ${index + 1} loaded successfully`);
             const mesh = deerEntity.getObject3D('mesh');
-            
             if (mesh) {
                 mesh.traverse((node) => {
                     if (node.isMesh) {
-                        // טעינת טקסטורת ה-TGA
                         const texture = new THREE.TextureLoader().load(
                             document.querySelector('#deer-texture').src,
                             (texture) => {
-                                console.log('TGA texture loaded successfully');
-                                texture.flipY = false; // לפעמים נדרש לטקסטורות TGA
+                                texture.flipY = false;
                             }
                         );
 
@@ -547,96 +674,28 @@ function addDeerModel() {
             }
         });
 
-        deerEntity.addEventListener('model-error', (error) => {
-            console.error(`Error loading deer ${index + 1}:`, error);
-        });
-
         container.appendChild(deerEntity);
         scene.appendChild(container);
     });
 }
 
-// הוספת פונקציה לזיהוי איילים (בדומה לזיהוי קופים)
-async function detectDeer() {
-    clearInterval(detectionInterval);
-    detecting = true;
-    videoElement.style.display = 'block';
-
-    try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-        videoElement.srcObject = stream;
-        classifier = await ml5.imageClassifier('MobileNet', videoElement);
-        console.log('Model loaded for deer detection');
-        detectionInterval = setInterval(classifyVideoForDeer, 3000);
-    } catch (error) {
-        console.error("Error accessing camera or loading model:", error);
-        handleError(error);
-    }
-}
-
-function classifyVideoForDeer() {
-    if (!detecting) return;
-    classifier.classify(videoElement)
-        .then(handleDeerResults)
-        .catch(handleError);
-}
-
-function handleDeerResults(results) {
-    console.log('Classification results for deer:', results);
-    if (Array.isArray(results) && results.length > 0) {
-        const deerFound = results.some(result => {
-            const label = result.label ? result.label.toLowerCase() : '';
-            const confidence = result.confidence || 0;
-            return (label.includes('deer') || 
-                   label.includes('corn') || 
-                   label.includes('hotdog')) && 
-                   confidence > 0.05;
-        });
-
-        if (deerFound) {
-            alert('Deer found!');
-            detecting = false;
-            closeCamera();
-            removeDeerButton();
-            addDeerModel();
-        }
-    }
-}
-
-function removeDeerButton() {
-    const deerButton = document.querySelector('a-box[data-animal="deer"]');
-    if (deerButton) {
-        deerButton.parentNode.removeChild(deerButton);
-    }
-}
-// פונקציית הוספת מודל החזיר
 function addBoarModel() {
     const scene = document.querySelector('a-scene');
-    
     const boarConfigs = [
-        // חזיר ראשון
         {
             position: { x: -10, y: -1.8, z: 3 },
             rotation: { x: 0, y: 180, z: 0 },
-            scale: { x: 0.1, y: 0.1, z: 0.1 }  // נתחיל עם סקייל קטן
+            scale: { x: 0.1, y: 0.1, z: 0.1 }
         },
-        // חזיר שני
         {
             position: { x: -14, y: -1.8, z: 4 },
             rotation: { x: 0, y: 160, z: 0 },
             scale: { x: 0.2, y: 0.2, z: 0.2 }
         },
-        // חזיר שלישי
         {
             position: { x: -8, y: -1.8, z: 5 },
             rotation: { x: 0, y: 200, z: 0 },
             scale: { x: 0.15, y: 0.15, z: 0.15 }
-        },
-        // חזיר רביעי
-        {
-            position: { x: -20, y: -1.8, z: 3.5 },
-            rotation: { x: 0, y: 170, z: 0 },
-            scale: { x: 0.3, y: 0.3, z: 0.3 }
         }
     ];
 
@@ -653,13 +712,10 @@ function addBoarModel() {
         });
 
         boarEntity.addEventListener('model-loaded', (ev) => {
-            console.log(`Boar ${index + 1} loaded successfully`);
             const mesh = boarEntity.getObject3D('mesh');
-            
             if (mesh) {
                 mesh.traverse((node) => {
                     if (node.isMesh) {
-                        // עדכון החומר עם הטקסטורה
                         const material = new THREE.MeshStandardMaterial({
                             map: new THREE.TextureLoader().load(document.querySelector('#boar-texture').src),
                             roughness: 0.7,
@@ -677,87 +733,23 @@ function addBoarModel() {
     });
 }
 
-// פונקציות זיהוי החזיר
-async function detectBoar() {
-    clearInterval(detectionInterval);
-    detecting = true;
-    videoElement.style.display = 'block';
-
-    try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-        videoElement.srcObject = stream;
-        classifier = await ml5.imageClassifier('MobileNet', videoElement);
-        console.log('Model loaded for boar detection');
-        detectionInterval = setInterval(classifyVideoForBoar, 3000);
-    } catch (error) {
-        console.error("Error accessing camera or loading model:", error);
-        handleError(error);
-    }
-}
-
-function classifyVideoForBoar() {
-    if (!detecting) return;
-    classifier.classify(videoElement)
-        .then(handleBoarResults)
-        .catch(handleError);
-}
-
-function handleBoarResults(results) {
-    console.log('Classification results for boar:', results);
-    if (Array.isArray(results) && results.length > 0) {
-        const boarFound = results.some(result => {
-            const label = result.label ? result.label.toLowerCase() : '';
-            const confidence = result.confidence || 0;
-            return (label.includes('barbershop') || 
-                   label.includes('polecat') || 
-                   label.includes('fitch')) && 
-                   confidence > 0.05;
-        });
-
-        if (boarFound) {
-            alert('Boar found!');
-            detecting = false;
-            closeCamera();
-            removeBoarButton();
-            addBoarModel();
-        }
-    }
-}
-
-function removeBoarButton() {
-    const boarButton = document.querySelector('a-box[data-animal="boar"]');
-    if (boarButton) {
-        boarButton.parentNode.removeChild(boarButton);
-    }
-}
-
 function addFoxModel() {
     const scene = document.querySelector('a-scene');
-    
     const foxConfigs = [
-        // שועל ראשון
         {
             position: { x: -6, y: -1.8, z: 3 },
             rotation: { x: 0, y: 180, z: 0 },
-            scale: { x: 0.1, y: 0.1, z: 0.1 }  // סקייל קטן יותר משום ששועלים קטנים יותר
+            scale: { x: 0.1, y: 0.1, z: 0.1 }
         },
-        // שועל שני
         {
             position: { x: -8, y: -1.8, z: 4 },
             rotation: { x: 0, y: 160, z: 0 },
             scale: { x: 0.12, y: 0.12, z: 0.12 }
         },
-        // שועל שלישי
         {
             position: { x: -4, y: -1.8, z: 5 },
             rotation: { x: 0, y: 200, z: 0 },
             scale: { x: 0.3, y: 0.3, z: 0.3 }
-        },
-        // שועל רביעי
-        {
-            position: { x: -7, y: -1.8, z: 3.5 },
-            rotation: { x: 0, y: 170, z: 0 },
-            scale: { x: 0.1, y: 0.1, z: 0.1 }
         }
     ];
 
@@ -774,13 +766,10 @@ function addFoxModel() {
         });
 
         foxEntity.addEventListener('model-loaded', (ev) => {
-            console.log(`Fox ${index + 1} loaded successfully`);
             const mesh = foxEntity.getObject3D('mesh');
-            
             if (mesh) {
                 mesh.traverse((node) => {
                     if (node.isMesh) {
-                        // עדכון החומר עם הטקסטורה
                         const material = new THREE.MeshStandardMaterial({
                             map: new THREE.TextureLoader().load(document.querySelector('#fox-texture').src),
                             roughness: 0.7,
@@ -798,56 +787,69 @@ function addFoxModel() {
     });
 }
 
-// פונקציות זיהוי השועל
-async function detectFox() {
-    clearInterval(detectionInterval);
-    detecting = true;
-    videoElement.style.display = 'block';
-
-    try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-        videoElement.srcObject = stream;
-        classifier = await ml5.imageClassifier('MobileNet', videoElement);
-        console.log('Model loaded for fox detection');
-        detectionInterval = setInterval(classifyVideoForFox, 3000);
-    } catch (error) {
-        console.error("Error accessing camera or loading model:", error);
-        handleError(error);
-    }
-}
-
-function classifyVideoForFox() {
-    if (!detecting) return;
-    classifier.classify(videoElement)
-        .then(handleFoxResults)
-        .catch(handleError);
-}
-
-function handleFoxResults(results) {
-    console.log('Classification results for fox:', results);
-    if (Array.isArray(results) && results.length > 0) {
-        const foxFound = results.some(result => {
-            const label = result.label ? result.label.toLowerCase() : '';
-            const confidence = result.confidence || 0;
-            return (label.includes('fox') || 
-                   label.includes('canine') || 
-                   label.includes('wolf')) && 
-                   confidence > 0.05;
+// Event Listeners for Input Validation
+document.addEventListener('DOMContentLoaded', function() {
+    // Character Input Validation
+    const characterInput = document.getElementById('characterInput');
+    if (characterInput) {
+        characterInput.addEventListener('input', function(e) {
+            const modal = document.getElementById('characterModal');
+            const characterType = modal.dataset.characterType;
+            const correctAnswer = characters[characterType].answer;
+            
+            const isCorrect = e.target.value.trim().toLowerCase() === correctAnswer.toLowerCase();
+            document.querySelector('.validation-mark').style.display = isCorrect ? 'block' : 'none';
+            document.getElementById('scanBtn').classList.toggle('active', isCorrect);
         });
+    }
 
-        if (foxFound) {
-            alert('Fox found!');
-            detecting = false;
+    // Camera Controls
+    const closeButton = document.getElementById('closeCamera');
+    if (closeButton) {
+        closeButton.addEventListener('click', function(e) {
+            e.stopPropagation();
             closeCamera();
-            removeFoxButton();
-            addFoxModel();
-        }
+        });
+    }
+
+    const cameraOverlay = document.getElementById('cameraOverlay');
+    if (cameraOverlay) {
+        cameraOverlay.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeCamera();
+            }
+        });
+    }
+});
+
+// Initialize detection handlers
+function updateDetectionHandlers() {
+    const originalHandlers = {
+        handleTreeResults: window.handleTreeResults,
+        handleBirdResults: window.handleBirdResults,
+        handleMonkeyResults: window.handleMonkeyResults,
+        handleDeerResults: window.handleDeerResults,
+        handleBoarResults: window.handleBoarResults,
+        handleFoxResults: window.handleFoxResults
+    };
+
+    for (let handler in originalHandlers) {
+        window[handler] = function(results) {
+            originalHandlers[handler].call(this, results);
+            if (document.getElementById('characterModal')) {
+                document.getElementById('characterModal').style.display = 'none';
+            }
+        };
     }
 }
 
-function removeFoxButton() {
-    const foxButton = document.querySelector('a-box[data-animal="fox"]');
-    if (foxButton) {
-        foxButton.parentNode.removeChild(foxButton);
-    }
-}
+// Initialize when the page loads
+window.addEventListener('load', function() {
+    // Show initial guide
+    setTimeout(() => {
+        document.getElementById('guideModal').style.display = 'block';
+    }, 2000);
+
+    // Update detection handlers
+    updateDetectionHandlers();
+});
