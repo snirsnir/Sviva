@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CO2 Factory Check</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+:root {
+    --primary-green: #69B550;
+    --dark-green: #2C5E1A;
+    --light-green: #AAD897;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    font-family: 'Rubik', Arial, sans-serif;
+    background: url('img/bg.png') no-repeat center center fixed;
+    background-size: cover;
+    position: relative;
+}
+
+.smoke-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('img/smoke.gif') no-repeat center center;
+    background-size: cover;
+    opacity: 0.5;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Modal Styles */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 1000;
+}
+
+.modal-iframe {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 1000px;
+    height: 65vh;
+    border: 1px solid rgba(0, 255, 0, 0.3);
+    border-radius: 15px;
+    background: rgba(0, 0, 0, 0.95);
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
+}
+
+/* Help Button */
+.help-button {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    background-color: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 50%;
+    font-size: 24px;
+    color: #000;
+    cursor: pointer;
+    z-index: 999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+}
+
+.help-button:hover {
+    background-color: white;
+    transform: scale(1.1);
+    box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+}
+
+.help-button:active {
+    transform: scale(0.95);
+}
+
+@keyframes fadeInButton {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.help-button.show {
+    display: flex;
+    animation: fadeInButton 0.5s ease forwards;
+}
+
+/* Container */
+.container {
+    display: flex;
+    justify-content: space-between;
+    padding: 2rem;
+    height: calc(100vh - 4rem);
+    gap: 2rem;
+    position: relative;
+    z-index: 2;
+}
+
+/* Side Panels */
+.side-panel {
+    position: absolute;
+    bottom: 2rem;
+    width: auto;
+    min-width: 250px;
+    max-width: 300px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 15px;
+    padding: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.side-panel:first-child {
+    right: 20%;
+}
+
+.side-panel:last-child {
+    left: 20%;
+}
+
+.company-title {
+    text-align: center;
+    color: var(--dark-green);
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin-bottom: 0.3rem;
+    padding: 0.8rem;
+    background: var(--light-green);
+    border-radius: 8px;
+}
+
+.input-container {
+    background: var(--primary-green);
+    padding: 0.7rem;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.input-button {
+    background: white;
+    color: var(--dark-green);
+    border: none;
+    padding: 0.7rem 1.2rem;
+    border-radius: 25px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    width: 100%;
+    font-family: 'Rubik', Arial, sans-serif;
+}
+
+.input-button:hover {
+    transform: scale(1.05);
+}
+
+/* Center Flow */
+.center-flow {
+    width: 60%;
+    margin: 0 auto;
+    padding-bottom: 150px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Instructions */
+.instructions {
+    background: rgba(104, 181, 80, 0.1);
+    border-radius: 12px;
+    padding: 2.5rem;
+    margin-bottom: 2.5rem;
+    border: 2px solid var(--primary-green);
+    text-align: center;
+    width: 70%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.instructions h3 {
+    color: var(--dark-green);
+    margin-bottom: 1.8rem;
+    font-size: 2.2rem;
+    font-weight: 800;
+    text-align: center;
+}
+
+.instructions ul {
+    list-style: none;
+    padding: 0;
+    margin: 0 auto;
+    text-align: center;
+    font-weight: 800;
+    max-width: 80%;
+}
+
+.instructions li {
+    margin-bottom: 1.2rem;
+    font-size: 1.7rem;
+    line-height: 1.6;
+    padding-right: 0;
+    position: relative;
+}
+
+.instructions li:before {
+    content: "✓";
+    color: var(--primary-green);
+    margin-left: 10px;
+    display: inline-block;
+    position: static;
+}
+
+/* Flow Steps */
+.flow-step {
+    background: var(--primary-green);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 12px;
+    width: 40%;
+    text-align: center;
+    position: relative;
+    cursor: pointer;
+    font-weight: 700;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    font-size: 1.5rem;
+    margin: 1rem auto;
+    display: block;
+    left: 20%;
+    transform: translateX(-50%);
+    transition: all 0.3s ease;
+}
+
+.flow-step:hover {
+    transform: translateX(-50%) scale(1.05);
+}
+
+.flow-step::after {
+    content: '';
+    position: absolute;
+    bottom: -1.5rem;
+    left: 50%;
+    transform: translateX(-30%);
+    width: 3px;
+    height: 1.5rem;
+    background: var(--primary-green);
+}
+
+.flow-step:last-child::after {
+    display: none;
+}
+
+/* Responsive Design */
+@media (max-width: 1500px) {
+    .instructions li {
+        font-size: 1.5rem;
+    }
+    .instructions h3 {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 1200px) {
+    .side-panel {
+        min-width: 200px;
+    }
+
+    .side-panel:first-child {
+        right: 10%;
+    }
+
+    .side-panel:last-child {
+        left: 10%;
+    }
+
+    .center-flow {
+        width: 70%;
+    }
+
+    .flow-step {
+        width: 60%;
+    }
+    
+    .instructions {
+        width: 80%;
+    }
+    
+    .instructions li {
+        font-size: 1.3rem;
+    }
+    
+    .instructions h3 {
+        font-size: 1.8rem;
+    }
+}
+
+@media (max-width: 992px) {
+    .instructions {
+        width: 90%;
+        padding: 1.5rem;
+    }
+
+    .instructions h3 {
+        font-size: 1.6rem;
+    }
+
+    .instructions li {
+        font-size: 1.2rem;
+    }
+
+    .flow-step {
+        width: 70%;
+        font-size: 1.3rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+        height: auto;
+        padding: 1rem;
+    }
+
+    .side-panel {
+        position: relative;
+        min-width: unset;
+        width: 90%;
+        margin: 1rem auto;
+        left: auto;
+        right: auto;
+        bottom: auto;
+    }
+
+    .side-panel:first-child,
+    .side-panel:last-child {
+        left: auto;
+        right: auto;
+    }
+
+    .center-flow {
+        width: 90%;
+        padding-bottom: 2rem;
+    }
+
+    .instructions {
+        width: 95%;
+        padding: 1rem;
+    }
+
+    .instructions h3 {
+        font-size: 1.4rem;
+    }
+
+    .instructions li {
+        font-size: 1.1rem;
+    }
+
+    .flow-step {
+        width: 80%;
+        padding: 1rem;
+        font-size: 1.2rem;
+        left: 50%;
+    }
+
+    .modal-iframe {
+        height: 80vh;
+    }
+}
+
+@media (max-width: 480px) {
+    .instructions h3 {
+        font-size: 1.3rem;
+    }
+
+    .instructions li {
+        font-size: 1rem;
+    }
+
+    .flow-step {
+        width: 85%;
+        font-size: 1.1rem;
+    }
+
+    .company-title {
+        font-size: 1.2rem;
+    }
+
+    .input-button {
+        font-size: 1.1rem;
+    }
+}
+.equipment-modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 1000;
+    backdrop-filter: blur(5px);
+}
+
+.equipment-modal {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 500px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    box-shadow: 0 0 20px rgba(104, 181, 80, 0.3);
+    border: 2px solid var(--primary-green);
+    direction: rtl;
+}
+
+.equipment-header {
+    background: var(--primary-green);
+    color: white;
+    padding: 1.5rem;
+    border-radius: 18px 18px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.equipment-header h2 {
+    margin: 0;
+    font-size: 1.8rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 2rem;
+    cursor: pointer;
+    padding: 0;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background 0.3s ease;
+}
+
+.close-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.equipment-content {
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+.equipment-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 1.3rem;
+    padding: 0.8rem;
+    border-radius: 12px;
+    background: rgba(104, 181, 80, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.equipment-item:hover {
+    transform: scale(1.02);
+    background: rgba(104, 181, 80, 0.15);
+}
+
+.equipment-icon {
+    font-size: 1.8rem;
+    min-width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    border-radius: 50%;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.equipment-text {
+    font-weight: 600;
+    color: var(--dark-green);
+}
+
+@media (max-width: 768px) {
+    .equipment-modal {
+        width: 95%;
+    }
+    
+    .equipment-header h2 {
+        font-size: 1.5rem;
+    }
+    
+    .equipment-item {
+        font-size: 1.1rem;
+    }
+    
+    .equipment-icon {
+        font-size: 1.5rem;
+        min-width: 35px;
+        height: 35px;
+    }
+}
+/* הוסף את זה לחלק הסגנונות */
+.experiment-modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 1000;
+    backdrop-filter: blur(5px);
+}
+
+.experiment-modal {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 95%;
+    max-width: 1200px; /* רוחב מקסימלי גדול יותר */
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    box-shadow: 0 0 20px rgba(104, 181, 80, 0.3);
+    border: 2px solid var(--primary-green);
+    direction: rtl;
+}
+
+.experiment-header {
+    background: var(--primary-green);
+    color: white;
+    padding: 1.5rem;
+    border-radius: 18px 18px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.experiment-header h2 {
+    margin: 0;
+    font-size: 1.8rem;
+    font-weight: 800;
+}
+
+.experiment-content {
+    padding: 2rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* חלוקה לשני טורים */
+    gap: 2rem;
+}
+.main-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.experiment-intro {
+    text-align: center;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: rgba(104, 181, 80, 0.1);
+    border-radius: 12px;
+}
+
+.experiment-intro h3 {
+    color: var(--dark-green);
+    font-size: 1.6rem;
+    margin: 0.5rem 0;
+}
+
+.experiment-icon {
+    font-size: 2.5rem;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.experiment-section {
+    background: rgba(104, 181, 80, 0.05);
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 1px solid rgba(104, 181, 80, 0.2);
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.section-header h4 {
+    margin: 0;
+    font-size: 1.4rem;
+    color: var(--dark-green);
+}
+
+.section-icon {
+    font-size: 1.8rem;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    border-radius: 50%;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.sub-steps {
+    margin-right: 2.5rem;
+    margin-top: 0.8rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    color: #666;
+    font-size: 1.1rem;
+}
+
+/* עדכון סגנונות לשלבים האחרונים */
+.final-steps {
+    border-right: 2px dashed rgba(104, 181, 80, 0.3); /* קו מפריד אנכי */
+    padding-right: 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1.5rem;
+}
+
+.final-steps .step-item {
+    padding: 1.5rem;
+    font-size: 1.4rem;
+    background: rgba(104, 181, 80, 0.05);
+    border-radius: 12px;
+    margin: 0.8rem 0;
+}
+
+.final-steps .step-content {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+}
+
+.final-steps .step-number {
+    width: 35px;
+    height: 35px;
+    font-size: 1.3rem;
+}
+
+.final-steps .step-text {
+    font-size: 1.4rem;
+    font-weight: 700;
+    line-height: 1.5;
+}
+
+.important {
+    background: rgba(255, 244, 222, 0.7) !important;
+    border: 2px solid #ffd700;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* התאמה למסכים קטנים */
+@media (max-width: 992px) {
+    .experiment-content {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .final-steps {
+        border-right: none;
+        border-top: 2px dashed rgba(104, 181, 80, 0.3);
+        padding-right: 0;
+        padding-top: 2rem;
+        margin-top: 1rem;
+    }
+}
+    </style>
+</head>
+<body>
+    <!-- כפתור העזרה -->
+    <button class="help-button" id="helpButton" onclick="showGuideModal()">?</button>
+
+    <!-- המודל -->
+    <div class="modal-overlay" id="guideModal">
+        <iframe src="tutorial.html" class="modal-iframe" frameborder="0"></iframe>
+    </div>
+
+    <!-- תוכן המסך הראשי -->
+    <div class="container">
+        <!-- חברת קראנץ' - צד ימין -->
+        <div class="side-panel">
+            <div class="company-title">חברת קראנץ'</div>
+            <div class="input-container">
+                <button class="input-button">הזנת תוצאות 📝</button>
+            </div>
+        </div>
+
+        <!-- תרשים זרימה מרכזי -->
+        <div class="center-flow">
+            <div class="instructions">
+                <h3>השלבים לביקורת פתע 📋</h3>
+                <ul>
+                    <li>ראשית הסתכלו ברשימת הציוד</li>
+                    <li>לאחר מכן עברו על מהלך הניסוי</li>
+                    <li>בצעו את הניסוי ואספו את התוצאות</li>
+                    <li>הזינו את התוצאות לכל חברה</li>
+                </ul>
+            </div>
+            
+            <div class="flow-step" onclick="showEquipmentList()">
+               1. רשימת ציוד 📋
+            </div>
+            <div class="flow-step" onclick="showExperimentSteps()">
+                2. מהלך הניסוי 🔬
+            </div>
+        </div>
+
+        <!-- חברת בועות - צד שמאל -->
+        <div class="side-panel">
+            <div class="company-title">חברת בועות</div>
+            <div class="input-container">
+                <button class="input-button">הזנת תוצאות 📝</button>
+            </div>
+        </div>
+    </div>
+    <div class="equipment-modal-overlay" id="equipmentModal">
+        <div class="equipment-modal">
+            <div class="equipment-header">
+                <h2>🧪 רשימת ציוד לניסוי</h2>
+                <button class="close-btn" onclick="closeEquipmentModal()">×</button>
+            </div>
+            <div class="equipment-content">
+                <div class="equipment-item">
+                    <span class="equipment-icon">🧪</span>
+                    <span class="equipment-text">2 בקבוקונים (500 מ"ל)</span>
+                </div>
+                <div class="equipment-item">
+                    <span class="equipment-icon">🎈</span>
+                    <span class="equipment-text">2 בלונים</span>
+                </div>
+                <div class="equipment-item">
+                    <span class="equipment-icon">🍶</span>
+                    <span class="equipment-text">חומץ</span>
+                </div>
+                <div class="equipment-item">
+                    <span class="equipment-icon">🧂</span>
+                    <span class="equipment-text">סודה לשתייה</span>
+                </div>
+                <div class="equipment-item">
+                    <span class="equipment-icon">🥄</span>
+                    <span class="equipment-text">2 כפות למדידה</span>
+                </div>
+                <div class="equipment-item">
+                    <span class="equipment-icon">⏏️</span>
+                    <span class="equipment-text">משפך</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="experiment-modal-overlay" id="experimentModal">
+        <div class="experiment-modal">
+            <div class="experiment-header">
+                <h2>🧪 מהלך הניסוי</h2>
+                <button class="close-btn" onclick="closeExperimentModal()">×</button>
+            </div>
+            <div class="experiment-content">
+                <!-- החלק הימני -->
+                <div class="main-steps">
+                    <div class="experiment-intro">
+                        <span class="experiment-icon">🔬</span>
+                        <h3>כעת זה הזמן לבצע את הביקורת!</h3>
+                    </div>
+    
+                    <div class="experiment-section">
+                        <div class="section-header">
+                            <span class="section-icon">🥤</span>
+                            <h4>ערכת חברת בועות:</h4>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-content">
+                                <span class="step-number">1</span>
+                                <span class="step-text">שפכו באמצעות המשפך:</span>
+                            </div>
+                            <div class="sub-steps">
+                                <span>• כף אחת חומץ</span>
+                                <span>• כף אחת סודה לשתייה</span>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <div class="experiment-section">
+                        <div class="section-header">
+                            <span class="section-icon">🍪</span>
+                            <h4>ערכת חברת קראנץ:</h4>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-content">
+                                <span class="step-number">2</span>
+                                <span class="step-text">שפכו באמצעות המשפך:</span>
+                            </div>
+                            <div class="sub-steps">
+                                <span>• 3 כפות חומץ</span>
+                                <span>• 3 כפות סודה לשתייה</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+    
+                <!-- החלק השמאלי -->
+                <div class="final-steps">
+                    <div class="step-item">
+                        <div class="step-content">
+                            <span class="step-number">3</span>
+                            <span class="step-text">מיד אחרי הוספת הסודה לשתייה, הלבישו בלון על פתח כל בקבוקון</span>
+                        </div>
+                    </div>
+                    <div class="step-item important">
+                        <div class="step-content">
+                            <span class="step-number">4</span>
+                            <span class="step-text">השאירו את הבקבוקונים במצב זה לזמן מה, התמקדו בבלון!</span>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-content">
+                            <span class="step-number">6</span>
+                            <span class="step-text">עברו להזנת התוצאות</span>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('guideModal').style.display = 'block';
+            }, 2000);
+        });
+
+        function closeModal() {
+            document.getElementById('guideModal').style.display = 'none';
+            setTimeout(() => {
+                document.getElementById('helpButton').classList.add('show');
+            }, 500);
+        }
+
+        function showGuideModal() {
+            const iframe = document.querySelector('.modal-iframe');
+            if (iframe.contentWindow.showSection) {
+                iframe.contentWindow.showSection(1);
+            }
+            document.getElementById('guideModal').style.display = 'block';
+        }
+
+        function showEquipmentList() {
+    document.getElementById('equipmentModal').style.display = 'block';
+}
+
+function closeEquipmentModal() {
+    document.getElementById('equipmentModal').style.display = 'none';
+}
+
+// Close modal when clicking outside
+document.getElementById('equipmentModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeEquipmentModal();
+    }
+});
+function showExperimentSteps() {
+    document.getElementById('experimentModal').style.display = 'block';
+}
+
+function closeExperimentModal() {
+    document.getElementById('experimentModal').style.display = 'none';
+}
+
+// הוסף מאזין לסגירת מודל הניסוי בלחיצה מחוץ לו
+document.getElementById('experimentModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeExperimentModal();
+    }
+});
+    </script>
+</body>
+</html>
