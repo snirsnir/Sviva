@@ -146,7 +146,22 @@ document.addEventListener('DOMContentLoaded', function() {
                     powerBox.removeAttribute('event-set__click');
                 }
                 break;
+            
+                case "closeMifal":
+                    document.getElementById('factoryModal').style.display = 'none';
+                    const mifalImg = document.getElementById('mifalImg');
+                    if (mifalImg) mifalImg.src = "img/mifalV.png";
+                    
+                    const solarImg = document.getElementById('solarImage');
+                    if (solarImg) solarImg.setAttribute('visible', 'true');
+                    const mifalBox = document.querySelector('a-box[position="-9 2 5"]');
+                    if (mifalBox) {
+                        mifalBox.classList.remove('clickable');
+                        mifalBox.removeAttribute('onclick');
+                        mifalBox.removeAttribute('event-set__click');
+                    }
 
+                    break;
             // הוסף כאן case נוספים לפי הצורך
         }
 

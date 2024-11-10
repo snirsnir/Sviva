@@ -1,16 +1,271 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>זיהוי כדור לבן</title>
+    <title>מערכת הנשימה - בית החולים</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #4287f5;
+            --dark-blue: #2563eb;
+            --light-blue: #60a5fa;
+            --hospital-white: #f8fafc;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            font-family: 'Rubik', Arial, sans-serif;
+            background: url('img/hospital-bg.jpg') no-repeat center center fixed;
+            background-size: cover;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.9);
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .header {
+            background: rgba(66, 135, 245, 0.1);
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 3rem;
+            border: 2px solid var(--primary-blue);
+        }
+
+        .header h1 {
+            color: var(--dark-blue);
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .video-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        video {
+            width: 100%;
+            display: block;
+        }
+
+        .ready-btn {
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            padding: 1rem 3rem;
+            font-size: 1.5rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 2rem;
+            font-weight: bold;
+        }
+
+        .ready-btn:hover {
+            background: var(--dark-blue);
+            transform: scale(1.05);
+        }
+
+        /* Tutorial Modal Styles */
+        .tutorial-modal-overlay {
+            display: block;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .tutorial-modal {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 600px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 0 20px rgba(66, 135, 245, 0.3);
+        }
+
+        .tutorial-content {
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .tutorial-slide {
+            display: none;
+        }
+
+        .tutorial-slide.active {
+            display: block;
+        }
+
+        .tutorial-slide h2 {
+            color: var(--dark-blue);
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .tutorial-slide p {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            color: #444;
+            margin-bottom: 2rem;
+        }
+
+        .tutorial-nav {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 0 0 20px 20px;
+        }
+
+        .nav-btn {
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .nav-btn:hover {
+            background: var(--dark-blue);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .tutorial-modal {
+                width: 95%;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>זיהוי כדור לבן במצלמה</h1>
-    <video id="camera" autoplay></video>
-    <canvas id="canvas" style="display: none;"></canvas>
-    <div id="alert" style="display: none; color: red;">הכדור שחרחר!</div>
+    <!-- Tutorial Modal -->
+    <div class="tutorial-modal-overlay" id="tutorialModal">
+        <div class="tutorial-modal">
+            <div class="tutorial-content">
+                <div class="tutorial-slide active" data-slide="1">
+                    <h2>🏥 ברוכים הבאים לבית החולים</h2>
+                    <p>
+                        בשנים האחרונות אנו עדים לעלייה משמעותית במספר המטופלים המגיעים עם בעיות במערכת הנשימה.
+                        <br><br>
+                        <strong>כ-30% מהמטופלים</strong> בבית החולים סובלים מבעיות הקשורות לזיהום אוויר ופגיעה במערכת הנשימה.
+                    </p>
+                </div>
+                <div class="tutorial-slide" data-slide="2">
+                    <h2>🧪 בניית דגם מערכת הנשימה</h2>
+                    <p>
+                        כדי להבין טוב יותר את ההשפעה של זיהום אוויר על הריאות שלנו,
+                        נבנה דגם של מערכת הנשימה ונבדוק מה קורה כשהיא נחשפת לאוויר מזוהם.
+                        <br><br>
+                        בואו נתחיל!
+                    </p>
+                </div>
+            </div>
+            <div class="tutorial-nav">
+                <button class="nav-btn" onclick="nextSlide()">הבא</button>
+            </div>
+        </div>
+    </div>
 
-    <script src="script.js"></script>
+    <!-- Main Content -->
+    <div class="container">
+        <div class="header">
+            <h1>דגם מערכת הנשימה</h1>
+            <p>לרשותכם בעמדה ערכה לבניה של דגם של מערכת הנשימה<br>
+            בנו לפי סרטון ההדרכה:</p>
+        </div>
+
+        <div class="video-container">
+            <video controls>
+                <source src="vid/breath.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+
+        <button class="ready-btn" onclick="showReadyModal()">
+            הדגם שלי מוכן! 
+        </button>
+    </div>
+
+    <script>
+        let currentSlide = 1;
+        const totalSlides = 2;
+
+        function nextSlide() {
+            if (currentSlide < totalSlides) {
+                document.querySelector(`[data-slide="${currentSlide}"]`).classList.remove('active');
+                currentSlide++;
+                document.querySelector(`[data-slide="${currentSlide}"]`).classList.add('active');
+            } else {
+                document.getElementById('tutorialModal').style.display = 'none';
+            }
+        }
+
+        function showReadyModal() {
+            // יתווסף בהמשך על פי ההנחיות שלך
+            alert('יש להוסיף את המודל החדש כאן');
+        }
+
+        // מניעת גלילה כשהמודל פתוח
+        document.addEventListener('DOMContentLoaded', function() {
+            function preventScroll(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            }
+
+            const scrollEvents = [
+                'wheel',
+                'touchmove',
+                'scroll',
+                'mousewheel',
+                'DOMMouseScroll'
+            ];
+
+            scrollEvents.forEach(event => {
+                window.addEventListener(event, preventScroll, { passive: false });
+            });
+        });
+    </script>
 </body>
 </html>

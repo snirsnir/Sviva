@@ -713,6 +713,472 @@ body {
         margin-top: 1rem;
     }
 }
+.balloon-modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 1000;
+    backdrop-filter: blur(5px);
+}
+
+.balloon-modal {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 600px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    box-shadow: 0 0 20px rgba(104, 181, 80, 0.3);
+    border: 2px solid var(--primary-green);
+    direction: rtl;
+}
+
+.balloon-header {
+    background: var(--primary-green);
+    color: white;
+    padding: 1.5rem;
+    border-radius: 18px 18px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.balloon-header h2 {
+    margin: 0;
+    font-size: 1.8rem;
+    font-weight: 800;
+}
+
+.balloon-content {
+    padding: 2rem;
+}
+
+.balloons-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.balloon-item {
+    aspect-ratio: 1;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    padding: 1rem;
+    border: 2px solid transparent;
+    border-radius: 12px;
+}
+
+.balloon-item:hover {
+    transform: scale(1.05);
+}
+
+.balloon-item.selected {
+    border-color: var(--primary-green);
+    background: rgba(104, 181, 80, 0.1);
+}
+
+.balloon-svg {
+    width: 100%;
+    height: 100%;
+}
+
+.balloon-circle {
+    fill: #ff7272;
+    stroke: var(--primary-green);
+    stroke-width: 2;
+}
+
+.balloon-string {
+    fill: none;
+    stroke: var(--primary-green);
+    stroke-width: 2;
+}
+
+.submit-btn {
+    display: block;
+    width: 200px;
+    margin: 0 auto;
+    padding: 1rem 2rem;
+    background: var(--primary-green);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.submit-btn:hover {
+    transform: scale(1.05);
+}
+
+@media (max-width: 768px) {
+    .balloons-grid {
+        gap: 1rem;
+    }
+    
+    .balloon-item {
+        padding: 0.5rem;
+    }
+}
+/* סגנונות למודל סיכום */
+.summary-modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 1000;
+    backdrop-filter: blur(5px);
+}
+
+.summary-modal {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 500px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    box-shadow: 0 0 20px rgba(104, 181, 80, 0.3);
+    border: 2px solid var(--primary-green);
+    direction: rtl;
+}
+
+.summary-header {
+    background: var(--primary-green);
+    color: white;
+    padding: 1.5rem;
+    border-radius: 18px 18px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.summary-content {
+    padding: 2rem;
+    text-align: center;
+}
+
+.success-animation {
+    font-size: 4rem;
+    color: var(--primary-green);
+    margin-bottom: 1rem;
+    animation: popIn 0.5s ease-out;
+}
+
+.summary-content h3 {
+    color: var(--dark-green);
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+}
+
+.summary-content p {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    color: #666;
+}
+
+.restart-btn {
+    background: var(--primary-green);
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 25px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.restart-btn:hover {
+    transform: scale(1.05);
+}
+
+@keyframes popIn {
+    0% { transform: scale(0); }
+    70% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+/* סגנונות לסימון שליחה */
+.company-title.submitted {
+    background: var(--primary-green);
+    color: white;
+    animation: pulse 2s infinite;
+}
+
+.submission-text {
+    color: var(--primary-green);
+    font-size: 0.9rem;
+    text-align: center;
+    margin-top: 0.5rem;
+    font-weight: bold;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.8; }
+    100% { opacity: 1; }
+}
+/* עדכון סגנונות למודל סיכום */
+.summary-text {
+    font-size: 1.4rem;
+    margin: 2rem 0;
+    color: #333;
+    line-height: 1.6;
+    text-align: center;
+}
+
+.summary-header h2 {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.success-animation {
+    font-size: 5rem;
+    color: var(--primary-green);
+    margin: 1rem 0;
+    animation: popIn 0.5s ease-out;
+}
+
+/* שיפור המראה הכללי */
+.summary-modal {
+    max-width: 700px;
+}
+
+.summary-content {
+    padding: 2.5rem;
+}
+
+.summary-content h3 {
+    color: var(--dark-green);
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+.restart-btn {
+    margin-top: 1.5rem;
+    padding: 1rem 2.5rem;
+    font-size: 1.3rem;
+}
+/* סגנונות לכפתורים במודל הסיכום */
+.buttons-container {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+.next-btn {
+    background: #4CAF50;
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 25px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.next-btn:hover {
+    transform: scale(1.05);
+    background: #45a049;
+}
+
+.btn-icon {
+    font-size: 1.4rem;
+}
+
+/* סגנונות למודל השלב הבא */
+.next-step-modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 1000;
+    backdrop-filter: blur(5px);
+}
+
+.next-step-modal {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 800px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    box-shadow: 0 0 20px rgba(76, 175, 80, 0.3);
+    border: 2px solid #4CAF50;
+    direction: rtl;
+}
+
+.next-step-header {
+    background: #4CAF50;
+    color: white;
+    padding: 1.5rem;
+    border-radius: 18px 18px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.next-step-header h2 {
+    margin: 0;
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.next-step-content {
+    padding: 2rem;
+}
+
+.challenge-intro {
+    text-align: center;
+    font-size: 1.3rem;
+    margin-bottom: 2rem;
+    background: rgba(76, 175, 80, 0.1);
+    padding: 1.5rem;
+    border-radius: 12px;
+    line-height: 1.6;
+}
+
+.solutions-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.solution-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.solution-card:hover {
+    transform: translateY(-5px);
+}
+
+.solution-icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.solution-card h4 {
+    color: #2C5E1A;
+    margin: 0.5rem 0;
+    font-size: 1.2rem;
+}
+
+.solution-card p {
+    color: #666;
+    font-size: 1rem;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.assignment-section {
+    background: #f9f9f9;
+    border: 2px dashed #4CAF50;
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-top: 2rem;
+}
+
+.assignment-section h3 {
+    color: #2C5E1A;
+    margin: 0 0 1rem 0;
+    font-size: 1.4rem;
+}
+
+.assignment-section ol {
+    margin: 0;
+    padding-right: 1.5rem;
+    line-height: 1.6;
+}
+
+.assignment-section li {
+    margin-bottom: 0.5rem;
+    color: #444;
+}
+
+@media (max-width: 768px) {
+    .solutions-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .next-step-modal {
+        width: 95%;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+    
+    .buttons-container {
+        flex-direction: column;
+    }
+    
+    .next-btn, .restart-btn {
+        width: 100%;
+    }
+}
+.return-button-container {
+    text-align: center;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 2px dashed #4CAF50;
+}
+
+.return-btn {
+    background: #2196F3;
+    color: white;
+    border: none;
+    padding: 1rem 2.5rem;
+    border-radius: 25px;
+    font-size: 1.3rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 auto;
+}
+
+.return-btn:hover {
+    transform: scale(1.05);
+    background: #1976D2;
+}
+
+.return-btn .btn-icon {
+    font-size: 1.5rem;
+}
     </style>
 </head>
 <body>
@@ -861,27 +1327,182 @@ body {
                     </div>
                     <div class="step-item">
                         <div class="step-content">
-                            <span class="step-number">6</span>
+                            <span class="step-number">5</span>
                             <span class="step-text">עברו להזנת התוצאות</span>
                         </div>
                 </div>
             </div>
         </div>
     </div>
+    </div>
+    <div class="balloon-modal-overlay" id="balloonModal">
+        <div class="balloon-modal">
+            <div class="balloon-header">
+                <h2>🎈 העריכו את נפח הבלון</h2>
+                <button class="close-btn" onclick="closeBalloonModal()">×</button>
+            </div>
+            <div class="balloon-content">
+                <div class="balloons-grid">
+                    <!-- שורה 1 -->
+                    <div class="balloon-item" data-size="1">
+                        <svg viewBox="0 0 100 100" class="balloon-svg">
+                            <circle cx="50" cy="60" r="15" class="balloon-circle" />
+                            <path d="M48 75 L52 75 L50 85" class="balloon-string" />
+                        </svg>
+                    </div>
+                    <div class="balloon-item" data-size="2">
+                        <svg viewBox="0 0 100 100" class="balloon-svg">
+                            <circle cx="50" cy="60" r="20" class="balloon-circle" />
+                            <path d="M48 80 L52 80 L50 90" class="balloon-string" />
+                        </svg>
+                    </div>
+                    <div class="balloon-item" data-size="3">
+                        <svg viewBox="0 0 100 100" class="balloon-svg">
+                            <circle cx="50" cy="60" r="25" class="balloon-circle" />
+                            <path d="M48 85 L52 85 L50 95" class="balloon-string" />
+                        </svg>
+                    </div>
+                    <!-- שורה 2 -->
+                    <div class="balloon-item" data-size="4">
+                        <svg viewBox="0 0 100 100" class="balloon-svg">
+                            <circle cx="50" cy="55" r="30" class="balloon-circle" />
+                            <path d="M48 85 L52 85 L50 95" class="balloon-string" />
+                        </svg>
+                    </div>
+                    <div class="balloon-item" data-size="5">
+                        <svg viewBox="0 0 100 100" class="balloon-svg">
+                            <circle cx="50" cy="55" r="35" class="balloon-circle" />
+                            <path d="M48 90 L52 90 L50 100" class="balloon-string" />
+                        </svg>
+                    </div>
+                    <div class="balloon-item" data-size="6">
+                        <svg viewBox="0 0 100 100" class="balloon-svg">
+                            <circle cx="50" cy="50" r="40" class="balloon-circle" />
+                            <path d="M48 90 L52 90 L50 100" class="balloon-string" />
+                        </svg>
+                    </div>
+                    <!-- שורה 3 -->
+                    <div class="balloon-item" data-size="7">
+                        <svg viewBox="0 0 100 100" class="balloon-svg">
+                            <circle cx="50" cy="50" r="45" class="balloon-circle" />
+                            <path d="M48 95 L52 95 L50 105" class="balloon-string" />
+                        </svg>
+                    </div>
+                    <div class="balloon-item" data-size="8">
+                        <svg viewBox="0 0 100 100" class="balloon-svg">
+                            <circle cx="50" cy="45" r="47" class="balloon-circle" />
+                            <path d="M48 92 L52 92 L50 102" class="balloon-string" />
+                        </svg>
+                    </div>
+                    <div class="balloon-item" data-size="9">
+                        <svg viewBox="0 0 100 100" class="balloon-svg">
+                            <circle cx="50" cy="45" r="49" class="balloon-circle" />
+                            <path d="M48 94 L52 94 L50 104" class="balloon-string" />
+                        </svg>
+                    </div>
+                </div>
+                <button class="submit-btn">שלח תוצאות</button>
+            </div>
+        </div>
+    </div>
+
+    
+    <div class="summary-modal-overlay" id="summaryModal">
+        <div class="summary-modal">
+            <div class="summary-header">
+                <h2>🌍 תוצאות הביקורת</h2>
+                <!-- הסרת כפתור ה-X -->
+            </div>
+            <div class="summary-content">
+                <div class="success-animation">✓</div>
+                <h3>הביקורת הסתיימה בהצלחה!</h3>
+                <p class="summary-text">
+                    גיליתם בביקורת ש<strong>חברת בועות</strong> פולטת הרבה יותר פחמן דו חמצני מהמותר<br>
+                    וגורמת לנזק סביבתי לכדור הארץ שלנו.
+                </p>
+                <div class="buttons-container">
+                    <button class="next-btn" onclick="showNextStep()">
+                        <span class="btn-icon">🌱</span>
+                        בואו נעזור לחברת בועות!
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- עדכון מודל השלב הבא - החלפת המשימה הכיתתית בכפתור חזרה -->
+    <div class="next-step-modal-overlay" id="nextStepModal">
+        <div class="next-step-modal">
+            <div class="next-step-header">
+                <h2>🌱 איך נעזור לחברת בועות לשמור על הסביבה?</h2>
+                <!-- הסרת כפתור ה-X -->
+            </div>
+            <div class="next-step-content">
+                <div class="challenge-intro">
+                    <p>חברת בועות גילתה שהם פולטים יותר מדי CO₂ לאוויר... 
+                    <br>בואו נחשוב יחד איך אפשר לעזור להם!</p>
+                </div>
+                
+                
+                <div class="solutions-grid">
+                    <div class="solution-card">
+                        <span class="solution-icon">🔄</span>
+                        <h4>מיחזור חומרים</h4>
+                        <p>שימוש חוזר בחומרים ומיחזור פסולת יכולים להפחית את כמות הפליטה</p>
+                    </div>
+                    
+                    <div class="solution-card">
+                        <span class="solution-icon">🌿</span>
+                        <h4>שימוש בחומרים ירוקים</h4>
+                        <p>החלפת חומרים מזהמים בחומרים ידידותיים לסביבה</p>
+                    </div>
+                    
+                    <div class="solution-card">
+                        <span class="solution-icon">💡</span>
+                        <h4>חיסכון באנרגיה</h4>
+                        <p>שימוש בתאורה חסכונית ומכשירים יעילים באנרגיה</p>
+                    </div>
+    
+                    <div class="solution-card">
+                        <span class="solution-icon">🌳</span>
+                        <h4>נטיעת עצים</h4>
+                        <p>נטיעת עצים חדשים שיעזרו לספוג את הפחמן הדו חמצני</p>
+                    </div>
+                </div>
+    
+                <div class="return-button-container">
+                    <button class="return-btn" onclick="returnToTechnoland()">
+                        <span class="btn-icon">🏠</span>
+                        חזרה לטכנולנד
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <script>
+        // משתנים גלובליים
+        let currentCompany = '';
+        let selectedBalloonSize = null;
+        let results = {
+            'בועות': null,
+            'קראנץ': null
+        };
+        
+        // פונקציות טעינה ראשונית
         window.addEventListener('load', () => {
             setTimeout(() => {
                 document.getElementById('guideModal').style.display = 'block';
             }, 2000);
         });
-
+        
         function closeModal() {
             document.getElementById('guideModal').style.display = 'none';
             setTimeout(() => {
                 document.getElementById('helpButton').classList.add('show');
             }, 500);
         }
-
+        
         function showGuideModal() {
             const iframe = document.querySelector('.modal-iframe');
             if (iframe.contentWindow.showSection) {
@@ -889,35 +1510,191 @@ body {
             }
             document.getElementById('guideModal').style.display = 'block';
         }
-
+        
+        // פונקציות ציוד וניסוי
         function showEquipmentList() {
-    document.getElementById('equipmentModal').style.display = 'block';
+            document.getElementById('equipmentModal').style.display = 'block';
+        }
+        
+        function closeEquipmentModal() {
+            document.getElementById('equipmentModal').style.display = 'none';
+        }
+        
+        function showExperimentSteps() {
+            document.getElementById('experimentModal').style.display = 'block';
+        }
+        
+        function closeExperimentModal() {
+            document.getElementById('experimentModal').style.display = 'none';
+        }
+        
+        // פונקציות בלונים ותוצאות
+        function showBalloonModal(company) {
+            currentCompany = company;
+            // נקה בחירה קודמת כשפותחים את המודל
+            document.querySelectorAll('.balloon-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            document.getElementById('balloonModal').style.display = 'block';
+        }
+        
+        function closeBalloonModal() {
+            document.getElementById('balloonModal').style.display = 'none';
+            currentCompany = '';
+        }
+        
+        function markAsSubmitted(company) {
+            const panels = document.querySelectorAll('.side-panel');
+            let targetPanel = null;
+            
+            panels.forEach(panel => {
+                const title = panel.querySelector('.company-title').textContent;
+                if (title.includes(company)) {
+                    targetPanel = panel;
+                }
+            });
+        
+            if (targetPanel) {
+                targetPanel.querySelector('.company-title').classList.add('submitted');
+                
+                const existingText = targetPanel.querySelector('.submission-text');
+                if (existingText) {
+                    existingText.remove();
+                }
+                
+                const submissionText = document.createElement('div');
+                submissionText.className = 'submission-text';
+                submissionText.textContent = 'נשלח ✓';
+                submissionText.style.color = '#000000'; 
+                targetPanel.querySelector('.input-container').appendChild(submissionText);
+            }
+        }
+        
+        function checkResults() {
+            if (results['בועות'] !== null && results['קראנץ'] !== null) {
+                if (results['בועות'] > results['קראנץ']) {
+                    setTimeout(() => {
+                        document.getElementById('summaryModal').style.display = 'block';
+                    }, 1000);
+                } else {
+                    alert('התוצאות אינן הגיוניות. נסו שוב!');
+                    setTimeout(resetExperiment, 2000);
+                }
+            }
+        }
+        
+        function resetExperiment() {
+            results = {
+                'בועות': null,
+                'קראנץ': null
+            };
+            
+            document.querySelectorAll('.company-title.submitted').forEach(el => {
+                el.classList.remove('submitted');
+            });
+            
+            document.querySelectorAll('.submission-text').forEach(el => {
+                el.remove();
+            });
+        
+            document.querySelectorAll('.balloon-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+        }
+        
+        function closeSummaryModal() {
+            document.getElementById('summaryModal').style.display = 'none';
+        }
+        
+        function restartExperiment() {
+            resetExperiment();
+            closeSummaryModal();
+        }
+        
+        // מאזיני אירועים
+        document.addEventListener('DOMContentLoaded', function() {
+            // מאזין לסגירת מודל הציוד בלחיצה מחוץ לתוכן
+            document.getElementById('equipmentModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeEquipmentModal();
+                }
+            });
+        
+            // מאזין לסגירת מודל הניסוי בלחיצה מחוץ לתוכן
+            document.getElementById('experimentModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeExperimentModal();
+                }
+            });
+        
+            // מאזין ללחיצה על כפתורי הזנת תוצאות
+            document.querySelectorAll('.input-button').forEach(button => {
+                button.addEventListener('click', function() {
+                    const companyTitle = this.closest('.side-panel').querySelector('.company-title').textContent;
+                    const company = companyTitle.includes('בועות') ? 'בועות' : 'קראנץ';
+                    showBalloonModal(company);
+                });
+            });
+        
+            // מאזין לבחירת בלון
+            document.querySelectorAll('.balloon-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    document.querySelectorAll('.balloon-item').forEach(i => i.classList.remove('selected'));
+                    this.classList.add('selected');
+                    selectedBalloonSize = parseInt(this.dataset.size);
+                });
+            });
+        
+            // מאזין לכפתור שליחה
+            document.querySelector('.submit-btn').addEventListener('click', function() {
+                if (selectedBalloonSize !== null && currentCompany) {
+                    results[currentCompany] = selectedBalloonSize;
+                    markAsSubmitted(currentCompany);
+                    closeBalloonModal();
+                    checkResults();
+                    selectedBalloonSize = null;
+                } else {
+                    alert('נא לבחור גודל בלון');
+                }
+            });
+        
+            // מאזינים לסגירת מודלים בלחיצה מחוץ לתוכן
+            document.getElementById('balloonModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeBalloonModal();
+                }
+            });
+        
+
+        });
+        function showNextStep() {
+    // נסיר את כל מאזיני האירועים של המודל הראשון
+    document.getElementById('summaryModal').style.display = 'none';
+    document.getElementById('nextStepModal').style.display = 'block';
 }
 
-function closeEquipmentModal() {
-    document.getElementById('equipmentModal').style.display = 'none';
-}
-
-// Close modal when clicking outside
-document.getElementById('equipmentModal').addEventListener('click', function(e) {
-    if (e.target === this) {
-        closeEquipmentModal();
+// הסרת כל מאזיני האירועים שקשורים לסגירת המודלים
+document.addEventListener('DOMContentLoaded', function() {
+    // הסרנו את כל מאזיני האירועים שקשורים לסגירת המודלים
+    
+    // עדכון הפונקציה checkResults
+    function checkResults() {
+        if (results['בועות'] !== null && results['קראנץ'] !== null) {
+            if (results['בועות'] > results['קראנץ']) {
+                setTimeout(() => {
+                    document.getElementById('summaryModal').style.display = 'block';
+                }, 1000);
+            } else {
+                alert('התוצאות אינן הגיוניות. נסו שוב!');
+                setTimeout(resetExperiment, 2000);
+            }
+        }
     }
 });
-function showExperimentSteps() {
-    document.getElementById('experimentModal').style.display = 'block';
-}
 
-function closeExperimentModal() {
-    document.getElementById('experimentModal').style.display = 'none';
+function returnToTechnoland() {
+    window.parent.postMessage({ type: "closeModal", message: "closeMifal" }, "*");
 }
-
-// הוסף מאזין לסגירת מודל הניסוי בלחיצה מחוץ לו
-document.getElementById('experimentModal').addEventListener('click', function(e) {
-    if (e.target === this) {
-        closeExperimentModal();
-    }
-});
-    </script>
+        </script>
 </body>
 </html>
