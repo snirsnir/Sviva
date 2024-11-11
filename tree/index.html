@@ -242,7 +242,150 @@
         opacity: 0.7;
         z-index: 1001;
     }
+    
+/* עיצוב כפתור הסיום */
+.finish-button {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #4CAF50;
+    color: white;
+    padding: 12px 30px;
+    border-radius: 25px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
 
+.finish-button:hover {
+    background: #388E3C;
+    transform: translateX(-50%) translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+/* עיצובים נוספים ל-Modal */
+.summary-section {
+    margin: 20px 0;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 10px;
+}
+
+.summary-section h3 {
+    color: #2c3e50;
+    margin-bottom: 10px;
+    font-size: 20px;
+}
+
+.summary-section ul {
+    padding-right: 20px;
+}
+
+.summary-section li {
+    margin: 10px 0;
+    line-height: 1.5;
+}
+
+.warning {
+    background: #fff3e0;
+    border-right: 4px solid #ff9800;
+}
+
+.back-to-techno-btn {
+    background: #2196F3;
+    color: white;
+    border: none;
+    padding: 12px 35px;
+    border-radius: 25px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.back-to-techno-btn:hover {
+    background: #1976D2;
+    transform: translateY(-2px);
+}
+/* עיצוב המודל */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+}
+
+.modal-content {
+    position: relative;
+    background-color: #ffffff;
+    margin: 5% auto;
+    padding: 20px;
+    width: 80%;
+    max-width: 800px;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    direction: rtl;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal-title {
+    font-size: 24px;
+    color: #2c3e50;
+    text-align: center;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+.summary-section {
+    margin: 20px 0;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 10px;
+}
+
+.summary-section h3 {
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+.summary-section p {
+    line-height: 1.6;
+    color: #34495e;
+}
+
+.warning {
+    background: #fff3e0;
+    border-right: 4px solid #ff9800;
+}
+
+.modal-footer {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.back-to-techno-btn {
+    background: #2196F3;
+    color: white;
+    border: none;
+    padding: 12px 35px;
+    border-radius: 25px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.back-to-techno-btn:hover {
+    background: #1976D2;
+    transform: translateY(-2px);
+}
     </style>
 </head>
 <body>
@@ -332,6 +475,55 @@
     </a-scene>
 
     <video id="cameraView" autoplay playsinline></video>
+
+    <div id="finishButton" style="display: none;" class="finish-button">
+        סיום
+    </div>
+    
+    <!-- הוספת Modal הסיכום -->
+    <div id="finishButton" style="display: none;" class="finish-button">
+        סיום
+    </div>
+    
+    <!-- מודל הסיכום -->
+    <div id="summaryModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-title">סיכום: השפעת בעלי החיים והיער על הסביבה</div>
+            
+            <div class="summary-section">
+                <h3>🌳 חשיבות היער</h3>
+                <p>היער הוא מערכת אקולוגית שלמה המהווה בית למגוון רחב של בעלי חיים וצמחים. העצים מייצרים חמצן, סופגים פחמן דו-חמצני ומסייעים במניעת התחממות כדור הארץ.</p>
+            </div>
+    
+            <div class="summary-section">
+                <h3>🦊 תרומת בעלי החיים ליער</h3>
+                <ul>
+                    <li><strong>ציפורים:</strong> מפיצות זרעים ושומרות על איזון החרקים</li>
+                    <li><strong>קופים:</strong> מפיצים זרעים ושומרים על בריאות העצים</li>
+                    <li><strong>איילים:</strong> מסייעים בהפצת זרעים ושמירה על איזון הצמחייה</li>
+                    <li><strong>חזירי בר:</strong> מערבבים את האדמה ומסייעים בהתחדשות היער</li>
+                    <li><strong>שועלים:</strong> שומרים על איזון אוכלוסיית המכרסמים</li>
+                </ul>
+            </div>
+    
+            <div class="summary-section warning">
+                <h3>⚠️ הסכנה שבכריתת יערות</h3>
+                <p>כריתת יערות פוגעת קשות במערכת האקולוגית:</p>
+                <ul>
+                    <li>אובדן בית גידול לבעלי חיים רבים</li>
+                    <li>פגיעה באיכות האוויר והאצת שינויי האקלים</li>
+                    <li>הפרת האיזון האקולוגי</li>
+                    <li>סכנת הכחדה למינים רבים</li>
+                </ul>
+            </div>
+    
+            <div class="modal-footer">
+                <button onclick="backTechnoland()" class="back-to-techno-btn">
+                    חזרה לטכנולנד
+                </button>
+            </div>
+        </div>
+    </div>
     <script src="script.js"></script>
 </body>
 </html>

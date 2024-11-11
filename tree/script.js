@@ -234,46 +234,69 @@ async function detectFox() {
     }
 }
 
-// Classification Functions
+// Classification Functions// עץ
 function classifyVideoForTree() {
     if (!detecting) return;
     classifier.classify(videoElement)
-        .then(handleTreeResults)
+        .then(results => {
+            console.log('Tree Detection Results:', results.map(r => `${r.label} (${(r.confidence * 100).toFixed(2)}%)`));
+            handleTreeResults(results);
+        })
         .catch(handleError);
 }
 
+// ציפור
 function classifyVideoForBirds() {
     if (!detecting) return;
     classifier.classify(videoElement)
-        .then(handleBirdResults)
+        .then(results => {
+            console.log('Bird Detection Results:', results.map(r => `${r.label} (${(r.confidence * 100).toFixed(2)}%)`));
+            handleBirdResults(results);
+        })
         .catch(handleError);
 }
 
+// קוף
 function classifyVideoForMonkey() {
     if (!detecting) return;
     classifier.classify(videoElement)
-        .then(handleMonkeyResults)
+        .then(results => {
+            console.log('Monkey Detection Results:', results.map(r => `${r.label} (${(r.confidence * 100).toFixed(2)}%)`));
+            handleMonkeyResults(results);
+        })
         .catch(handleError);
 }
 
+// אייל
 function classifyVideoForDeer() {
     if (!detecting) return;
     classifier.classify(videoElement)
-        .then(handleDeerResults)
+        .then(results => {
+            console.log('Deer Detection Results:', results.map(r => `${r.label} (${(r.confidence * 100).toFixed(2)}%)`));
+            handleDeerResults(results);
+        })
         .catch(handleError);
 }
 
+// חזיר בר
 function classifyVideoForBoar() {
     if (!detecting) return;
     classifier.classify(videoElement)
-        .then(handleBoarResults)
+        .then(results => {
+            console.log('Boar Detection Results:', results.map(r => `${r.label} (${(r.confidence * 100).toFixed(2)}%)`));
+            handleBoarResults(results);
+        })
         .catch(handleError);
 }
 
+// שועל
 function classifyVideoForFox() {
     if (!detecting) return;
     classifier.classify(videoElement)
-        .then(handleFoxResults)
+        .then(results => {
+            console.log('Fox Detection Results:', results.map(r => `${r.label} (${(r.confidence * 100).toFixed(2)}%)`));
+            handleFoxResults(results);
+        })
         .catch(handleError);
 }
 
@@ -284,7 +307,7 @@ function handleTreeResults(results) {
         const treeFound = results.some(result => {
             const label = result.label ? result.label.toLowerCase() : '';
             const confidence = result.confidence || 0;
-            return (label.includes('broccoli') || label.includes('tree')) && confidence > 0.05;
+            return (label.includes('broccoli') || label.includes('guacamole') || label.includes('Petri dish') || label.includes('tree')) && confidence > 0.05;
         });
 
         if (treeFound) {
@@ -302,7 +325,7 @@ function handleBirdResults(results) {
         const birdFound = results.some(result => {
             const label = result.label ? result.label.toLowerCase() : '';
             const confidence = result.confidence || 0;
-            return (label.includes('chickadee') || label.includes('bird')) && confidence > 0.05;
+            return (label.includes('chickadee') || label.includes('syringe') || label.includes('barbell') || label.includes('beaker') || label.includes('bird')) && confidence > 0.05;
         });
 
         if (birdFound) {
@@ -320,7 +343,7 @@ function handleMonkeyResults(results) {
         const monkeyFound = results.some(result => {
             const label = result.label ? result.label.toLowerCase() : '';
             const confidence = result.confidence || 0;
-            return (label.includes('monkey') || label.includes('ape') || label.includes('dough')) && confidence > 0.05;
+            return (label.includes('monkey') || label.includes('washer')|| label.includes('whell')|| label.includes('dough')|| label.includes('ape') || label.includes('dough')) && confidence > 0.05;
         });
 
         if (monkeyFound) {
@@ -338,7 +361,7 @@ function handleDeerResults(results) {
         const deerFound = results.some(result => {
             const label = result.label ? result.label.toLowerCase() : '';
             const confidence = result.confidence || 0;
-            return (label.includes('deer') || label.includes('corn') || label.includes('hotdog')) && confidence > 0.05;
+            return (label.includes('deer') ||label.includes('corn') ||label.includes('dough') ||label.includes('pretzel') || label.includes('beigel') || label.includes('hotdog')) && confidence > 0.05;
         });
 
         if (deerFound) {
@@ -356,7 +379,7 @@ function handleBoarResults(results) {
         const boarFound = results.some(result => {
             const label = result.label ? result.label.toLowerCase() : '';
             const confidence = result.confidence || 0;
-            return (label.includes('barbershop') || label.includes('polecat') || label.includes('fitch')) && confidence > 0.05;
+            return (label.includes('barbershop') || label.includes('polecat') || label.includes('paintbrush') || label.includes('beaker') || label.includes('fitch')) && confidence > 0.05;
         });
 
         if (boarFound) {
@@ -374,7 +397,7 @@ function handleFoxResults(results) {
         const foxFound = results.some(result => {
             const label = result.label ? result.label.toLowerCase() : '';
             const confidence = result.confidence || 0;
-            return (label.includes('fox') || label.includes('canine') || label.includes('wolf')) && confidence > 0.05;
+            return (label.includes('fox') || label.includes('dumbbell') || label.includes('barbell') || label.includes('dough') || label.includes('canine') || label.includes('Chihuahua')) && confidence > 0.05;
         });
 
         if (foxFound) {
@@ -624,17 +647,17 @@ function addDeerModel() {
     const scene = document.querySelector('a-scene');
     const deerConfigs = [
         {
-            position: { x: -5, y: -1.8, z: 3 },
+            position: { x: 5, y: -1.8, z: 3 },
             rotation: { x: 0, y: 0, z: 0 },
             scale: { x: 0.1, y: 0.1, z: 0.1 }
         },
         {
-            position: { x: -9, y: -1.8, z: 3.5 },
+            position: { x: 3, y: -1.8, z: 3.5 },
             rotation: { x: 0, y: 30, z: 0 },
             scale: { x: 0.1, y: 0.1, z: 0.1 }
         },
         {
-            position: { x: -13, y: -1.8, z: 3 },
+            position: { x: 1, y: -1.8, z: 3 },
             rotation: { x: 0, y: 0, z: 0 },
             scale: { x: 0.1, y: 0.1, z: 0.1 }
         }
@@ -737,19 +760,19 @@ function addFoxModel() {
     const scene = document.querySelector('a-scene');
     const foxConfigs = [
         {
-            position: { x: -6, y: -1.8, z: 3 },
-            rotation: { x: 0, y: 180, z: 0 },
-            scale: { x: 0.1, y: 0.1, z: 0.1 }
+            position: { x: 1, y: -1.8, z: 8 },
+            rotation: { x: -90, y: 90, z: 90 },
+            scale: { x: 0.04, y: 0.04, z: 0.04 }
         },
         {
-            position: { x: -8, y: -1.8, z: 4 },
-            rotation: { x: 0, y: 160, z: 0 },
-            scale: { x: 0.12, y: 0.12, z: 0.12 }
+            position: { x: 3, y: -1.8, z: 10 },
+            rotation: { x: -90, y: 90, z: 90 },
+            scale: { x: 0.04, y: 0.04, z: 0.04 }
         },
         {
-            position: { x: -4, y: -1.8, z: 5 },
-            rotation: { x: 0, y: 200, z: 0 },
-            scale: { x: 0.3, y: 0.3, z: 0.3 }
+            position: { x: 4, y: -1.8, z: 12 },
+            rotation: { x: -90, y: 90, z: 90 },
+            scale: { x: 0.04, y: 0.04, z: 0.04 }
         }
     ];
 
@@ -852,4 +875,105 @@ window.addEventListener('load', function() {
 
     // Update detection handlers
     updateDetectionHandlers();
+
+    
 });
+// הוספת משתנים גלובליים למעקב אחר הסריקות
+let scannedAnimals = {
+    tree: false,
+    bird: false,
+    monkey: false,
+    deer: false,
+    boar: false,
+    fox: false
+};
+
+// פונקציה לבדיקה האם כל החיות נסרקו
+function checkAllAnimalsScanned() {
+    return Object.values(scannedAnimals).every(value => value === true);
+}
+
+// פונקציה להצגת כפתור הסיום
+function showFinishButton() {
+    const finishButton = document.getElementById('finishButton');
+    finishButton.style.display = 'block';
+}
+
+// עדכון פונקציות הטיפול בתוצאות הסריקה
+function updateHandleResults() {
+    const originalHandlers = {
+        handleTreeResults: window.handleTreeResults,
+        handleBirdResults: window.handleBirdResults,
+        handleMonkeyResults: window.handleMonkeyResults,
+        handleDeerResults: window.handleDeerResults,
+        handleBoarResults: window.handleBoarResults,
+        handleFoxResults: window.handleFoxResults
+    };
+
+    window.handleTreeResults = function(results) {
+        originalHandlers.handleTreeResults.call(this, results);
+        scannedAnimals.tree = true;
+        checkAndShowFinish();
+    };
+
+    window.handleBirdResults = function(results) {
+        originalHandlers.handleBirdResults.call(this, results);
+        scannedAnimals.bird = true;
+        checkAndShowFinish();
+    };
+
+    window.handleMonkeyResults = function(results) {
+        originalHandlers.handleMonkeyResults.call(this, results);
+        scannedAnimals.monkey = true;
+        checkAndShowFinish();
+    };
+
+    window.handleDeerResults = function(results) {
+        originalHandlers.handleDeerResults.call(this, results);
+        scannedAnimals.deer = true;
+        checkAndShowFinish();
+    };
+
+    window.handleBoarResults = function(results) {
+        originalHandlers.handleBoarResults.call(this, results);
+        scannedAnimals.boar = true;
+        checkAndShowFinish();
+    };
+
+    window.handleFoxResults = function(results) {
+        originalHandlers.handleFoxResults.call(this, results);
+        scannedAnimals.fox = true;
+        checkAndShowFinish();
+    };
+}
+
+// פונקציה לבדיקה והצגת כפתור הסיום
+function checkAndShowFinish() {
+    if (checkAllAnimalsScanned()) {
+        showFinishButton();
+        
+        // הוספת מאזין לחיצה לכפתור הסיום
+        document.getElementById('finishButton').addEventListener('click', showSummaryModal);
+    }
+}
+
+// פונקציה להצגת מודל הסיכום
+function showSummaryModal() {
+    const summaryModal = document.getElementById('summaryModal');
+    summaryModal.style.display = 'block';
+}
+
+// עדכון אירועי טעינת הדף
+window.addEventListener('load', function() {
+    // הוספת הלוגיקה הקיימת
+    setTimeout(() => {
+        document.getElementById('guideModal').style.display = 'block';
+    }, 2000);
+
+    // עדכון הטיפול בתוצאות
+    updateHandleResults();
+});
+function backTechnoland(){
+    window.parent.postMessage({ type: "closeModal", message: "closeTree" }, "*");
+
+}

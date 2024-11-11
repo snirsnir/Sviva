@@ -162,8 +162,40 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
 
                     break;
+                    case "closeMed":
+                        document.getElementById('hospitalModal').style.display = 'none';
+                        const medImg = document.getElementById('hospitalImg');
+                        if (medImg) medImg.src = "img/hospitalV.png";
+                        const airP = document.getElementById('airP');
+                        if (airP) airP.setAttribute('visible', 'true');
+                       
+                        const medBox = document.querySelector('a-box[position="-3.5 1.6 -8"]');
+                        if (medBox) {
+                            medBox.classList.remove('clickable');
+                            medBox.removeAttribute('onclick');
+                            medBox.removeAttribute('event-set__click');
+                        }
+    
+                        break;
             // הוסף כאן case נוספים לפי הצורך
-        }
+            case "closeTree":
+                document.getElementById('treeModal').style.display = 'none';
+                const treesImg = document.getElementById('treesImg');
+                if (treesImg) treesImg.src = "img/treesV.png";
+                const treesi = document.getElementById('treesi');
+                if (treesi) treesi.setAttribute('visible', 'true');
+               
+                const treesBox = document.querySelector('a-box[position="-19.5 -0.6 -15"]');
+                if (treesBox) {
+                    treesBox.classList.remove('clickable');
+                    treesBox.removeAttribute('onclick');
+                    treesBox.removeAttribute('event-set__click');
+                }
+
+                break;
+    // הוסף כאן case נוספים לפי הצורך
+}
+        
 
         if (envMeterFill && event.data.message.startsWith('close')) {
             const currentHeight = parseFloat(getComputedStyle(envMeterFill).height);
@@ -185,4 +217,76 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     window.closeModalOnClickOutside = closeModalOnClickOutside;
+});
+// הוספת פונקציה לבדיקת השלמת המשימות
+function checkAllTasksCompleted() {
+    const images = [
+        'hospitalV.png',
+        'treesV.png',
+        'mifalV.png',
+        'trafficV.png',
+        'energyV.png'
+    ];
+    
+    let allCompleted = true;
+    images.forEach(imageName => {
+        const elements = Array.from(document.getElementsByTagName('img')).filter(img => 
+            img.src.endsWith(imageName)
+        );
+        if (elements.length === 0) {
+            allCompleted = false;
+        }
+    });
+    
+    if (allCompleted) {
+        const messageDiv = document.createElement('div');
+        messageDiv.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            z-index: 1001;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+            font-family: Arial, sans-serif;
+        `;
+        
+        messageDiv.innerHTML = `
+            <h2 style="color: #2c3e50; margin-bottom: 15px; font-size: 24px;">
+                <strong>הפכתם את העולם לנקי יותר!</strong>
+            </h2>
+            <p style="color: #34495e; font-size: 18px;">
+                חפשו את השולחן ולחצו על הדו"ח סיכום
+            </p>
+        `;
+        
+        document.body.appendChild(messageDiv);
+        
+        // הסרת ההודעה אחרי 5 שניות
+        setTimeout(() => {
+            messageDiv.style.opacity = '0';
+            messageDiv.style.transition = 'opacity 1s ease-out';
+            setTimeout(() => messageDiv.remove(), 1000);
+        }, 60000);
+    }
+}
+
+// הוספת מאזין אירועים לשינויים בתמונות
+const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+        if (mutation.type === 'attributes' && mutation.attributeName === 'src') {
+            checkAllTasksCompleted();
+        }
+    });
+});
+
+// הפעלת המעקב אחר שינויי תמונות
+document.addEventListener('DOMContentLoaded', () => {
+    const images = document.querySelectorAll('.circle img');
+    images.forEach(img => {
+        observer.observe(img, { attributes: true });
+    });
 });
