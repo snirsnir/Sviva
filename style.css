@@ -98,7 +98,42 @@ iframe {
     object-fit: cover; /* גורם לתמונה להתאים את עצמה לעיגול */
     object-position: center; /* ממרכז את התמונה */
 }
+@media screen and (max-width: 1024px) {
+    .circle {
+        width: 70px;
+        height: 70px;
+    }
+    
+    .progress-circles {
+        gap: 8px;
+    }
+}
 
+/* מובייל */
+@media screen and (max-width: 768px) {
+    .circle {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .progress-circles {
+        gap: 5px;
+        top: 10px;
+        left: 10px;
+    }
+}
+
+/* מסכים קטנים במיוחד */
+@media screen and (max-width: 480px) {
+    .circle {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .progress-circles {
+        gap: 4px;
+    }
+}
 /* שאר הסגנונות הקיימים שלך */
 .modal {
     position: fixed;
