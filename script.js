@@ -1,4 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
+    if (AFRAME.utils.device.isMobile()) {
+        AFRAME.utils.device.requestFullscreen();
+    }
     // פונקציה משופרת למניעת גלילה
     function preventScroll(e) {
         e.preventDefault();
@@ -14,7 +17,19 @@ document.addEventListener('DOMContentLoaded', function() {
         'mousewheel',
         'DOMMouseScroll'
     ];
-
+    window.addEventListener('load', function() {
+        setTimeout(function() {
+            const autoModal = document.getElementById('autoModal');
+            if (autoModal) {
+                autoModal.style.display = 'block';
+            }
+        }, 2000);
+    });
+    window.addEventListener("message", (event) => {
+        if (event.data.message === "closeTut") {
+            document.getElementById('autoModal').style.display = 'none';
+        }
+    })
     function toggleModalState(show) {
         const html = document.documentElement;
         const body = document.body;
@@ -115,14 +130,25 @@ document.addEventListener('DOMContentLoaded', function() {
         const envMeterFill = document.querySelector('.env-meter-fill');
     
         // בדיקה שיש event.data ו-message לפני השימוש בהם
-        if (event.data && event.data.message && envMeterFill && event.data.message.startsWith('close')) {
-            const currentHeight = parseFloat(getComputedStyle(envMeterFill).height);
-            const newHeight = currentHeight * 0.8;
-            envMeterFill.style.height = `${newHeight}px`;
-            
-            environmentalDrops++;
-            updateEnvMeterColor(envMeterFill);
-        }
+        if (event.data && event.data.message) {
+            if (event.data.message === "closeTut") {
+                document.getElementById('autoModal').style.display = 'none';
+                return; // חשוב! מונע המשך עיבוד של ההודעה
+            }
+    
+            if (envMeterFill) {
+                const validCloseMessages = ['closeCar', 'closeTable', 'closeMifal', 'closeMed', 'closeTree'];
+                
+                if (validCloseMessages.includes(event.data.message)) {
+                    const currentHeight = parseFloat(getComputedStyle(envMeterFill).height);
+                    const newHeight = currentHeight * 0.8;
+                    envMeterFill.style.height = `${newHeight}px`;
+                    
+                    environmentalDrops++;
+                    updateEnvMeterColor(envMeterFill);
+                }
+            }
+        
 
         switch(event.data.message) {
             case "closeCar":
@@ -216,7 +242,8 @@ document.addEventListener('DOMContentLoaded', function() {
             environmentalDrops++;
             updateEnvMeterColor(envMeterFill);
         }
-    });
+    }
+});
 
     // סגירת מודל בלחיצה מחוץ לתוכן
     function closeModalOnClickOutside(event, modalId) {
