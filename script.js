@@ -1,4 +1,39 @@
 document.addEventListener('DOMContentLoaded', function() {
+    const helpButton = document.getElementById('helpButton');
+    const autoModal = document.getElementById('autoModal');
+    
+    // פתיחה אוטומטית של המודל אחרי 2 שניות
+    setTimeout(function() {
+        if (autoModal) {
+            autoModal.style.display = 'block';
+        }
+    }, 2000);
+    
+    // טיפול בלחיצה על כפתור העזרה
+    helpButton.addEventListener('click', function() {
+        if (autoModal) {
+            if (autoModal.style.display === 'block') {
+                autoModal.style.display = 'none';
+            } else {
+                // מחדש את התוכן של ה-iframe לפני הצגת המודל
+                const iframe = autoModal.querySelector('iframe');
+                if (iframe) {
+                    const currentSrc = iframe.src;
+                    iframe.src = '';
+                    iframe.src = currentSrc;
+                }
+                autoModal.style.display = 'block';
+            }
+        }
+    });
+    
+    // טיפול בהודעת הסגירה מה-iframe
+    window.addEventListener("message", (event) => {
+        if (event.data.message === "closeTut" && autoModal) {
+            autoModal.style.display = 'none';
+        }
+    });
+
     if (AFRAME.utils.device.isMobile()) {
         AFRAME.utils.device.requestFullscreen();
     }
@@ -17,19 +52,8 @@ document.addEventListener('DOMContentLoaded', function() {
         'mousewheel',
         'DOMMouseScroll'
     ];
-    window.addEventListener('load', function() {
-        setTimeout(function() {
-            const autoModal = document.getElementById('autoModal');
-            if (autoModal) {
-                autoModal.style.display = 'block';
-            }
-        }, 2000);
-    });
-    window.addEventListener("message", (event) => {
-        if (event.data.message === "closeTut") {
-            document.getElementById('autoModal').style.display = 'none';
-        }
-    })
+
+
     function toggleModalState(show) {
         const html = document.documentElement;
         const body = document.body;

@@ -809,7 +809,17 @@ function addFoxModel() {
         scene.appendChild(container);
     });
 }
-
+document.addEventListener('DOMContentLoaded', function() {
+    const characterModal = document.getElementById('characterModal');
+    
+    // הוספת מאזין ללחיצה על הרקע
+    characterModal.addEventListener('click', function(e) {
+        // בודק אם הלחיצה הייתה על הרקע ולא על התוכן
+        if (e.target === characterModal) {
+            characterModal.style.display = 'none';
+        }
+    });
+});
 // Event Listeners for Input Validation
 document.addEventListener('DOMContentLoaded', function() {
     // Character Input Validation
