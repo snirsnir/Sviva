@@ -606,3 +606,192 @@ iframe {
     background: rgba(104, 181, 80, 0.1);
     transform: translateX(-5px);
 }
+/* סגנונות בסיס */
+:root {
+    --env-meter-width-desktop: 60px;
+    --env-meter-height-desktop: 400px;
+    --circle-size-desktop: 120px;
+    --audio-button-size-desktop: 40px;
+}
+
+/* מסכי מחשב גדולים - 1920x1080 */
+@media screen and (min-width: 1920px) {
+    .env-meter-container {
+        width: var(--env-meter-width-desktop);
+        height: var(--env-meter-height-desktop);
+    }
+
+    .circle {
+        width: var(--circle-size-desktop);
+        height: var(--circle-size-desktop);
+    }
+
+    .audio-button, .help-button {
+        width: var(--audio-button-size-desktop);
+        height: var(--audio-button-size-desktop);
+    }
+}
+
+/* מחשבים ניידים - 15 אינץ' (1366x768) */
+@media screen and (max-width: 1366px) {
+    :root {
+        --env-meter-width-laptop: 45px;
+        --env-meter-height-laptop: 300px;
+        --circle-size-laptop: 90px;
+        --audio-button-size-laptop: 35px;
+    }
+
+    .env-meter-container {
+        width: var(--env-meter-width-laptop);
+        height: var(--env-meter-height-laptop);
+        right: 15px;
+    }
+
+    .env-meter {
+        width: 35px;
+        height: 260px;
+    }
+
+    .circle {
+        width: var(--circle-size-laptop);
+        height: var(--circle-size-laptop);
+    }
+
+    .progress-circles {
+        gap: 8px;
+        top: 15px;
+        left: 15px;
+    }
+
+    .audio-button, .help-button {
+        width: var(--audio-button-size-laptop);
+        height: var(--audio-button-size-laptop);
+    }
+
+    .env-meter-label {
+        font-size: 12px;
+    }
+
+    /* התאמת גודל המודלים */
+    .modal-content, .auto-modal-content {
+        width: 95% !important;
+        height: 75% !important;
+        margin: 3% auto !important;
+    }
+
+    .notebook-modal, .info-modal {
+        width: 80%;
+        max-width: 500px;
+    }
+}
+
+/* טאבלטים - 10 אינץ' (1024x768) */
+@media screen and (max-width: 1024px) {
+    :root {
+        --env-meter-width-tablet: 35px;
+        --env-meter-height-tablet: 250px;
+        --circle-size-tablet: 70px;
+        --audio-button-size-tablet: 30px;
+    }
+
+    .env-meter-container {
+        width: var(--env-meter-width-tablet);
+        height: var(--env-meter-height-tablet);
+        right: 10px;
+    }
+
+    .env-meter {
+        width: 25px;
+        height: 220px;
+    }
+
+    .circle {
+        width: var(--circle-size-tablet);
+        height: var(--circle-size-tablet);
+    }
+
+    .progress-circles {
+        gap: 6px;
+        top: 10px;
+        left: 10px;
+    }
+
+    .audio-button, .help-button {
+        width: var(--audio-button-size-tablet);
+        height: var(--audio-button-size-tablet);
+        font-size: 16px;
+    }
+
+    .env-meter-label {
+        font-size: 10px;
+        margin-bottom: 15px;
+    }
+
+    /* התאמת גודל המודלים */
+    .modal-content, .auto-modal-content {
+        width: 98% !important;
+        height: 70% !important;
+        margin: 2% auto !important;
+    }
+
+    .notebook-modal, .info-modal {
+        width: 95%;
+        max-width: 450px;
+    }
+
+    /* התאמת גדלי טקסט */
+    .notebook-header h2 {
+        font-size: 1.5rem;
+    }
+
+    .message-container h3 {
+        font-size: 1.3rem;
+    }
+
+    .message-container p {
+        font-size: 1.1rem;
+    }
+
+    .return-btn {
+        padding: 0.8rem 1.6rem;
+        font-size: 1.1rem;
+    }
+}
+
+/* התאמות נוספות לביצועים ואינטראקציה */
+* {
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* אופטימיזציה לאנימציות */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* התאמות ל-VR */
+.a-enter-vr {
+    display: none !important;
+}
+
+/* התאמות נגישות */
+.clickable {
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.clickable:hover {
+    transform: scale(1.05);
+}
+
+/* תיקון לבעיית גלילה במודלים */
+.modal-open {
+    overflow: hidden !important;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+}

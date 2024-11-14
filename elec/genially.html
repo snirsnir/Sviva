@@ -50,14 +50,22 @@
             font-weight: bold !important;
         }
 
-        /* שדות קלט */
+        /* שדות קלט - עודכן */
         .container input[type="number"] {
-            width: 70px !important;
-            padding: 6px !important;
-            border: 1px solid #ddd !important;
+            width: 100px !important;
+            padding: 8px !important;
+            border: 2px solid #3498db !important;
             border-radius: 4px !important;
-            font-size: 15px !important;
+            font-size: 16px !important;
             text-align: center !important;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.3) !important;
+            transition: all 0.3s ease !important;
+        }
+
+        .container input[type="number"]:focus {
+            border-color: #2980b9 !important;
+            box-shadow: 0 0 8px rgba(52, 152, 219, 0.5) !important;
+            outline: none !important;
         }
 
         /* כפתורים */
@@ -208,27 +216,15 @@
                         <td><input type="number" class="particles" min="0"></td>
                     </tr>
                     <tr>
-                        <td>דקה 1</td>
+                        <td>מיד לאחר הדלקת הנר</td>
                         <td><input type="number" class="particles" min="0"></td>
                     </tr>
                     <tr>
-                        <td>דקה 2</td>
+                        <td>כעבור 20 שניות מהדלקת הנר</td>
                         <td><input type="number" class="particles" min="0"></td>
                     </tr>
                     <tr>
-                        <td>דקה 3</td>
-                        <td><input type="number" class="particles" min="0"></td>
-                    </tr>
-                    <tr>
-                        <td>דקה 4</td>
-                        <td><input type="number" class="particles" min="0"></td>
-                    </tr>
-                    <tr>
-                        <td>דקה 5</td>
-                        <td><input type="number" class="particles" min="0"></td>
-                    </tr>
-                    <tr>
-                        <td>לאחר אוורור</td>
+                        <td>לאחר כיבוי הנר ואוורור של חצי דקה</td>
                         <td><input type="number" class="particles" min="0"></td>
                     </tr>
                 </tbody>

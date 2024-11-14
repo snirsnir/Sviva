@@ -439,7 +439,6 @@ body {
     box-shadow: 0 0 20px rgba(104, 181, 80, 0.3);
     border: 2px solid var(--primary-green);
     direction: rtl;
-    max-width: 1000px; 
 }
 
 .equipment-header {
@@ -482,15 +481,12 @@ body {
 }
 
 .equipment-content {
+    padding: 2rem;
     display: flex;
-    flex-direction: row; /* שינוי מ-column ל-row */
-    gap: 2rem;
-    justify-content: space-between;
+    flex-direction: column;
+    gap: 1.2rem;
 }
-.company-container {
-    flex: 1; /* כל מיכל תופס חצי מהרוחב */
-    max-width: calc(50% - 1rem);
-}
+
 .equipment-item {
     display: flex;
     align-items: center;
@@ -1239,64 +1235,29 @@ body {
                 <button class="close-btn" onclick="closeEquipmentModal()">×</button>
             </div>
             <div class="equipment-content">
-                <!-- חברת קראנץ' - צד ימין -->
-                <div class="company-container" style="background: #fff; padding: 15px; border-radius: 12px; border: 2px solid #69B550;">
-                    <div class="equipment-item" style="background: #69B550; color: white;">
-                        <span class="equipment-icon">🏭</span>
-                        <span class="equipment-text" style="font-weight: bold;">שקית של חברת קראנץ'</span>
-                    </div>
-                    <div style="padding-right: 20px; margin-top: 10px;">
-                        <div class="equipment-item">
-                            <span class="equipment-icon">🧪</span>
-                            <span class="equipment-text">מבחנה עם נוזל</span>
-                        </div>
-                        <div class="equipment-item">
-                            <span class="equipment-icon">🥤</span>
-                            <span class="equipment-text">כוס פלסטיק עם חומר</span>
-                        </div>
-                        <div class="equipment-item">
-                            <span class="equipment-icon">🧪</span>
-                            <span class="equipment-text">בקבוק קוני 250 מ"ל</span>
-                        </div>
-                        <div class="equipment-item">
-                            <span class="equipment-icon">🎈</span>
-                            <span class="equipment-text">בלון</span>
-                        </div>
-                        <div class="equipment-item">
-                            <span class="equipment-icon">⏏️</span>
-                            <span class="equipment-text">משפך</span>
-                        </div>
-                    </div>
+                <div class="equipment-item">
+                    <span class="equipment-icon">🧪</span>
+                    <span class="equipment-text">2 בקבוקונים (500 מ"ל)</span>
                 </div>
-    
-                <!-- חברת בועות - צד שמאל -->
-                <div class="company-container" style="background: #fff; padding: 15px; border-radius: 12px; border: 2px solid #69B550;">
-                    <div class="equipment-item" style="background: #69B550; color: white;">
-                        <span class="equipment-icon">🏢</span>
-                        <span class="equipment-text" style="font-weight: bold;">שקית של חברת בועות</span>
-                    </div>
-                    <div style="padding-right: 20px; margin-top: 10px;">
-                        <div class="equipment-item">
-                            <span class="equipment-icon">🧪</span>
-                            <span class="equipment-text">מבחנה עם נוזל</span>
-                        </div>
-                        <div class="equipment-item">
-                            <span class="equipment-icon">🥤</span>
-                            <span class="equipment-text">כוס פלסטיק עם חומר</span>
-                        </div>
-                        <div class="equipment-item">
-                            <span class="equipment-icon">🧪</span>
-                            <span class="equipment-text">בקבוק קוני 250 מ"ל</span>
-                        </div>
-                        <div class="equipment-item">
-                            <span class="equipment-icon">🎈</span>
-                            <span class="equipment-text">בלון</span>
-                        </div>
-                        <div class="equipment-item">
-                            <span class="equipment-icon">⏏️</span>
-                            <span class="equipment-text">משפך</span>
-                        </div>
-                    </div>
+                <div class="equipment-item">
+                    <span class="equipment-icon">🎈</span>
+                    <span class="equipment-text">2 בלונים</span>
+                </div>
+                <div class="equipment-item">
+                    <span class="equipment-icon">🍶</span>
+                    <span class="equipment-text">חומץ</span>
+                </div>
+                <div class="equipment-item">
+                    <span class="equipment-icon">🧂</span>
+                    <span class="equipment-text">סודה לשתייה</span>
+                </div>
+                <div class="equipment-item">
+                    <span class="equipment-icon">🥄</span>
+                    <span class="equipment-text">2 כפות למדידה</span>
+                </div>
+                <div class="equipment-item">
+                    <span class="equipment-icon">⏏️</span>
+                    <span class="equipment-text">משפך</span>
                 </div>
             </div>
         </div>
@@ -1308,6 +1269,7 @@ body {
                 <button class="close-btn" onclick="closeExperimentModal()">×</button>
             </div>
             <div class="experiment-content">
+                <!-- החלק הימני -->
                 <div class="main-steps">
                     <div class="experiment-intro">
                         <span class="experiment-icon">🔬</span>
@@ -1322,16 +1284,11 @@ body {
                         <div class="step-item">
                             <div class="step-content">
                                 <span class="step-number">1</span>
-                                <span class="step-text">שפכו באמצעות המשפך לבקבוק הקוני:</span>
+                                <span class="step-text">שפכו באמצעות המשפך:</span>
                             </div>
                             <div class="sub-steps">
-                                <span>• את תכולת הכוס פלסטיק</span>
-                                <span>• את תכולת המבחנה</span>
-                            </div>
-                        </div>
-                        <div class="step-item important">
-                            <div class="step-content">
-                                <span class="step-text">⚠️ המשיכו מיד לסעיף 3!</span>
+                                <span>• כף אחת חומץ</span>
+                                <span>• כף אחת סודה לשתייה</span>
                             </div>
                         </div>
                     </div>
@@ -1344,32 +1301,28 @@ body {
                         <div class="step-item">
                             <div class="step-content">
                                 <span class="step-number">2</span>
-                                <span class="step-text">שפכו באמצעות המשפך לבקבוק הקוני:</span>
+                                <span class="step-text">שפכו באמצעות המשפך:</span>
                             </div>
                             <div class="sub-steps">
-                                <span>• את תכולת הכוס פלסטיק</span>
-                                <span>• את תכולת המבחנה</span>
-                            </div>
-                        </div>
-                        <div class="step-item important">
-                            <div class="step-content">
-                                <span class="step-text">⚠️ המשיכו מיד לסעיף 3!</span>
+                                <span>• 3 כפות חומץ</span>
+                                <span>• 3 כפות סודה לשתייה</span>
                             </div>
                         </div>
                     </div>
                 </div>
     
+                <!-- החלק השמאלי -->
                 <div class="final-steps">
                     <div class="step-item">
                         <div class="step-content">
                             <span class="step-number">3</span>
-                            <span class="step-text">מיד אחרי שפיכת החומרים, הלבישו בלון על פתח כל בקבוק קוני</span>
+                            <span class="step-text">מיד אחרי הוספת הסודה לשתייה, הלבישו בלון על פתח כל בקבוקון</span>
                         </div>
                     </div>
                     <div class="step-item important">
                         <div class="step-content">
                             <span class="step-number">4</span>
-                            <span class="step-text">השאירו את הבקבוקים במצב זה לזמן מה, התמקדו בבלון!</span>
+                            <span class="step-text">השאירו את הבקבוקונים במצב זה לזמן מה, התמקדו בבלון!</span>
                         </div>
                     </div>
                     <div class="step-item">
@@ -1377,10 +1330,10 @@ body {
                             <span class="step-number">5</span>
                             <span class="step-text">עברו להזנת התוצאות</span>
                         </div>
-                    </div>
                 </div>
             </div>
         </div>
+    </div>
     </div>
     <div class="balloon-modal-overlay" id="balloonModal">
         <div class="balloon-modal">
@@ -1453,21 +1406,23 @@ body {
         </div>
     </div>
 
+    
     <div class="summary-modal-overlay" id="summaryModal">
-        <div class="summary-modal" style="max-width: 480px; transform: translate(-50%, -50%) scale(0.95);">
-            <div class="summary-header" style="padding: 1rem;">
-                <h2 style="font-size: 1.4rem;">🌍 תוצאות הביקורת</h2>
+        <div class="summary-modal">
+            <div class="summary-header">
+                <h2>🌍 תוצאות הביקורת</h2>
+                <!-- הסרת כפתור ה-X -->
             </div>
-            <div class="summary-content" style="padding: 1.2rem;">
-                <div class="success-animation" style="margin: 0.5rem auto; width: 100px; height: 100px;">
-                    <img src="img/sgira.jpg" alt="צו סגירה" style="width: 100%; height: 100%; object-fit: contain;" />
-                </div>
-                <p class="summary-text" style="font-size: 1.1rem; margin: 0.8rem 0; line-height: 1.4;">
-                    הביקורת הסתיימה בהצלחה, הוצא צו סגירה לחברת בועות בעקבות פליטת יתר פחמן דו חמצני
+            <div class="summary-content">
+                <div class="success-animation">✓</div>
+                <h3>הביקורת הסתיימה בהצלחה!</h3>
+                <p class="summary-text">
+                    גיליתם בביקורת ש<strong>חברת בועות</strong> פולטת הרבה יותר פחמן דו חמצני מהמותר<br>
+                    וגורמת לנזק סביבתי לכדור הארץ שלנו.
                 </p>
-                <div class="buttons-container" style="margin-top: 1rem;">
-                    <button class="next-btn" onclick="showNextStep()" style="font-size: 1.1rem; padding: 0.8rem 1.5rem;">
-                        <span class="btn-icon" style="font-size: 1.2rem;">🌱</span>
+                <div class="buttons-container">
+                    <button class="next-btn" onclick="showNextStep()">
+                        <span class="btn-icon">🌱</span>
                         בואו נעזור לחברת בועות!
                     </button>
                 </div>
@@ -1477,45 +1432,47 @@ body {
     
     <!-- עדכון מודל השלב הבא - החלפת המשימה הכיתתית בכפתור חזרה -->
     <div class="next-step-modal-overlay" id="nextStepModal">
-        <div class="next-step-modal" style="max-width: 700px; transform: translate(-50%, -50%) scale(0.95);">
-            <div class="next-step-header" style="padding: 1rem;">
-                <h2 style="font-size: 1.4rem;">🌱 איך נעזור לחברת בועות לשמור על הסביבה?</h2>
+        <div class="next-step-modal">
+            <div class="next-step-header">
+                <h2>🌱 איך נעזור לחברת בועות לשמור על הסביבה?</h2>
+                <!-- הסרת כפתור ה-X -->
             </div>
-            <div class="next-step-content" style="padding: 1.2rem;">
-                <div class="challenge-intro" style="font-size: 1.1rem; padding: 1rem; margin-bottom: 1.2rem;">
-                    <p>חברת בועות גילתה שהם פולטים יותר מדי CO₂ לאוויר... <br>
-                    בואו נחשוב יחד איך אפשר לעזור להם!</p>
+            <div class="next-step-content">
+                <div class="challenge-intro">
+                    <p>חברת בועות גילתה שהם פולטים יותר מדי CO₂ לאוויר... 
+                    <br>בואו נחשוב יחד איך אפשר לעזור להם!</p>
                 </div>
                 
-                <div class="solutions-grid" style="gap: 1.2rem;">
-                    <div class="solution-card" style="padding: 1.2rem;">
-                        <span class="solution-icon" style="font-size: 2.2rem;">🌿</span>
-                        <h4 style="font-size: 1.2rem;">שימוש בחומרים ירוקים</h4>
-                        <p style="font-size: 1rem;">החלפת חומרים מזהמים בחומרים ידידותיים לסביבה</p>
+                
+                <div class="solutions-grid">
+                    <div class="solution-card">
+                        <span class="solution-icon">🔄</span>
+                        <h4>מיחזור חומרים</h4>
+                        <p>שימוש חוזר בחומרים ומיחזור פסולת יכולים להפחית את כמות הפליטה</p>
                     </div>
                     
-                    <div class="solution-card" style="padding: 1.2rem;">
-                        <span class="solution-icon" style="font-size: 2.2rem;">↩️</span>
-                        <h4 style="font-size: 1.2rem;">מיחזור חומרים</h4>
-                        <p style="font-size: 1rem;">שימוש חוזר בחומרים ומיחזור פסולת יכולים להפחית את הפליטה</p>
+                    <div class="solution-card">
+                        <span class="solution-icon">🌿</span>
+                        <h4>שימוש בחומרים ירוקים</h4>
+                        <p>החלפת חומרים מזהמים בחומרים ידידותיים לסביבה</p>
                     </div>
                     
-                    <div class="solution-card" style="padding: 1.2rem;">
-                        <span class="solution-icon" style="font-size: 2.2rem;">🌳</span>
-                        <h4 style="font-size: 1.2rem;">נטיעת עצים</h4>
-                        <p style="font-size: 1rem;">נטיעת עצים חדשים שיעזרו לספוג את הפחמן הדו חמצני</p>
+                    <div class="solution-card">
+                        <span class="solution-icon">💡</span>
+                        <h4>חיסכון באנרגיה</h4>
+                        <p>שימוש בתאורה חסכונית ומכשירים יעילים באנרגיה</p>
                     </div>
     
-                    <div class="solution-card" style="padding: 1.2rem;">
-                        <span class="solution-icon" style="font-size: 2.2rem;">💡</span>
-                        <h4 style="font-size: 1.2rem;">חיסכון באנרגיה</h4>
-                        <p style="font-size: 1rem;">שימוש בתאורה חסכונית ומכשירים יעילים באנרגיה</p>
+                    <div class="solution-card">
+                        <span class="solution-icon">🌳</span>
+                        <h4>נטיעת עצים</h4>
+                        <p>נטיעת עצים חדשים שיעזרו לספוג את הפחמן הדו חמצני</p>
                     </div>
                 </div>
     
-                <div class="return-button-container" style="margin-top: 1.2rem; padding-top: 1.2rem;">
-                    <button class="return-btn" onclick="returnToTechnoland()" style="font-size: 1.1rem; padding: 0.8rem 1.5rem;">
-                        <span class="btn-icon" style="font-size: 1.2rem;">🏠</span>
+                <div class="return-button-container">
+                    <button class="return-btn" onclick="returnToTechnoland()">
+                        <span class="btn-icon">🏠</span>
                         חזרה לטכנולנד
                     </button>
                 </div>
