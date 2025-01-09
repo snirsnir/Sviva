@@ -6,7 +6,8 @@
     <title>מערכת הנשימה - בית החולים</title>
     <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-:root {
+        /* Keeping the same CSS styles */
+        :root {
             --primary-blue: #4287f5;
             --dark-blue: #2563eb;
         }
@@ -22,7 +23,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden; /* מונע גלילה */
+            overflow: hidden;
         }
 
         body::before {
@@ -65,6 +66,7 @@
 
         .header p {
             margin: 0.5rem 0;
+            line-height: 1.6;
         }
 
         .video-container {
@@ -72,7 +74,7 @@
             overflow: hidden;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             flex: 1;
-            min-height: 0; /* חשוב לגמישות */
+            min-height: 0;
             display: flex;
             flex-direction: column;
         }
@@ -103,14 +105,13 @@
             transform: scale(1.05);
         }
 
-        /* מסכי מחשב גדולים - 1920x1080 */
+        /* Keeping all the media queries */
         @media screen and (min-width: 1920px) {
             .header h1 { font-size: 2rem; }
             .header p { font-size: 1.1rem; }
             .video-container { max-height: 50vh; }
         }
 
-        /* מחשבים ניידים - 1366x768 */
         @media screen and (max-width: 1366px) {
             .container { 
                 gap: 15px;
@@ -135,7 +136,6 @@
             }
         }
 
-        /* טאבלטים - 1024x768 */
         @media screen and (max-width: 1024px) {
             .container { 
                 gap: 10px;
@@ -160,84 +160,19 @@
             }
         }
 
-        /* התאמות למודל ההדרכה */
-        .tutorial-modal-overlay {
-            display: block;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.85);
-            z-index: 1000;
-            backdrop-filter: blur(5px);
-        }
-
-        .tutorial-modal {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 90%;
-            max-width: 500px;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 0 20px rgba(66, 135, 245, 0.3);
-        }
-
-        .tutorial-content {
-            padding: 1.5rem;
-        }
-
-        .tutorial-slide {
+        /* Adding styles for page transition */
+        .page {
             display: none;
         }
 
-        .tutorial-slide.active {
-            display: block;
-        }
-
-        .tutorial-slide h2 {
-            color: var(--dark-blue);
-            margin: 0 0 1rem 0;
-        }
-
-        /* התאמות רספונסיביות למודל */
-        @media screen and (max-width: 1366px) {
-            .tutorial-modal {
-                max-width: 450px;
-            }
-            .tutorial-slide h2 {
-                font-size: 1.3rem;
-            }
-            .tutorial-slide p {
-                font-size: 1rem;
-            }
-            .nav-btn {
-                padding: 0.6rem 1.8rem;
-                font-size: 1rem;
-            }
-        }
-
-        @media screen and (max-width: 1024px) {
-            .tutorial-modal {
-                max-width: 400px;
-            }
-            .tutorial-slide h2 {
-                font-size: 1.2rem;
-            }
-            .tutorial-slide p {
-                font-size: 0.9rem;
-            }
-            .nav-btn {
-                padding: 0.5rem 1.5rem;
-                font-size: 0.9rem;
-            }
+        .page.active {
+            display: flex;
         }
     </style>
 </head>
 <body>
-    <div class="container">
+    <!-- First page -->
+    <div class="container page active" id="buildPage">
         <div class="header">
             <h1>דגם מערכת הנשימה</h1>
             <p>לרשותכם בעמדה ערכה לבניה של דגם של מערכת הנשימה<br>
@@ -251,41 +186,35 @@
             </video>
         </div>
 
-        <button class="ready-btn" onclick="showReadyModal()">הדגם שלי מוכן!</button>
+        <button class="ready-btn" onclick="showPollutionPage()">הדגם שלי מוכן!</button>
     </div>
 
-    <div class="tutorial-modal-overlay" id="tutorialModal">
-        <div class="tutorial-modal">
-            <div class="tutorial-content">
-                <div class="tutorial-slide active" data-slide="1">
-                    <h2>🏥 ברוכים הבאים לבית החולים</h2>
-                    <p>בשנים האחרונות אנו עדים לעלייה משמעותית במספר המטופלים המגיעים עם בעיות במערכת הנשימה.<br>
-                    <strong>כ-30% מהמטופלים</strong> סובלים מבעיות הקשורות לזיהום אוויר.</p>
-                </div>
-                <div class="tutorial-slide" data-slide="2">
-                    <h2>🧪 בניית דגם מערכת הנשימה</h2>
-                    <p>נבנה דגם של מערכת הנשימה ונבדוק מה קורה כשהיא נחשפת לאוויר מזוהם.<br>בואו נתחיל!</p>
-                </div>
-                <button class="nav-btn" onclick="nextSlide()">הבא</button>
-            </div>
+    <!-- Second page (Pollution Test) -->
+    <div class="container page" id="pollutionPage">
+        <div class="header">
+            <h1>הכנסת האוויר המזוהם לריאות</h1>
+            <p>כעת קחו את שקית הפחם וחברו אותה לקנה הנשימה.<br>
+               הכניסו והוציאו אוויר וצפו בתוצאות.<br>
+               צפו בסרטון להדרכה נוספת.</p>
         </div>
+
+        <div class="video-container">
+            <video controls>
+                <source src="vid/pollution.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+
+        <button class="ready-btn" onclick="goToDetect()">הריאות שלכם מזוהמות? לחצו כאן להמשך</button>
     </div>
 
     <script>
-        let currentSlide = 1;
-        const totalSlides = 2;
-
-        function nextSlide() {
-            if (currentSlide < totalSlides) {
-                document.querySelector(`[data-slide="${currentSlide}"]`).classList.remove('active');
-                currentSlide++;
-                document.querySelector(`[data-slide="${currentSlide}"]`).classList.add('active');
-            } else {
-                document.getElementById('tutorialModal').style.display = 'none';
-            }
+        function showPollutionPage() {
+            document.getElementById('buildPage').classList.remove('active');
+            document.getElementById('pollutionPage').classList.add('active');
         }
 
-        function showReadyModal() {
+        function goToDetect() {
             window.location.href = 'detect.html';
         }
     </script>
