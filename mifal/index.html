@@ -1,0 +1,1352 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ביקורת פליטת CO2</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-green: #4CAF50;
+            --dark-green: #2E7D32;
+            --light-green: #C8E6C9;
+            --accent-blue: #2196F3;
+            --warning-orange: #FF9800;
+            --success-green: #4CAF50;
+            --bg-light: #F8F9FA;
+            --text-dark: #2C3E50;
+            --shadow: 0 4px 12px rgba(0,0,0,0.15);
+            --border-radius: 12px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Rubik', Arial, sans-serif;
+            background: linear-gradient(135deg, #E8F5E8 0%, #F0F8F0 100%);
+            min-height: 100vh;
+            color: var(--text-dark);
+        }
+
+        /* רקע אנימציה עדינה */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="%23E0E0E0" stroke-width="0.5" opacity="0.3"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Tutorial Modal */
+.tutorial-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(5px);
+    display: none;
+    align-items: center;          /* זה מרכז אנכית */
+    justify-content: center;      /* זה מרכז אופקית */
+    z-index: 3000;
+}
+
+        .tutorial-modal.show {
+            display: flex;
+            animation: fadeIn 0.3s ease-out;
+        }
+.tutorial-frame {
+    width: 80vw;
+    height: 80vh;
+    max-width: 1200px;
+    max-height: 700px;
+    border: 1px solid rgba(0, 255, 0, 0.3);
+    border-radius: 15px;
+    background: rgba(0, 0, 0, 0.95);
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
+    /* הסר כל position או transform שיש כאן */
+}
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* כותרת ופס התקדמות */
+        .header {
+            background: white;
+            box-shadow: var(--shadow);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+ .header-content {
+    max-width: 95vw;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 2rem; /* רווח בין האלמנטים */
+    justify-content: flex-start; /* התחלה מימין */
+}
+
+.progress-container {
+    /* מחק את הקלאס הזה או השאר אותו ריק */
+}
+
+        .main-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--dark-green);
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .title-icon {
+            font-size: 2rem;
+        }
+
+        .progress-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .progress-bar {
+            background: var(--bg-light);
+            border-radius: 25px;
+            height: 8px;
+            width: 200px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success-green), var(--primary-green));
+            border-radius: 25px;
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .progress-text {
+            font-size: 0.85rem;
+            color: var(--text-dark);
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        /* מיכל ראשי - ניצול מלא של הרוחב */
+        .container {
+            max-width: 95vw;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        /* Wizard Container */
+.wizard-container {
+    background: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    /* overflow: hidden; ← מחק או הגב את השורה הזו */
+    min-height: calc(100vh - 140px);  /* ← שנה height ל-min-height */
+    display: flex;
+    flex-direction: column;
+}
+
+        .wizard-step {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+        }
+
+        .wizard-step.active {
+            display: flex;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .step-header {
+            background: linear-gradient(135deg, var(--primary-green), var(--dark-green));
+            color: white;
+            padding: 1.2rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-shrink: 0;
+        }
+
+        .step-number {
+            background: rgba(255,255,255,0.2);
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            font-weight: 800;
+        }
+
+        .step-info h3 {
+            font-size: 1.4rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .step-info p {
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+
+        .step-content {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+        }
+
+        /* תוכן ציוד - 2 עמודות */
+        .equipment-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .equipment-section h4 {
+            color: var(--dark-green);
+            font-size: 1.1rem;
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .company-badge {
+            background: var(--primary-green);
+            color: white;
+            padding: 0.2rem 0.6rem;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .equipment-list {
+            background: var(--light-green);
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .equipment-item {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            padding: 0.4rem 0;
+            border-bottom: 1px solid rgba(46, 125, 50, 0.1);
+            font-size: 0.9rem;
+        }
+
+        .equipment-item:last-child {
+            border-bottom: none;
+        }
+
+        .equipment-icon {
+            font-size: 1.1rem;
+            min-width: 20px;
+        }
+
+        /* הוראות ניסוי - 2 עמודות */
+        .instructions-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .instruction-card {
+            background: var(--bg-light);
+            padding: 1rem;
+            border-radius: 8px;
+            border-right: 3px solid var(--accent-blue);
+        }
+
+        .instruction-card h4 {
+            color: var(--dark-green);
+            margin-bottom: 0.8rem;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .instruction-steps {
+            margin-right: 0.8rem;
+            line-height: 1.4;
+        }
+
+        .instruction-steps li {
+            margin-bottom: 0.6rem;
+            font-size: 0.85rem;
+        }
+
+        .important-note {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            grid-column: 1 / -1;
+        }
+
+        .important-note h4 {
+            color: #856404;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .warning-box {
+            background: #ffe6e6;
+            border: 2px solid #ff4444;
+            padding: 1.2rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .warning-box h4 {
+            color: #cc0000;
+            font-size: 1.1rem;
+            margin-bottom: 0.6rem;
+        }
+
+        .warning-box p {
+            color: #cc0000;
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        /* וידאו - מותאם לרוחב */
+        .video-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .video-wrapper {
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        .video-wrapper video {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .video-info {
+            padding: 1rem;
+        }
+
+        .video-caption {
+            font-size: 1rem;
+            color: var(--dark-green);
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .action-section {
+            background: var(--light-green);
+            padding: 1.5rem;
+            border-radius: 8px;
+        }
+
+        .action-section .icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .action-section h3 {
+            color: var(--dark-green);
+            margin-bottom: 0.8rem;
+            font-size: 1.3rem;
+        }
+
+        .action-section p {
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        /* תוצאות */
+        .results-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .company-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+            border: 2px solid transparent;
+        }
+
+        .company-card.bubbles {
+            border-color: #2196F3;
+        }
+
+        .company-card.crunch {
+            border-color: #FF9800;
+        }
+
+        .company-header {
+            padding: 1rem;
+            text-align: center;
+            color: white;
+        }
+
+        .company-header.bubbles {
+            background: #2196F3;
+        }
+
+        .company-header.crunch {
+            background: #FF9800;
+        }
+
+        .company-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+        }
+
+        .company-content {
+            padding: 1.2rem;
+            text-align: center;
+        }
+
+        .balloon-selector {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 0.4rem;
+            margin: 1rem 0;
+        }
+
+        .balloon-option {
+            aspect-ratio: 1;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            position: relative;
+            background: #f8f9fa;
+        }
+
+        .balloon-option:hover {
+            border-color: var(--primary-green);
+            transform: scale(1.05);
+        }
+
+        .balloon-option.selected {
+            border-color: var(--success-green);
+            background: var(--light-green);
+            transform: scale(1.05);
+        }
+
+        .balloon-option.selected::after {
+            content: '✓';
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: var(--success-green);
+            color: white;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+        }
+
+        /* בלונים בגדלים שונים */
+        .balloon-size-1 { font-size: 0.8rem; }
+        .balloon-size-2 { font-size: 1rem; }
+        .balloon-size-3 { font-size: 1.2rem; }
+        .balloon-size-4 { font-size: 1.4rem; }
+        .balloon-size-5 { font-size: 1.6rem; }
+        .balloon-size-6 { font-size: 1.8rem; }
+
+        /* ניווט */
+        .wizard-navigation {
+            background: var(--bg-light);
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #e0e0e0;
+            flex-shrink: 0;
+        }
+
+        .btn {
+            padding: 0.7rem 1.5rem;
+            border: none;
+            border-radius: 20px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-family: inherit;
+            min-width: 130px;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-green), var(--dark-green));
+            color: white;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #545b62;
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .btn-back {
+            background: var(--bg-light);
+            color: var(--text-dark);
+            border: 2px solid #ddd;
+        }
+
+        .btn-back:hover {
+            border-color: var(--primary-green);
+            transform: translateY(-2px);
+        }
+
+        /* מודל תוצאות */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            animation: scaleIn 0.3s ease-out;
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .modal h3 {
+            color: var(--dark-green);
+            font-size: 1.6rem;
+            margin-bottom: 1rem;
+        }
+
+        .modal p {
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+
+        .solutions-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .solution-card {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            text-align: center;
+            border: 2px solid var(--light-green);
+        }
+
+        .solution-icon {
+            font-size: 1.8rem;
+            margin-bottom: 0.4rem;
+            display: block;
+        }
+
+        .solution-card h4 {
+            color: var(--dark-green);
+            margin: 0.4rem 0;
+            font-size: 0.9rem;
+        }
+
+        .solution-card p {
+            font-size: 0.75rem;
+            margin: 0;
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* סקרולבר מותאם */
+        .step-content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .step-content::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+
+        .step-content::-webkit-scrollbar-thumb {
+            background: var(--primary-green);
+            border-radius: 3px;
+        }
+
+        .step-content::-webkit-scrollbar-thumb:hover {
+            background: var(--dark-green);
+        }
+    </style>
+</head>
+<body>
+    <!-- Tutorial Modal -->
+    <div class="tutorial-modal" id="tutorialModal">
+        <iframe src="tutorial.html" class="tutorial-frame" frameborder="0"></iframe>
+    </div>
+
+    <!-- כותרת ופס התקדמות -->
+    <div class="header">
+<div class="header-content">
+    <h1 class="main-title">
+        <span class="title-icon">🏭</span>
+        ביקורת פליטת CO2
+    </h1>
+    <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <div class="progress-text" id="progressText">שלב 1 מתוך 5</div>
+</div>
+    </div>
+
+    <div class="container">
+        <div class="wizard-container">
+            <!-- שלב 1: רשימת ציוד -->
+            <div class="wizard-step active" id="step1">
+                <div class="step-header">
+                    <div class="step-number">1</div>
+                    <div class="step-info">
+                        <h3>הכנה - בדיקת ציוד</h3>
+                        <p>בדקו שקיבלתם 2 שקיות עם כל הציוד הנדרש</p>
+                    </div>
+                </div>
+                <div class="step-content">
+                    <div class="equipment-grid">
+                        <div class="equipment-section">
+                            <h4>
+                                🎒 שקית 1 
+                                <span class="company-badge" style="background: #2196F3;">חברת בועות</span>
+                            </h4>
+                            <div class="equipment-list">
+                                <div class="equipment-item">
+                                    <span class="equipment-icon">🧪</span>
+                                    <span>ארלנמייר 500 מ"ל עם פיה צרה</span>
+                                </div>
+                                <div class="equipment-item">
+                                    <span class="equipment-icon">🎈</span>
+                                    <span>בלון אחד</span>
+                                </div>
+                                <div class="equipment-item">
+                                    <span class="equipment-icon">🧪</span>
+                                    <span>מבחנה פקוקה ובתוכה חומץ</span>
+                                </div>
+                                <div class="equipment-item">
+                                    <span class="equipment-icon">🥤</span>
+                                    <span>כוס של אבקת סודה לשתיה</span>
+                                </div>
+                                <div class="equipment-item">
+                                    <span class="equipment-icon">⏏️</span>
+                                    <span>משפך</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="equipment-section">
+                            <h4>
+                                🎒 שקית 2 
+                                <span class="company-badge" style="background: #FF9800;">חברת קראנץ'</span>
+                            </h4>
+                            <div class="equipment-list">
+                                <div class="equipment-item">
+                                    <span class="equipment-icon">🧪</span>
+                                    <span>ארלנמייר 500 מ"ל עם פיה צרה</span>
+                                </div>
+                                <div class="equipment-item">
+                                    <span class="equipment-icon">🎈</span>
+                                    <span>בלון אחד</span>
+                                </div>
+                                <div class="equipment-item">
+                                    <span class="equipment-icon">🧪</span>
+                                    <span>מבחנה פקוקה ובתוכה חומץ</span>
+                                </div>
+                                <div class="equipment-item">
+                                    <span class="equipment-icon">🥤</span>
+                                    <span>כוס של אבקת סודה לשתיה</span>
+                                </div>
+                                <div class="equipment-item">
+                                    <span class="equipment-icon">⏏️</span>
+                                    <span>משפך</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="wizard-navigation">
+                    <div></div>
+                    <button class="btn btn-primary" onclick="nextStep()">
+                        <span>✓</span>
+                        יש לנו את כל הציוד
+                    </button>
+                </div>
+            </div>
+
+            <!-- שלב 2: הוראות הניסוי -->
+            <div class="wizard-step" id="step2">
+                <div class="step-header">
+                    <div class="step-number">2</div>
+                    <div class="step-info">
+                        <h3>הוראות הניסוי</h3>
+                        <p>למדו את השלבים - עדיין לא לבצע את הניסוי!</p>
+                    </div>
+                </div>
+                <div class="step-content">
+                    <div class="warning-box">
+                        <h4>⚠️ חשוב!</h4>
+                        <p>עדיין לא לבצע את הניסוי! בחלק הבא תוכלו לראות הדמיה של הניסוי</p>
+                    </div>
+
+                    <div class="instructions-grid">
+                        <div class="instruction-card">
+                            <h4>
+                                🥤 ערכת חברת בועות
+                                <span class="company-badge" style="background: #2196F3;">בועות</span>
+                            </h4>
+                            <ol class="instruction-steps">
+                                <li>שפכו באמצעות המשפך לארלנמייר את החומץ שיש במבחנה</li>
+                                <li>שפכו באמצעות המשפך את אבקת הסודה לשתיה</li>
+                                <li><strong>מיד אחרי הוספת הסודה</strong> - הלבישו בלון על פתח הארלנמייר</li>
+                            </ol>
+                        </div>
+
+                        <div class="instruction-card">
+                            <h4>
+                                🍪 ערכת חברת קראנץ'
+                                <span class="company-badge" style="background: #FF9800;">קראנץ'</span>
+                            </h4>
+                            <ol class="instruction-steps">
+                                <li>שפכו באמצעות המשפך לארלנמייר את החומץ שיש במבחנה</li>
+                                <li>שפכו באמצעות המשפך את אבקת הסודה לשתיה</li>
+                                <li><strong>מיד אחרי הוספת הסודה</strong> - הלבישו בלון על פתח הארלנמייר</li>
+                            </ol>
+                        </div>
+
+                        <div class="important-note">
+                            <h4>⚠️ חשוב לזכור!</h4>
+                            <p>השאירו את הארלנמיירים עם הבלונים במקום במשך כמה דקות והתבוננו בבלון - זה מה שתצטרכו לדווח!</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="wizard-navigation">
+                    <button class="btn btn-back" onclick="prevStep()">
+                        <span>←</span>
+                        חזור
+                    </button>
+                    <button class="btn btn-primary" onclick="nextStep()">
+                        <span>📖</span>
+                        הבנתי את ההוראות
+                    </button>
+                </div>
+            </div>
+
+            <!-- שלב 3: הדמיה של הניסוי -->
+            <div class="wizard-step" id="step3">
+                <div class="step-header">
+                    <div class="step-number">3</div>
+                    <div class="step-info">
+                        <h3>הדמיה של הניסוי</h3>
+                        <p>צפו בסרטון לפני שתבצעו את הניסוי בעצמכם</p>
+                    </div>
+                </div>
+                <div class="step-content">
+                    <div class="video-container">
+                        <div class="video-wrapper">
+                            <video controls preload="metadata">
+                                <source src="tut.mp4" type="video/mp4">
+                                הדפדפן שלכם לא תומך בוידאו HTML5.
+                            </video>
+                        </div>
+                        <div class="video-info">
+                            <div class="video-caption">הדמיה של ביצוע הניסוי</div>
+                            
+                            <div class="action-section">
+                                <div class="icon">🧪</div>
+                                <h3>עכשיו זה הזמן לבצע את הניסוי!</h3>
+                                <p>
+                                    לאחר שצפיתם בסרטון, בצעו את הניסוי בפועל עם 2 השקיות שקיבלתם.
+                                    זכרו לשים לב לגודל הבלון של כל חברה!
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="wizard-navigation">
+                    <button class="btn btn-back" onclick="prevStep()">
+                        <span>←</span>
+                        חזור
+                    </button>
+                    <button class="btn btn-primary" onclick="nextStep()">
+                        <span>🎈</span>
+                        ביצענו את הניסוי
+                    </button>
+                </div>
+            </div>
+
+            <!-- שלב 4: תיעוד תוצאות -->
+            <div class="wizard-step" id="step4">
+                <div class="step-header">
+                    <div class="step-number">4</div>
+                    <div class="step-info">
+                        <h3>תיעוד תוצאות</h3>
+                        <p>הזינו את התוצאות שראיתם עבור כל חברה</p>
+                    </div>
+                </div>
+                <div class="step-content">
+                    <p style="text-align: center; font-size: 1.1rem; margin-bottom: 1.5rem; color: var(--dark-green);">
+                        בחרו את גודל הבלון שהכי דומה למה שראיתם עבור כל חברה:
+                    </p>
+                    <div class="results-grid">
+                        <div class="company-card bubbles">
+                            <div class="company-header bubbles">
+                                <div class="company-name">🥤 חברת בועות</div>
+                                <div>השקית הכחולה</div>
+                            </div>
+                            <div class="company-content">
+                                <p style="margin-bottom: 1rem;">איזה גודל בלון התקבל?</p>
+                                <div class="balloon-selector" id="bubblesSelector">
+                                    <div class="balloon-option balloon-size-1" data-size="1">🎈</div>
+                                    <div class="balloon-option balloon-size-2" data-size="2">🎈</div>
+                                    <div class="balloon-option balloon-size-3" data-size="3">🎈</div>
+                                    <div class="balloon-option balloon-size-4" data-size="4">🎈</div>
+                                    <div class="balloon-option balloon-size-5" data-size="5">🎈</div>
+                                    <div class="balloon-option balloon-size-6" data-size="6">🎈</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="company-card crunch">
+                            <div class="company-header crunch">
+                                <div class="company-name">🍪 חברת קראנץ'</div>
+                                <div>השקית הכתומה</div>
+                            </div>
+                            <div class="company-content">
+                                <p style="margin-bottom: 1rem;">איזה גודל בלון התקבל?</p>
+                                <div class="balloon-selector" id="crunchSelector">
+                                    <div class="balloon-option balloon-size-1" data-size="1">🎈</div>
+                                    <div class="balloon-option balloon-size-2" data-size="2">🎈</div>
+                                    <div class="balloon-option balloon-size-3" data-size="3">🎈</div>
+                                    <div class="balloon-option balloon-size-4" data-size="4">🎈</div>
+                                    <div class="balloon-option balloon-size-5" data-size="5">🎈</div>
+                                    <div class="balloon-option balloon-size-6" data-size="6">🎈</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="wizard-navigation">
+                    <button class="btn btn-back" onclick="prevStep()">
+                        <span>←</span>
+                        חזור
+                    </button>
+                    <button class="btn btn-primary" id="submitResults" onclick="submitResults()" disabled>
+                        <span>📊</span>
+                        שלח תוצאות
+                    </button>
+                </div>
+            </div>
+
+            <!-- שלב 5: סיכום ותוצאות -->
+            <div class="wizard-step" id="step5">
+                <div class="step-header">
+                    <div class="step-number">5</div>
+                    <div class="step-info">
+                        <h3>סיכום ותוצאות</h3>
+                        <p>ניתוח התוצאות והמסקנות מהביקורת</p>
+                    </div>
+                </div>
+                <div class="step-content" id="summaryContent">
+                    <!-- תוכן יתווסף דינמית -->
+                </div>
+                <div class="wizard-navigation">
+                    <button class="btn btn-back" onclick="prevStep()">
+                        <span>←</span>
+                        חזור
+                    </button>
+                    <div id="finalButtons"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- מודל תוצאות -->
+    <div class="modal" id="resultsModal">
+        <div class="modal-content">
+            <div class="modal-icon">🎉</div>
+            <h3>הביקורת הושלמה</h3>
+            <p id="modalText">גילינו את החברה שפולטת יותר CO2!</p>
+            <div style="margin-top: 2rem;">
+                <button class="btn btn-primary" onclick="continueToSolutions()">
+                    <span>🌱</span>
+                    בואו נעזור לחברה!
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // משתנים גלובליים
+        let currentStep = 1;
+        let totalSteps = 5;
+        let results = {
+            bubbles: null,
+            crunch: null
+        };
+
+        // טעינה ראשונית - הצג tutorial אחרי 2 שניות
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                showTutorial();
+            }, 2000);
+        });
+
+        // הצגת tutorial
+        function showTutorial() {
+            document.getElementById('tutorialModal').classList.add('show');
+        }
+
+        // סגירת tutorial
+        function closeTutorial() {
+            document.getElementById('tutorialModal').classList.remove('show');
+        }
+
+        // האזנה להודעה מ-tutorial.html
+        window.addEventListener('message', function(event) {
+            if (event.data === 'closeTutorial') {
+                closeTutorial();
+            }
+        });
+
+        // עדכון פס התקדמות
+        function updateProgress() {
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+            const percentage = (currentStep / totalSteps) * 100;
+            
+            progressFill.style.width = percentage + '%';
+            progressText.textContent = `שלב ${currentStep} מתוך ${totalSteps}`;
+        }
+
+        // מעבר לשלב הבא
+        function nextStep() {
+            if (currentStep < totalSteps) {
+                // הסתר שלב נוכחי
+                document.getElementById(`step${currentStep}`).classList.remove('active');
+                
+                // עבור לשלב הבא
+                currentStep++;
+                document.getElementById(`step${currentStep}`).classList.add('active');
+                
+                // עדכן פס התקדמות
+                updateProgress();
+                
+                // גלול לראש העמוד
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        // חזרה לשלב הקודם
+        function prevStep() {
+            if (currentStep > 1) {
+                // הסתר שלב נוכחי
+                document.getElementById(`step${currentStep}`).classList.remove('active');
+                
+                // חזור לשלב הקודם
+                currentStep--;
+                document.getElementById(`step${currentStep}`).classList.add('active');
+                
+                // עדכן פס התקדמות
+                updateProgress();
+                
+                // גלול לראש העמוד
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        // אתחול בוחרי הבלונים
+        function initializeBalloonSelectors() {
+            const bubblesSelector = document.getElementById('bubblesSelector');
+            const crunchSelector = document.getElementById('crunchSelector');
+            
+            // מאזין לחברת בועות
+            bubblesSelector.addEventListener('click', (e) => {
+                if (e.target.classList.contains('balloon-option')) {
+                    // נקה בחירות קודמות
+                    bubblesSelector.querySelectorAll('.balloon-option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    // סמן בחירה חדשה
+                    e.target.classList.add('selected');
+                    results.bubbles = parseInt(e.target.dataset.size);
+                    checkIfCanSubmit();
+                }
+            });
+            
+            // מאזין לחברת קראנץ'
+            crunchSelector.addEventListener('click', (e) => {
+                if (e.target.classList.contains('balloon-option')) {
+                    // נקה בחירות קודמות
+                    crunchSelector.querySelectorAll('.balloon-option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    // סמן בחירה חדשה
+                    e.target.classList.add('selected');
+                    results.crunch = parseInt(e.target.dataset.size);
+                    checkIfCanSubmit();
+                }
+            });
+        }
+
+        // בדיקה אם ניתן לשלוח תוצאות
+        function checkIfCanSubmit() {
+            const submitButton = document.getElementById('submitResults');
+            if (results.bubbles !== null && results.crunch !== null) {
+                submitButton.disabled = false;
+                submitButton.classList.add('pulse');
+            }
+        }
+
+        // שליחת תוצאות
+        function submitResults() {
+            if (results.bubbles !== null && results.crunch !== null) {
+                // בדיקת תוצאות - חברת קראנץ' צריכה ליצור בלון גדול יותר
+                const isCorrect = results.crunch > results.bubbles;
+                
+                // הצג את התוצאות בשלב 5
+                generateSummary(isCorrect);
+                
+                // מעבר לשלב 5
+                nextStep();
+                
+                // הצג מודל תוצאות אחרי קצת זמן
+                setTimeout(() => {
+                    showResultsModal(isCorrect);
+                }, 1000);
+            }
+        }
+
+        // יצירת תוכן סיכום
+        function generateSummary(isCorrect) {
+            const summaryContent = document.getElementById('summaryContent');
+            const finalButtons = document.getElementById('finalButtons');
+            
+            if (isCorrect) {
+                summaryContent.innerHTML = `
+                    <div style="text-align: center; background: var(--light-green); padding: 2rem; border-radius: 8px; margin-bottom: 2rem;">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">✅</div>
+                        <h3 style="color: var(--dark-green); margin-bottom: 1rem; font-size: 1.6rem;">מצוין! גילינו את הבעיה</h3>
+                        <p style="font-size: 1.1rem; line-height: 1.6;">
+                            <strong>חברת קראנץ'</strong> יוצרת יותר CO₂ מחברת בועות!<br>
+                            (בלון גדול יותר = יותר פחמן דו חמצני)
+                        </p>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+                        <div style="background: #e3f2fd; padding: 1.2rem; border-radius: 8px; border: 2px solid #2196F3;">
+                            <h4 style="color: #1976d2; margin-bottom: 0.8rem; text-align: center; font-size: 1rem;">📊 התוצאות שלכם</h4>
+                            <div style="text-align: center; font-size: 0.9rem;">
+                                <p>חברת בועות: בלון בגודל ${results.bubbles}</p>
+                                <p>חברת קראנץ': בלון בגודל ${results.crunch}</p>
+                            </div>
+                        </div>
+                        <div style="background: var(--light-green); padding: 1.2rem; border-radius: 8px; border: 2px solid var(--success-green);">
+                            <h4 style="color: var(--dark-green); margin-bottom: 0.8rem; text-align: center; font-size: 1rem;">🌍 המסקנה</h4>
+                            <p style="text-align: center; font-size: 0.9rem;">
+                                חברת קראנץ' פולטת יותר CO₂ לאטמוספירה וגורמת לנזק סביבתי גדול יותר
+                            </p>
+                        </div>
+                    </div>
+                `;
+                
+                finalButtons.innerHTML = `
+                    <button class="btn btn-primary" onclick="showEnvironmentalSolutions()">
+                        <span>🌱</span>
+                        בואו נעזור לחברת קראנץ'!
+                    </button>
+                `;
+            } else {
+                summaryContent.innerHTML = `
+                    <div style="text-align: center; background: #fff3cd; padding: 2rem; border-radius: 8px; margin-bottom: 2rem; border: 2px solid #ffc107;">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">🤔</div>
+                        <h3 style="color: #856404; margin-bottom: 1rem;">נסו שוב!</h3>
+                        <p style="font-size: 1rem; line-height: 1.5; color: #856404;">
+                            התוצאות לא הגיוניות. לפי כמויות החומרים,<br>
+                            הבלון של חברת קראנץ' צריך להיות גדול יותר מזה של חברת בועות.
+                        </p>
+                    </div>
+                `;
+                
+                finalButtons.innerHTML = `
+                    <button class="btn btn-secondary" onclick="resetResults()">
+                        <span>🔄</span>
+                        נסה שוב
+                    </button>
+                `;
+            }
+        }
+
+        // הצגת מודל תוצאות
+        function showResultsModal(isCorrect) {
+            const modal = document.getElementById('resultsModal');
+            const modalText = document.getElementById('modalText');
+            
+            if (isCorrect) {
+                modalText.innerHTML = 'גילינו שחברת קראנץ\' פולטת יותר CO₂ מחברת בועות!<br>עכשיו בואו נחפש פתרונות סביבתיים.';
+            } else {
+                modalText.textContent = 'התוצאות לא הגיוניות. נסו לבצע שוב את הניסוי.';
+                document.querySelector('.modal .btn-primary').style.display = 'none';
+            }
+            
+            modal.classList.add('show');
+        }
+
+        // המשך לפתרונות סביבתיים
+        function continueToSolutions() {
+            const modal = document.getElementById('resultsModal');
+            modal.classList.remove('show');
+            showEnvironmentalSolutions();
+        }
+
+        // הצגת פתרונות סביבתיים
+        function showEnvironmentalSolutions() {
+            const summaryContent = document.getElementById('summaryContent');
+            const finalButtons = document.getElementById('finalButtons');
+            
+            summaryContent.innerHTML += `
+                <div style="border-top: 3px dashed var(--primary-green); margin-top: 2rem; padding-top: 2rem;">
+                    <div style="text-align: center; margin-bottom: 1.5rem;">
+                        <div style="font-size: 2.5rem; margin-bottom: 0.8rem;">🌱</div>
+                        <h3 style="color: var(--dark-green); font-size: 1.4rem;">איך נעזור לחברת קראנץ'?</h3>
+                        <p style="font-size: 1rem; margin-top: 0.8rem;">בואו נחשוב על פתרונות ידידותיים לסביבה:</p>
+                    </div>
+                    
+                    <div class="solutions-grid">
+                        <div class="solution-card">
+                            <span class="solution-icon">🔄</span>
+                            <h4>מיחזור חומרים</h4>
+                            <p>שימוש חוזר בחומרים ומיחזור פסולת</p>
+                        </div>
+                        <div class="solution-card">
+                            <span class="solution-icon">🌿</span>
+                            <h4>חומרים ירוקים</h4>
+                            <p>חומרים ידידותיים לסביבה</p>
+                        </div>
+                        <div class="solution-card">
+                            <span class="solution-icon">💡</span>
+                            <h4>חיסכון באנרגיה</h4>
+                            <p>ציוד חסכוני ויעיל באנרגיה</p>
+                        </div>
+                        <div class="solution-card">
+                            <span class="solution-icon">🌳</span>
+                            <h4>נטיעת עצים</h4>
+                            <p>ספיגת CO₂ מהאטמוספירה</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            finalButtons.innerHTML = `
+                <button class="btn btn-primary" onclick="returnToTechnoland()">
+                    <span>🏠</span>
+                    חזרה לטכנולנד
+                </button>
+
+            `;
+        }
+
+        // איפוס תוצאות
+        function resetResults() {
+            results = { bubbles: null, crunch: null };
+            
+            // נקה בחירות
+            document.querySelectorAll('.balloon-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            
+            // אפס כפתור
+            const submitButton = document.getElementById('submitResults');
+            submitButton.disabled = true;
+            submitButton.classList.remove('pulse');
+            
+            // חזור לשלב 4
+            currentStep = 4;
+            document.getElementById('step5').classList.remove('active');
+            document.getElementById('step4').classList.add('active');
+            updateProgress();
+            
+            // גלול לראש העמוד
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // חזרה לטכנולנד
+        function returnToTechnoland() {
+            if (window.parent) {
+                window.parent.postMessage({ 
+                    type: "closeModal", 
+                    message: "closeMifal" 
+                }, "*");
+            }
+        }
+
+        // התחלה מחדש
+        function restartActivity() {
+            location.reload();
+        }
+
+        // סגירת מודל בלחיצה מחוץ לתוכן
+        document.getElementById('resultsModal').addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal')) {
+                e.target.classList.remove('show');
+            }
+        });
+
+        // סגירת tutorial בלחיצה מחוץ לתוכן
+        document.getElementById('tutorialModal').addEventListener('click', (e) => {
+            if (e.target.classList.contains('tutorial-modal')) {
+                closeTutorial();
+            }
+        });
+
+        // אתחול העמוד
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeBalloonSelectors();
+            updateProgress();
+            
+            // הוסף מאזיני אירועים למקלדת לניווט
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    closeTutorial();
+                } else if (e.key === 'ArrowRight' && currentStep < totalSteps) {
+                    const nextBtn = document.querySelector('.wizard-step.active .btn-primary:not(:disabled)');
+                    if (nextBtn && !nextBtn.textContent.includes('חזור')) {
+                        nextBtn.click();
+                    }
+                } else if (e.key === 'ArrowLeft' && currentStep > 1) {
+                    prevStep();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

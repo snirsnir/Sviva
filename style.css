@@ -1,0 +1,797 @@
+/* עדכון סגנונות למניעת גלילה מוחלטת */
+html.modal-open,
+body.modal-open {
+    overflow: hidden !important;
+    position: fixed !important;
+    width: 100% !important;
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    touch-action: none !important;
+    overscroll-behavior: none !important;
+    -webkit-overflow-scrolling: touch !important;
+}
+
+.modal, 
+.auto-modal {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    overflow: hidden !important;
+    overscroll-behavior: none !important;
+    touch-action: none !important;
+    -webkit-overflow-scrolling: touch !important;
+    background-color: rgba(0,0,0,0.8);
+}
+
+.modal-content,
+.auto-modal-content {
+    position: relative;
+    width: 90% !important;
+    height: 88% !important; /* הקטנת הגובה מ-85% ל-80% */
+    margin: 5% auto !important; /* הקטנת המרווח העליון מ-8% ל-5% */
+    padding: 0;
+    border: none;
+    background-color: transparent; /* שינוי מ-black ל-transparent */
+    overflow: hidden !important;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+}
+
+/* נקה הגדרות גלילה מתנגשות */
+.modal[style*="display: block"],
+.auto-modal[style*="display: block"] {
+    overflow: hidden !important;
+}
+
+iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background-color: white; /* הוספת רקע לבן ל-iframe */
+}
+
+.close {
+    color: #aaa;
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 28px;
+    font-weight: bold;
+    z-index: 1;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+.progress-circles {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    display: flex;
+    gap: 10px;
+    z-index: 1000;
+}
+
+.circle {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background-color: white;
+    border: 2px solid #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    overflow: hidden; /* חשוב להסתיר את הקצוות של התמונה */
+}
+
+.circle img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* גורם לתמונה להתאים את עצמה לעיגול */
+    object-position: center; /* ממרכז את התמונה */
+}
+@media screen and (max-width: 1024px) {
+    .circle {
+        width: 70px;
+        height: 70px;
+    }
+    
+    .progress-circles {
+        gap: 8px;
+    }
+}
+
+/* מובייל */
+@media screen and (max-width: 768px) {
+    .circle {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .progress-circles {
+        gap: 5px;
+        top: 10px;
+        left: 10px;
+    }
+}
+
+/* מסכים קטנים במיוחד */
+@media screen and (max-width: 480px) {
+    .circle {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .progress-circles {
+        gap: 4px;
+    }
+}
+/* שאר הסגנונות הקיימים שלך */
+.modal {
+    position: fixed;
+    z-index: 999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.5);
+}
+.audio-control {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.audio-button {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: white;
+    border: 2px solid #333;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.audio-button:hover {
+    transform: scale(1.1);
+    background-color: #f0f0f0;
+}
+
+.audio-icon {
+    font-size: 20px;
+}
+
+.audio-button.muted .audio-icon {
+    opacity: 0.5;
+}
+
+.help-icon {
+    position: fixed;
+    top: 80px; /* מתחת לכפתור האודיו */
+    right: 20px;
+    z-index: 1000;
+}
+
+.help-button {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: white;
+    border: 2px solid #333;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    font-size: 20px;
+}
+
+.help-button:hover {
+    transform: scale(1.1);
+    background-color: #f0f0f0;
+}
+
+.help-button i {
+    color: #333;
+}
+.env-meter-container {
+    position: fixed;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 60px;
+    height: 400px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 30px;
+    padding: 10px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.env-meter-label {
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: #333;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    transform: rotate(-90deg);
+    margin-bottom: 20px;
+}
+
+.env-meter {
+    width: 50px;
+    height: 350px;
+    background: #ddd;
+    border-radius: 15px;
+    position: relative;
+    overflow: hidden;
+    border: 2px solid #666;
+}
+
+.env-meter-fill {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to top, #ff4444, #ff4444);
+    transition: height 0.5s ease-in-out, background 0.5s ease-in-out;
+    animation: liquidBubble 3s ease-in-out infinite;
+    overflow: hidden;
+}
+
+/* בועות מוגדלות ויותר בולטות */
+.env-meter-fill::before,
+.env-meter-fill::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.7;  /* הגדלת השקיפות */
+}
+
+.env-meter-fill::before {
+    background: 
+        radial-gradient(circle at 30% 50%, rgba(255,255,255,0.5) 0%, transparent 30%),
+        radial-gradient(circle at 70% 80%, rgba(255,255,255,0.5) 0%, transparent 25%),
+        radial-gradient(circle at 50% 30%, rgba(255,255,255,0.5) 0%, transparent 35%);
+    animation: bubbleRise1 4s linear infinite;
+}
+
+.env-meter-fill::after {
+    background: 
+        radial-gradient(circle at 40% 60%, rgba(255,255,255,0.5) 0%, transparent 25%),
+        radial-gradient(circle at 60% 40%, rgba(255,255,255,0.5) 0%, transparent 30%),
+        radial-gradient(circle at 20% 70%, rgba(255,255,255,0.5) 0%, transparent 28%);
+    animation: bubbleRise2 3.5s linear infinite;
+}
+
+/* אנימציית תנועת נוזל מוגברת */
+@keyframes liquidBubble {
+    0% {
+        transform: translateY(4px) scaleY(1);
+        filter: brightness(1);
+    }
+    50% {
+        transform: translateY(-4px) scaleY(1.03);
+        filter: brightness(1.2);
+    }
+    100% {
+        transform: translateY(4px) scaleY(1);
+        filter: brightness(1);
+    }
+}
+
+/* אנימציות בועות מואטות ויותר דרמטיות */
+@keyframes bubbleRise1 {
+    0% {
+        transform: translateY(100%) scale(1);
+        opacity: 0.7;
+    }
+    100% {
+        transform: translateY(-120%) scale(1.4);
+        opacity: 0;
+    }
+}
+
+@keyframes bubbleRise2 {
+    0% {
+        transform: translateY(100%) scale(0.8);
+        opacity: 0.7;
+    }
+    100% {
+        transform: translateY(-120%) scale(1.2);
+        opacity: 0;
+    }
+}
+
+/* אפקט גלים משופר */
+.env-meter-waves {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 200%;
+    height: 15px;  /* הגדלת גובה הגלים */
+    animation: waveMove 3s ease-in-out infinite;
+}
+
+.env-meter-waves::before,
+.env-meter-waves::after {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: 0;
+    width: 50%;
+    height: 100%;
+    border-radius: 50%;
+    background: inherit;
+    animation: waveBounce 3s ease-in-out infinite;
+}
+
+.env-meter-waves::after {
+    left: 50%;
+    animation-delay: -1.5s;
+}
+
+@keyframes waveMove {
+    0% { transform: translateX(-15px); }
+    50% { transform: translateX(0); }
+    100% { transform: translateX(-15px); }
+}
+
+@keyframes waveBounce {
+    0% { transform: translateY(0) scaleY(1); }
+    50% { transform: translateY(-3px) scaleY(1.2); }
+    100% { transform: translateY(0) scaleY(1); }
+}
+
+.env-meter-markers {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 10px 0;
+}
+
+.env-meter-markers span {
+    width: 8px;
+    height: 2px;
+    background: rgba(0, 0, 0, 0.3);
+    margin-left: 5px;
+}
+.a-enter-vr {
+    display: none !important;
+}
+.notebook-modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 1000;
+    backdrop-filter: blur(5px);
+}
+
+.notebook-modal {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 800px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    box-shadow: 0 0 30px rgba(104, 181, 80, 0.3);
+    border: 2px solid #69B550;
+    direction: rtl;
+    overflow: hidden;
+    font-family: 'Rubik', sans-serif;
+}
+
+.notebook-header {
+    background: #69B550;
+    color: white;
+    padding: 1.2rem;
+    text-align: center;
+}
+
+.notebook-header h2 {
+    margin: 0;
+    font-size: 1.8rem;
+    font-weight: bold;
+    font-family: 'Rubik', sans-serif;
+    font-weight: 700;
+}
+
+.notebook-content {
+    padding: 2rem;
+    text-align: center;
+}
+
+.success-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    animation: bounce 1s ease infinite;
+}
+
+.message-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+.message-container h3 {
+    color: #2C5E1A;
+    font-size: 1.6rem;
+    margin: 0;
+    font-family: 'Rubik', sans-serif;
+    font-weight: 600;
+}
+
+.message-container p {
+    font-size: 1.2rem;
+    margin: 0;
+    line-height: 1.5;
+    font-family: 'Rubik', sans-serif;
+    font-weight: 400;
+}
+
+.highlight-box {
+    background: rgba(104, 181, 80, 0.1);
+    padding: 1.2rem;
+    border-radius: 12px;
+    border: 2px dashed #69B550;
+    margin: 1rem 0;
+}
+
+.highlight-box p {
+    color: #2C5E1A;
+    font-weight: bold;
+    font-family: 'Rubik', sans-serif;
+    font-weight: 500;
+}
+
+.instructions {
+    background: #f8f9fa;
+    padding: 1.2rem;
+    border-radius: 12px;
+    margin: 1rem 0;
+}
+
+.final-note {
+    margin: 1rem 0;
+    font-family: 'Rubik', sans-serif;
+    font-weight: 500;
+}
+
+.return-btn {
+    background: #69B550;
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 25px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 1.5rem auto 0;
+    font-family: 'Rubik', sans-serif;
+    font-weight: 500;
+}
+
+.return-btn:hover {
+    transform: scale(1.05);
+    background: #5ca344;
+}
+
+.btn-icon {
+    font-size: 1.4rem;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+.info-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 1000;
+    backdrop-filter: blur(5px);
+}
+
+.info-modal {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 500px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    box-shadow: 0 0 30px rgba(104, 181, 80, 0.3);
+    border: 2px solid #69B550;
+    direction: rtl;
+    font-family: 'Rubik', sans-serif;
+}
+
+.info-header {
+    background: #69B550;
+    color: white;
+    padding: 1rem;
+    border-radius: 18px 18px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.info-header h2 {
+    margin: 0;
+    font-family: 'Rubik', sans-serif;
+    font-weight: 600;
+    font-size: 1.4rem;
+    
+}
+
+.info-content {
+    padding: 1.5rem;
+    line-height: 1.6;
+    font-family: 'Rubik', sans-serif;
+    font-weight: 400;
+    font-size: 1.1rem;
+}
+.info-modal, .notebook-modal {
+    letter-spacing: 0.2px;
+}
+
+.info-content, .notebook-content {
+    line-height: 1.6;
+}
+.notebook-header h2, .info-header h2 {
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+}
+
+.info-point {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 1rem;
+    font-family: 'Rubik', sans-serif;
+    margin-bottom: 1.2rem;
+    padding: 0.5rem;
+    background: rgba(104, 181, 80, 0.05);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.info-point-icon {
+    font-size: 1.2rem;
+    color: #69B550;
+    font-family: 'Rubik', sans-serif;
+    font-weight: 700;
+}
+.info-point:hover {
+    background: rgba(104, 181, 80, 0.1);
+    transform: translateX(-5px);
+}
+/* סגנונות בסיס */
+:root {
+    --env-meter-width-desktop: 60px;
+    --env-meter-height-desktop: 400px;
+    --circle-size-desktop: 120px;
+    --audio-button-size-desktop: 40px;
+}
+
+/* מסכי מחשב גדולים - 1920x1080 */
+@media screen and (min-width: 1920px) {
+    .env-meter-container {
+        width: var(--env-meter-width-desktop);
+        height: var(--env-meter-height-desktop);
+    }
+
+    .circle {
+        width: var(--circle-size-desktop);
+        height: var(--circle-size-desktop);
+    }
+
+    .audio-button, .help-button {
+        width: var(--audio-button-size-desktop);
+        height: var(--audio-button-size-desktop);
+    }
+}
+
+/* מחשבים ניידים - 15 אינץ' (1366x768) */
+@media screen and (max-width: 1366px) {
+    :root {
+        --env-meter-width-laptop: 45px;
+        --env-meter-height-laptop: 300px;
+        --circle-size-laptop: 90px;
+        --audio-button-size-laptop: 35px;
+    }
+
+    .env-meter-container {
+        width: var(--env-meter-width-laptop);
+        height: var(--env-meter-height-laptop);
+        right: 15px;
+    }
+
+    .env-meter {
+        width: 35px;
+        height: 260px;
+    }
+
+    .circle {
+        width: var(--circle-size-laptop);
+        height: var(--circle-size-laptop);
+    }
+
+    .progress-circles {
+        gap: 8px;
+        top: 15px;
+        left: 15px;
+    }
+
+    .audio-button, .help-button {
+        width: var(--audio-button-size-laptop);
+        height: var(--audio-button-size-laptop);
+    }
+
+    .env-meter-label {
+        font-size: 12px;
+    }
+
+    /* התאמת גודל המודלים */
+    .modal-content, .auto-modal-content {
+        width: 95% !important;
+        height: 75% !important;
+        margin: 3% auto !important;
+    }
+
+    .notebook-modal, .info-modal {
+        width: 80%;
+        max-width: 500px;
+    }
+}
+
+/* טאבלטים - 10 אינץ' (1024x768) */
+@media screen and (max-width: 1024px) {
+    :root {
+        --env-meter-width-tablet: 35px;
+        --env-meter-height-tablet: 250px;
+        --circle-size-tablet: 70px;
+        --audio-button-size-tablet: 30px;
+    }
+
+    .env-meter-container {
+        width: var(--env-meter-width-tablet);
+        height: var(--env-meter-height-tablet);
+        right: 10px;
+    }
+
+    .env-meter {
+        width: 25px;
+        height: 220px;
+    }
+
+    .circle {
+        width: var(--circle-size-tablet);
+        height: var(--circle-size-tablet);
+    }
+
+    .progress-circles {
+        gap: 6px;
+        top: 10px;
+        left: 10px;
+    }
+
+    .audio-button, .help-button {
+        width: var(--audio-button-size-tablet);
+        height: var(--audio-button-size-tablet);
+        font-size: 16px;
+    }
+
+    .env-meter-label {
+        font-size: 10px;
+        margin-bottom: 15px;
+    }
+
+    /* התאמת גודל המודלים */
+    .modal-content, .auto-modal-content {
+        width: 98% !important;
+        height: 70% !important;
+        margin: 2% auto !important;
+    }
+
+    .notebook-modal, .info-modal {
+        width: 95%;
+        max-width: 450px;
+    }
+
+    /* התאמת גדלי טקסט */
+    .notebook-header h2 {
+        font-size: 1.5rem;
+    }
+
+    .message-container h3 {
+        font-size: 1.3rem;
+    }
+
+    .message-container p {
+        font-size: 1.1rem;
+    }
+
+    .return-btn {
+        padding: 0.8rem 1.6rem;
+        font-size: 1.1rem;
+    }
+}
+
+/* התאמות נוספות לביצועים ואינטראקציה */
+* {
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* אופטימיזציה לאנימציות */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* התאמות ל-VR */
+.a-enter-vr {
+    display: none !important;
+}
+
+/* התאמות נגישות */
+.clickable {
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.clickable:hover {
+    transform: scale(1.05);
+}
+
+/* תיקון לבעיית גלילה במודלים */
+.modal-open {
+    overflow: hidden !important;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+}

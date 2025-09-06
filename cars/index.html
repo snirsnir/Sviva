@@ -1,0 +1,1657 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>עמדת בדיקות זיהום - טכנולנד</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/FirstPersonControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/howler@2.2.3/dist/howler.min.js"></script>
+    
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            cursor: default;
+            background: #000;
+        }
+        
+        #scene-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+        
+        #pollution-meter {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            width: 280px;
+            height: 320px;
+            background: linear-gradient(145deg, #ff8c00, #ff6600);
+            border: 4px solid #333;
+            border-radius: 25px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+            z-index: 250;
+            padding: 20px;
+            color: white;
+            font-weight: bold;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        #meter-display {
+            background: #001122;
+            height: 220px;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+            font-family: 'Courier New', monospace;
+            border: 2px solid #444;
+        }
+        
+        .meter-reading {
+            margin: 12px 0;
+            padding: 8px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .meter-reading.normal {
+            background-color: #006400;
+            color: #90EE90;
+            border: 1px solid #228B22;
+        }
+        
+        .meter-reading.danger {
+            background-color: #8B0000;
+            color: #FF6B6B;
+            border: 1px solid #FF0000;
+            animation: blink 0.5s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.7; }
+        }
+        
+        #hand-icon {
+            position: absolute;
+            bottom: -15px;
+            right: -15px;
+            font-size: 50px;
+            animation: hold 2s ease-in-out infinite;
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
+        }
+        
+        @keyframes hold {
+            0%, 100% { transform: rotate(-8deg) scale(1); }
+            50% { transform: rotate(8deg) scale(1.05); }
+        }
+        
+        #controls-info {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            z-index: 100;
+            border: 2px solid #444;
+        }
+        
+        #checked-cars {
+            position: absolute;
+            top: 20px;
+            right: 320px;
+            background: rgba(0,100,200,0.9);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 15px;
+            font-size: 20px;
+            font-weight: bold;
+            z-index: 100;
+            border: 2px solid #0066cc;
+        }
+        
+        #crosshair {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 32px;
+            pointer-events: none;
+            z-index: 100;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+        
+        #game-intro {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 250;
+            color: white;
+            text-align: center;
+            flex-direction: column;
+        }
+        
+        #intro-content {
+            background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+            padding: 50px;
+            border-radius: 25px;
+            border: 3px solid #444;
+            max-width: 600px;
+        }
+        
+        #start-button {
+            background: linear-gradient(145deg, #007bff, #0056b3);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 15px;
+            font-size: 18px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        #start-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,123,255,0.4);
+        }
+        
+        #inspection-modal {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            display: none;
+            z-index: 200;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        
+        #inspection-form {
+            background: linear-gradient(145deg, #f0f0f0, #e0e0e0);
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            max-width: 500px;
+            color: #333;
+            border: 3px solid #007bff;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            font-family: Arial, sans-serif;
+        }
+        
+        .form-header {
+            background: linear-gradient(145deg, #007bff, #0056b3);
+            color: white;
+            padding: 15px;
+            margin: -40px -40px 20px -40px;
+            border-radius: 12px 12px 0 0;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .form-field {
+            margin: 15px 0;
+            text-align: right;
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            border: 2px solid #ddd;
+        }
+        
+        .form-field label {
+            font-weight: bold;
+            color: #333;
+            margin-left: 10px;
+        }
+        
+        .form-field span {
+            color: #007bff;
+            font-weight: bold;
+        }
+        
+        #pollution-input {
+            padding: 12px;
+            border: 2px solid #007bff;
+            border-radius: 8px;
+            font-size: 18px;
+            text-align: center;
+            width: 200px;
+            margin: 10px;
+        }
+        
+        #submit-inspection {
+            background: linear-gradient(145deg, #28a745, #1e7e34);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            margin: 20px 10px;
+            transition: all 0.3s ease;
+        }
+        
+        #submit-inspection:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(40,167,69,0.4);
+        }
+        
+        .error-message {
+            color: #dc3545;
+            font-weight: bold;
+            margin: 10px 0;
+            padding: 10px;
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 5px;
+        }
+        
+        .success-message {
+            color: #155724;
+            font-weight: bold;
+            margin: 10px 0;
+            padding: 10px;
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 5px;
+        }
+        
+        #final-story {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            display: none;
+            z-index: 300;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        
+        #story-content {
+            background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+            padding: 40px;
+            border-radius: 25px;
+            text-align: center;
+            max-width: 800px;
+            color: white;
+            border: 3px solid #444;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            margin: 20px;
+        }
+        
+        .story-gap {
+            background: #007bff;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            margin: 0 3px;
+        }
+        
+        #loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 30px;
+            border-radius: 15px;
+            z-index: 300;
+            font-size: 18px;
+            text-align: center;
+            border: 2px solid #444;
+        }
+        .drop-zone {
+    display: inline-block;
+    min-width: 100px;
+    padding: 5px 10px;
+    border-bottom: 2px solid #007bff;
+    margin: 0 5px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.draggable-word:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0,123,255,0.3);
+}
+    </style>
+</head>
+<body>
+    <div id="scene-container"></div>
+    
+<div id="game-intro">
+<div id="intro-content">
+    <h1>טכנולנד - מגלה הזיהום</h1>
+    <p style="font-size: 20px; margin: 30px 0;">בואו לעזור לטכנולנד להפחית את זיהום האוויר שמקורם בכלי הרכב!</p>
+    <button id="start-button">לחצו להתחלה</button>
+</div>
+</div>
+<div id="video-screen" style="
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.9);
+    display: none;
+    z-index: 260;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+">
+    <video id="intro-video" width="80%" controls>
+        <source src="car.mp4" type="video/mp4">
+        הדפדפן שלך לא תומך בוידאו.
+    </video>
+<button id="start-game-after-video" style="
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 25px 60px;
+    background: linear-gradient(145deg, #28a745, #20c997);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(40, 167, 69, 0.4);
+    transition: all 0.3s ease;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    z-index: 270;
+" onmouseover="this.style.transform='translate(-50%, -50%) scale(1.1)'" 
+   onmouseout="this.style.transform='translate(-50%, -50%) scale(1)'">התחילו את המשחק!</button>
+</div>
+<div id="game-instructions" style="
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.8);
+    color: white;
+    padding: 15px 30px;
+    border-radius: 15px;
+    font-size: 18px;
+    font-weight: bold;
+    z-index: 100;
+    display: none;
+    text-align: center;
+">עליכם למצוא את העמדה של שמשון ולהתחיל בבדיקה</div>
+    <div id="loading">טוען את עמדת הבדיקות...</div>
+    
+#controls-info {
+    <h3>הוראות לשמשון:</h3>
+    <p>תנועה: W A S D או חצים</p>
+    <p>מבט: תזוזת עכבר</p>
+    <p>גשו אל עמדת הבדיקות!</p>
+}
+    
+    <div id="checked-cars">רכבים שנבדקו: <span id="cars-checked">0</span>/10</div>
+    
+    <div id="pollution-meter">
+        <h3 style="text-align: center; margin-top: 0;">מד זיהום אוויר</h3>
+        <div id="meter-display">
+            <div class="meter-reading normal" id="pm25">
+                <span>PM2.5:</span>
+                <span id="pm25-value">12.3 μg/m³</span>
+            </div>
+            <div class="meter-reading normal" id="pm10">
+                <span>PM10:</span>
+                <span id="pm10-value">24.1 μg/m³</span>
+            </div>
+            <div class="meter-reading normal" id="co2">
+                <span>CO2:</span>
+                <span id="co2-value">415 ppm</span>
+            </div>
+            <div class="meter-reading normal" id="noise">
+                <span>רעש:</span>
+                <span id="noise-value">45 dB</span>
+            </div>
+            <div class="meter-reading normal" id="status">
+                <span>סטטוס:</span>
+                <span id="status-value">נקי</span>
+            </div>
+        </div>
+        <div id="hand-icon">🤚</div>
+    </div>
+    
+    <div id="crosshair">+</div>
+    
+    <div id="inspection-modal">
+        <div id="inspection-form">
+            <div class="form-header">דו"ח בדיקת זיהום - טכנולנד</div>
+            
+            <div class="form-field">
+                <label>מספר רכב:</label>
+                <span id="car-number">--</span>
+            </div>
+            
+      <div class="form-field">
+    <img id="owner-image" src="" alt="תמונת הבעלים" style="
+        width: 80px; 
+        height: 80px; 
+        border-radius: 50%; 
+        object-fit: cover; 
+        border: 3px solid #007bff;
+        margin: 10px auto;
+        display: block;
+    ">
+</div>
+
+<div class="form-field">
+    <label>שם מלא:</label>
+    <span id="owner-name">--</span>
+</div>
+            
+            <div class="form-field">
+                <label>דגם רכב:</label>
+                <span id="car-model">--</span>
+            </div>
+            
+            <div class="form-field">
+                <label>קילומטרז':</label>
+                <span id="car-km">--</span>
+            </div>
+            
+            <div style="margin: 25px 0; padding: 20px; background: #f8f9fa; border-radius: 10px; border: 2px solid #007bff;">
+                <label for="pollution-input" style="font-size: 18px; font-weight: bold; color: #007bff;">
+                    הזינו את רמת הפליטה לפי המד:
+                </label>
+                <br>
+                <input type="number" id="pollution-input" placeholder="0-10" min="0" max="10">
+            </div>
+            
+            <div id="form-feedback"></div>
+            
+            <button id="submit-inspection">אשר בדיקה</button>
+        </div>
+    </div>
+    
+    <div id="final-story">
+        <div id="story-content">
+<h2>השלימו את הסיפור</h2>
+<p style="font-size: 16px; color: #666; text-align: center; margin: 10px 0 20px 0;">
+    עליכם לגרור את התשובה הנכונה למקום המתאים בסיפור
+</p>
+            </div>
+            <button onclick="location.reload()" style="margin-top: 30px; padding: 15px 30px; background: #007bff; color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 16px;">
+                התחל מחדש
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // משתנים גלובליים
+        let scene, camera, renderer, controls, clock;
+        let cars = [];
+        let checkpoint, gate;
+        let gameState = 'intro'; // 'intro', 'moving', 'checking'
+        let carsChecked = 0;
+        let currentCarIndex = 0;
+        let isLoaded = false;
+        let cleanCarOwners = [];
+        let currentPM25Value = 0; 
+        let gameStage = 'initial';
+        // נתוני הרכבים והבעלים
+const carData = [
+    { id: 1, owner: 'עומר עשני', model: 'פרארי GT 360', km: '85,000', type: 'gasoline', pollutionLevel: Math.floor(Math.random() * 4) + 7 },
+    { id: 2, owner: 'לירון פיחמן', model: 'פורד פיוזן', km: '95,000', type: 'gasoline', pollutionLevel: Math.floor(Math.random() * 4) + 7 },
+    { id: 3, owner: 'גל בזבזני', model: 'פורד פומה', km: '110,000', type: 'gasoline', pollutionLevel: Math.floor(Math.random() * 4) + 7 },
+    { id: 4, owner: 'רונית בנזיני', model: 'מאזדה 6', km: '120,000', type: 'gasoline', pollutionLevel: Math.floor(Math.random() * 4) + 7 },
+    { id: 5, owner: 'אייל גזוזי', model: 'BMW X5', km: '75,000', type: 'gasoline', pollutionLevel: Math.floor(Math.random() * 4) + 7 },
+    { id: 6, owner: 'דניאל פליטה', model: 'אקספנג F1', km: '25,000', type: 'electric', pollutionLevel: Math.floor(Math.random() * 4) },
+    { id: 7, owner: 'נועה תחבורה', model: 'יונדאי איוניק 5', km: '40,000', type: 'electric', pollutionLevel: Math.floor(Math.random() * 4) },
+    { id: 8, owner: 'תמר פקקים', model: 'טסלה מודל 3', km: '15,000', type: 'electric', pollutionLevel: Math.floor(Math.random() * 4) },
+    { id: 9, owner: 'יואב חשמל', model: 'BYD ATTO 3', km: '30,000', type: 'electric', pollutionLevel: Math.floor(Math.random() * 4) },
+    { id: 10, owner: 'מיכל ירוקה', model: 'BYD SEAL', km: '20,000', type: 'electric', pollutionLevel: Math.floor(Math.random() * 4) }
+];
+        
+// איתור הבעלים הנקיים - עדכן לשמות החדשים
+carData.forEach(car => {
+    if (car.type === 'electric') {
+        const lastName = car.owner.split(' ')[1];
+        cleanCarOwners.push(lastName);
+    }
+});
+        
+        // אפקטי שמע
+        let beepSound, walkSound;
+        let isWalking = false;
+        let movingForward = false;
+        let movingBackward = false;
+        
+        // אתחול המשחק
+        function init() {
+            setupScene();
+            setupLighting();
+            setupGround();
+            setupCheckpoint();
+            setupFirstPersonControls();
+            setupSounds();
+            setupMovementControls();
+            loadCars();
+            setupGameLoop();
+            
+            document.getElementById('loading').style.display = 'none';
+        }
+        
+        function setupScene() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            renderer.setClearColor(0x87CEEB);
+            
+            document.getElementById('scene-container').appendChild(renderer.domElement);
+            
+            clock = new THREE.Clock();
+            camera.position.set(-80, 2, 20);
+            renderer.gammaOutput = true;
+renderer.gammaFactor = 2.2;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.2;
+// שיפור צבעים ותאורה
+renderer.outputEncoding = THREE.sRGBEncoding;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.0;
+renderer.physicallyCorrectLights = true;
+// טעינת תמונה פנורמית 360 כרקע
+const loader = new THREE.TextureLoader();
+loader.load('pano.png', function(texture) {
+    // יצירת ספירה גדולה למיפוי הטקסטורה
+    const sphereGeometry = new THREE.SphereGeometry(500, 60, 40);
+    
+    // הפיכת הטקסטורה לפנימית (כך שנראה אותה מבפנים)
+    sphereGeometry.scale(-1, 1, 1);
+    
+    const sphereMaterial = new THREE.MeshBasicMaterial({ map: texture });
+const skyBox = new THREE.Mesh(sphereGeometry, sphereMaterial);
+skyBox.rotation.y = Math.PI; // סיבוב של 180 מעלות
+scene.add(skyBox);
+});
+        }
+        
+function setupLighting() {
+    // אור סביבתי חזק יותר
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1.5); // הגבר מ-1.0 ל-1.5
+    scene.add(ambientLight);
+    
+    // אור השמש עם עוצמה בינונית
+    const sunLight = new THREE.DirectionalLight(0xfff4e6, 0.6);
+    sunLight.position.set(20, 30, 20);
+    sunLight.castShadow = true;
+    
+    // הגדרות צל איכותיות
+    sunLight.shadow.mapSize.width = 2048;
+    sunLight.shadow.mapSize.height = 2048;
+    sunLight.shadow.camera.near = 0.5;
+    sunLight.shadow.camera.far = 100;
+    sunLight.shadow.camera.left = -100;
+    sunLight.shadow.camera.right = 100;
+    sunLight.shadow.camera.top = 50;
+    sunLight.shadow.camera.bottom = -50;
+    sunLight.shadow.bias = -0.0001;
+    
+    scene.add(sunLight);
+    
+    // אור מילוי חזק יותר מהצד השני
+    const fillLight = new THREE.DirectionalLight(0xe6f3ff, 0.5);
+    fillLight.position.set(-20, 20, -20);
+    scene.add(fillLight);
+    
+    // אור ספציפי לאזור הרכבים
+    const carLight = new THREE.DirectionalLight(0xffffff, 0.4);
+    carLight.position.set(0, 25, 5);
+    carLight.target.position.set(0, 0, 0);
+    scene.add(carLight);
+    scene.add(carLight.target);
+}
+function setupGround() {
+    // הגדל את רצפת האספלט
+    const groundGeometry = new THREE.PlaneGeometry(400, 400); // הוגדל מ-200x200
+    const groundMaterial = new THREE.MeshLambertMaterial({ color: 0x555555 });
+    const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+    ground.rotation.x = -Math.PI / 2;
+    ground.position.y = 0;
+    ground.receiveShadow = true;
+    scene.add(ground);
+    
+    // הגדל את המדרכות
+    const sidewalkWidth = 4;
+    for (let side of [-1, 1]) {
+        const sidewalkGeometry = new THREE.PlaneGeometry(300, sidewalkWidth); // הוגדל מ-200
+        const sidewalkMaterial = new THREE.MeshLambertMaterial({ color: 0xcccccc });
+        const sidewalk = new THREE.Mesh(sidewalkGeometry, sidewalkMaterial);
+        sidewalk.rotation.x = -Math.PI / 2;
+        sidewalk.position.set(0, 0.02, side * 8);
+        sidewalk.receiveShadow = true;
+        scene.add(sidewalk);
+    }
+    
+    // הכביש יכול גם להתארך
+    const roadGeometry = new THREE.PlaneGeometry(200, 8); // הוגדל מ-120
+    const roadMaterial = new THREE.MeshLambertMaterial({ color: 0x333333 });
+    const road = new THREE.Mesh(roadGeometry, roadMaterial);
+    road.rotation.x = -Math.PI / 2;
+    road.position.y = 0.01;
+    road.receiveShadow = true;
+    scene.add(road);
+    // קווי כביש
+    for (let i = -50; i <= 50; i += 10) {
+        const lineGeometry = new THREE.PlaneGeometry(2, 0.3);
+        const lineMaterial = new THREE.MeshLambertMaterial({ color: 0xffffff });
+        const line = new THREE.Mesh(lineGeometry, lineMaterial);
+        line.rotation.x = -Math.PI / 2;
+        line.position.set(i, 0.02, 0);
+        scene.add(line);
+    }
+    
+    // הוספת עצים
+    addTrees();
+}
+
+function addTrees() {
+    for (let i = 0; i < 20; i++) {
+        // מיקום אקראי על המדרכות ומחוצה להן
+        const x = (Math.random() - 0.5) * 180;
+        const z = Math.random() > 0.5 ? 
+            15 + Math.random() * 20 : // צד אחד
+            -15 - Math.random() * 20; // צד שני
+        
+        // גזע העץ
+        const trunkGeometry = new THREE.CylinderGeometry(0.3, 0.4, 4);
+        const trunkMaterial = new THREE.MeshLambertMaterial({ color: 0x8B4513 });
+        const trunk = new THREE.Mesh(trunkGeometry, trunkMaterial);
+        trunk.position.set(x, 2, z);
+        trunk.castShadow = true;
+        scene.add(trunk);
+        
+        // עלוות העץ
+        const leavesGeometry = new THREE.SphereGeometry(2.5);
+        const leavesMaterial = new THREE.MeshLambertMaterial({ color: 0x228B22 });
+        const leaves = new THREE.Mesh(leavesGeometry, leavesMaterial);
+        leaves.position.set(x, 5.5, z);
+        leaves.castShadow = true;
+        scene.add(leaves);
+    }
+}
+        function setupCheckpoint() {
+            // יצירת עמדת בדיקה
+            const checkpointGroup = new THREE.Group();
+            
+            // בסיס העמדה
+            const baseGeometry = new THREE.BoxGeometry(8, 0.5, 12);
+            const baseMaterial = new THREE.MeshLambertMaterial({ color: 0x666666 });
+            const base = new THREE.Mesh(baseGeometry, baseMaterial);
+            base.position.y = 0.25;
+            base.castShadow = true;
+            base.receiveShadow = true;
+            checkpointGroup.add(base);
+            
+            // עמודי התמיכה
+            for (let i = 0; i < 2; i++) {
+                const pillarGeometry = new THREE.BoxGeometry(0.8, 4, 0.8);
+                const pillarMaterial = new THREE.MeshLambertMaterial({ color: 0x444444 });
+                const pillar = new THREE.Mesh(pillarGeometry, pillarMaterial);
+                pillar.position.set(i === 0 ? -3 : 3, 2.5, 0);
+                pillar.castShadow = true;
+                checkpointGroup.add(pillar);
+            }
+            
+            // גג העמדה
+            const roofGeometry = new THREE.BoxGeometry(8, 0.3, 6);
+            const roofMaterial = new THREE.MeshLambertMaterial({ color: 0x0066cc });
+            const roof = new THREE.Mesh(roofGeometry, roofMaterial);
+            roof.position.y = 4.65;
+            roof.castShadow = true;
+            checkpointGroup.add(roof);
+            
+            // שלט
+// שלט
+const signGeometry = new THREE.BoxGeometry(6, 1.5, 0.2);
+const signMaterial = new THREE.MeshLambertMaterial({ color: 0xffffff });
+const sign = new THREE.Mesh(signGeometry, signMaterial);
+sign.position.set(0, 3.5, 3.1);
+
+// יצירת טקסטורת טקסט לשלט
+const canvas = document.createElement('canvas');
+canvas.width = 512;
+canvas.height = 128;
+const context = canvas.getContext('2d');
+
+// רקע לבן
+context.fillStyle = '#ffffff';
+context.fillRect(0, 0, canvas.width, canvas.height);
+
+// טקסט
+context.fillStyle = '#000000';
+context.font = 'bold 35px Arial';
+context.textAlign = 'center';
+context.textBaseline = 'middle';
+context.fillText('כניסה לטכנולנד - עצור לביקורת', canvas.width / 2, canvas.height / 2);
+
+// יצירת טקסטורה
+const signTexture = new THREE.CanvasTexture(canvas);
+const signMaterialWithText = new THREE.MeshLambertMaterial({ map: signTexture });
+sign.material = signMaterialWithText;
+
+checkpointGroup.add(sign);
+            // שער
+            const gateGeometry = new THREE.BoxGeometry(6, 0.5, 0.2);
+            const gateMaterial = new THREE.MeshLambertMaterial({ color: 0xff0000 });
+            gate = new THREE.Mesh(gateGeometry, gateMaterial);
+            gate.position.set(-6, 1.5, 0);
+            gate.castShadow = true;
+            checkpointGroup.add(gate);
+            
+            checkpointGroup.position.set(-15, 0, 8);
+            scene.add(checkpointGroup);
+            checkpointGroup.rotation.y = -Math.PI / 2;
+            checkpoint = checkpointGroup;
+            // אור מעל העמדה
+const checkpointLight = new THREE.PointLight(0xffffff, 1.5, 30);
+checkpointLight.position.set(0, 8, 0);
+checkpointGroup.add(checkpointLight);
+loadShimshon(checkpointGroup);
+        }
+        function loadShimshon(checkpointGroup) {
+    const loader = new THREE.GLTFLoader();
+    loader.load(
+        'cars/shimshon.glb',
+        (gltf) => {
+            const shimshon = gltf.scene;
+            
+            // התאמת גודל - יכול להצטרך התאמה בהתאם לגודל הקובץ
+            shimshon.scale.set(2, 2, 2);
+            
+            // מיקום שמשון בעמדה
+            shimshon.position.set(0, 1.4, -3); // ליד העמדה
+            shimshon.rotation.y = -90; // סיבוב שמשון פונה קדימה
+            const shimshonLight = new THREE.PointLight(0xffffff, 2, 15);
+shimshonLight.position.set(0, 3, -3);
+checkpointGroup.add(shimshonLight);
+            // הוספת צללים
+            shimshon.traverse((child) => {
+                if (child.isMesh) {
+                    child.castShadow = true;
+                    child.receiveShadow = true;
+                }
+            });
+            
+            checkpointGroup.add(shimshon);
+            console.log('שמשון נטען בהצלחה!');
+        },
+        undefined,
+        (error) => {
+            console.error('שגיאה בטעינת שמשון:', error);
+            console.log('ממשיך בלי שמשון...');
+        }
+    );
+}
+function setupFirstPersonControls() {
+    controls = new THREE.FirstPersonControls(camera, renderer.domElement);
+    controls.movementSpeed = 8;
+    controls.lookSpeed = 0.08;
+    controls.lookVertical = true;
+    controls.constrainVertical = true;
+    controls.verticalMin = Math.PI / 6;
+    controls.verticalMax = Math.PI / 1.5;
+    controls.enabled = false;
+    
+    // הגדרת אזור מת בקצוות המסך
+    const boundaryThreshold = 0.05; // 5% מהקצה
+    
+    // האזנה לתזוזת העכבר
+    document.addEventListener('mousemove', (e) => {
+        if (gameState !== 'moving' || !controls.enabled) return;
+        
+        const mouseX = e.clientX / window.innerWidth;
+        const mouseY = e.clientY / window.innerHeight;
+        
+        // בדיקה אם העכבר נמצא באזור המת (קרוב לקצוות)
+        const isNearLeftEdge = mouseX < boundaryThreshold;
+        const isNearRightEdge = mouseX > (1 - boundaryThreshold);
+        const isNearTopEdge = mouseY < boundaryThreshold;
+        const isNearBottomEdge = mouseY > (1 - boundaryThreshold);
+        
+        // עצירת התזוזה אם העכבר בקצוות
+        if (isNearLeftEdge || isNearRightEdge || isNearTopEdge || isNearBottomEdge) {
+            if (controls.activeLook !== false) {
+                controls.activeLook = false;
+            }
+        } else {
+            if (controls.activeLook !== true) {
+                controls.activeLook = true;
+            }
+        }
+    });
+    
+    // עצירת תנועה כשמשנים מצב משחק
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden && controls) {
+            controls.activeLook = false;
+        }
+    });
+}
+        
+        function setupMovementControls() {
+            const keys = {
+                w: false, s: false, a: false, d: false,
+                ArrowUp: false, ArrowDown: false, ArrowLeft: false, ArrowRight: false
+            };
+            
+            document.addEventListener('keydown', (e) => {
+                if (gameState !== 'moving') return;
+                
+                const key = e.code || e.key;
+                if (key in keys || e.key in keys) {
+                    keys[key] = true;
+                    keys[e.key] = true;
+                    
+                    if ((e.key === 'w' || e.key === 'W' || e.key === 'ArrowUp') && !movingForward) {
+                        movingForward = true;
+                        if (!isWalking && walkSound) {
+                            walkSound.play();
+                            isWalking = true;
+                        }
+                    }
+                    if ((e.key === 's' || e.key === 'S' || e.key === 'ArrowDown') && !movingBackward) {
+                        movingBackward = true;
+                        if (!isWalking && walkSound) {
+                            walkSound.play();
+                            isWalking = true;
+                        }
+                    }
+                }
+            });
+            
+            document.addEventListener('keyup', (e) => {
+                const key = e.code || e.key;
+                if (key in keys || e.key in keys) {
+                    keys[key] = false;
+                    keys[e.key] = false;
+                    
+                    if (e.key === 'w' || e.key === 'W' || e.key === 'ArrowUp') {
+                        movingForward = false;
+                    }
+                    if (e.key === 's' || e.key === 'S' || e.key === 'ArrowDown') {
+                        movingBackward = false;
+                    }
+                    
+                    if (!movingForward && !movingBackward && isWalking && walkSound) {
+                        walkSound.pause();
+                        isWalking = false;
+                    }
+                }
+            });
+            // הוסף בפונקציה setupMovementControls():
+// עצירת תנועה אוטומטית כשעוזבים את העמוד או עוברים ללשונית אחרת
+// בדיקת גבולות עכבר - עצירת תנועה כשיוצאים מ-90% מהמסך
+document.addEventListener('mousemove', (e) => {
+    const mouseX = e.clientX / window.innerWidth;
+    const mouseY = e.clientY / window.innerHeight;
+    
+    // בדיקה אם העכבר יצא מגבולות 90% מהמסך
+    const isOutOfBounds = mouseX < 0.05 || mouseX > 0.95 || mouseY < 0.05 || mouseY > 0.95;
+    
+    if (isOutOfBounds) {
+        // עצור את כל התנועה מיד
+        movingForward = false;
+        movingBackward = false;
+        
+        if (controls) {
+            controls.moveForward = false;
+            controls.moveBackward = false;
+        }
+        
+        if (isWalking && walkSound) {
+            walkSound.pause();
+            isWalking = false;
+        }
+    }
+});
+
+// גם כשהעכבר יוצא מהחלון לגמרי
+document.addEventListener('mouseleave', () => {
+    movingForward = false;
+    movingBackward = false;
+    
+    if (controls) {
+        controls.moveForward = false;
+        controls.moveBackward = false;
+    }
+    
+    if (isWalking && walkSound) {
+        walkSound.pause();
+        isWalking = false;
+    }
+});
+        }
+        
+function loadCars() {
+    document.getElementById('loading').style.display = 'block';
+    document.getElementById('loading').textContent = 'טוען רכבים...';
+    
+    const loader = new THREE.GLTFLoader();
+    let loadedCount = 0;
+    
+    // יצירת מערך מיקומים רנדומלי
+    const positions = [];
+    for (let i = 0; i < carData.length; i++) {
+        const xPos = (i - 10) * 8 - 20;
+        positions.push(new THREE.Vector3(xPos, 0, 0));
+    }
+    
+    // ערבוב המיקומים
+    shuffleArray(positions);
+    
+    carData.forEach((carInfo, index) => {
+        // השתמש במיקום הרנדומלי
+        carInfo.position = positions[index];
+        
+                
+                loader.load(
+                    `cars/${carInfo.id}.glb`,
+                    (gltf) => {
+                        const car = gltf.scene;
+                        car.userData = carInfo;
+                        
+                        // התאמת גודל
+                     const carScales = {
+    1: 150, 2: 150, 3: 150, 4: 1.5, 5: 140,
+    6: 4, 7: 1.5, 8: 0.015, 9: 140, 10: 1.5
+};
+                        const finalScale = carScales[carInfo.id] || 2.0;
+                        car.scale.set(finalScale, finalScale, finalScale);
+                        
+                        car.position.copy(carInfo.position);
+                        // כפיית מיקום לרכב 6
+
+                        // הגדרת גובה מיוחד לרכב 8
+if (carInfo.id === 8) {
+    car.position.y = 1.0; // רכב 8 גבוה יותר
+} else {
+    car.position.y = 0.0; // שאר הרכבים על הקרקע
+}
+                        
+                        // סיבוב לכיוון העמדה
+                        car.rotation.y = Math.PI / 2;
+                        // סיבוב לכיוון נסיעה - התאמה לכל רכב
+if (carInfo.id === 4) {
+    car.rotation.y = Math.PI; // כיוון אחר לרכב 4
+} else if (carInfo.id === 8) {
+    car.rotation.y = -Math.PI / 2; // רכב 8
+} 
+else {
+    car.rotation.y = Math.PI / 2; // כיוון רגיל לשאר הרכבים
+}
+
+
+
+                        car.traverse((child) => {
+                            if (child.isMesh) {
+                                child.castShadow = true;
+                                child.receiveShadow = true;
+                            }
+                        });
+                        
+                        cars.push(car);
+                        scene.add(car);
+                        
+                        loadedCount++;
+                        if (loadedCount === carData.length) {
+                            finishLoading();
+                        }
+                    },
+                    undefined,
+                    (error) => {
+                        console.error('שגיאה בטעינת רכב:', error);
+                        loadedCount++;
+                        if (loadedCount === carData.length) {
+                            finishLoading();
+                        }
+                    }
+                );
+            });
+        }
+        
+        function finishLoading() {
+            document.getElementById('loading').style.display = 'none';
+            isLoaded = true;
+        }
+        
+        function setupSounds() {
+            beepSound = new Howl({
+                src: ['data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjiS1/Lj'],
+                volume: 0.3,
+                loop: true
+            });
+            
+            walkSound = new Howl({
+                src: ['data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmMcBjiS1/Lj'],
+                volume: 0.2,
+                loop: true
+            });
+        }
+        
+function startGame() {
+    gameState = 'moving';
+    document.getElementById('video-screen').style.display = 'none';
+    document.getElementById('game-instructions').style.display = 'block';
+    
+    if (controls) {
+        controls.enabled = true;
+    }
+    
+}
+        
+function checkCheckpointProximity() {
+    if (gameState !== 'moving') return;
+    
+    const distance = camera.position.distanceTo(checkpoint.position);
+    if (distance < 20) {
+        gameState = 'checking';
+        
+        const instructions = document.getElementById('game-instructions');
+        if (instructions) {
+            instructions.textContent = 'בדקו את עשרת הרכבים הבאים';
+        }
+if (controls) {
+    controls.enabled = false;
+    controls.activeLook = false;
+    controls.moveForward = false;
+    controls.moveBackward = false;
+}
+
+// וגם אפס את המשתנים הגלובליים:
+movingForward = false;
+movingBackward = false;
+
+// עצור את צליל ההליכה
+if (isWalking && walkSound) {
+    walkSound.pause();
+    isWalking = false;
+}
+        camera.position.set(-5, 5, -5);
+        camera.lookAt(checkpoint.position);
+        
+        setTimeout(() => {
+            startCarInspections();
+        }, 1000);
+    }
+}
+        
+function startCarInspections() {
+    // מיין את הרכבים לפי מיקום X בלבד (ללא ערבוב נוסף)
+    if (currentCarIndex === 0) {
+        cars.sort((a, b) => b.position.x - a.position.x);
+    }
+    
+    if (currentCarIndex >= cars.length) {
+        endGame();
+        return;
+    }
+    
+    const currentCar = cars[currentCarIndex];
+    
+    // הזז רכב לעמדת בדיקה
+    moveCarToCheckpoint(currentCar, () => {
+        // פתח שער
+        openGate();
+        
+        // הצג טופס בדיקה
+        setTimeout(() => {
+            showInspectionForm(currentCar.userData);
+        }, 1000);
+    });
+}
+
+// פונקציה לערבוב מערך
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+        
+function moveCarToCheckpoint(car, callback) {
+    let targetPosition;
+    
+    // מיקום יעד מותאם לכל רכב
+targetPosition = new THREE.Vector3(-18, 0, 0);
+
+    const startPosition = car.position.clone();
+    const duration = 3000; // 3 שניות
+    const startTime = Date.now();
+    
+    function animateMovement() {
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        
+        car.position.lerpVectors(startPosition, targetPosition, progress);
+        
+        if (progress < 1) {
+            requestAnimationFrame(animateMovement);
+        } else {
+            callback();
+        }
+    }
+    
+    animateMovement();
+}
+        
+        function openGate() {
+            const startY = gate.position.y;
+            const targetY = 4;
+            const duration = 1000;
+            const startTime = Date.now();
+            
+            function animateGate() {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                gate.position.y = startY + (targetY - startY) * progress;
+                
+                if (progress < 1) {
+                    requestAnimationFrame(animateGate);
+                }
+            }
+            
+            animateGate();
+        }
+        
+        function closeGate() {
+            const startY = gate.position.y;
+            const targetY = 1.5;
+            const duration = 1000;
+            const startTime = Date.now();
+            
+            function animateGate() {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                gate.position.y = startY + (targetY - startY) * progress;
+                
+                if (progress < 1) {
+                    requestAnimationFrame(animateGate);
+                }
+            }
+            
+            animateGate();
+        }
+        
+function showInspectionForm(carData) {
+    if (controls) {
+        controls.enabled = false;
+        controls.activeLook = false;
+        controls.moveForward = false;
+        controls.moveBackward = false;
+    }
+
+    movingForward = false;
+    movingBackward = false;
+
+    if (isWalking && walkSound) {
+        walkSound.pause();
+        isWalking = false;
+    }
+    
+    document.getElementById('car-number').textContent = `${carData.id.toString().padStart(3, '0')}-${Math.floor(Math.random() * 90 + 10)}-${Math.floor(Math.random() * 900 + 100)}`;
+    document.getElementById('owner-name').textContent = carData.owner;
+    document.getElementById('car-model').textContent = carData.model;
+    document.getElementById('car-km').textContent = carData.km + ' ק"מ';
+    
+    // הוספת תמונת הבעלים
+    const ownerImage = document.getElementById('owner-image');
+    if (ownerImage) {
+        ownerImage.src = `people/${carData.id}.png`;
+        ownerImage.alt = `תמונה של ${carData.owner}`;
+    }
+    
+    document.getElementById('pollution-input').value = '';
+    document.getElementById('form-feedback').innerHTML = '';
+    
+    document.getElementById('inspection-modal').style.display = 'flex';
+    
+    // עדכן מד זיהום בהתאם לרכב
+    updatePollutionMeter(carData);
+}
+        
+        function updatePollutionMeter(carData) {
+            const pm25Value = document.getElementById('pm25-value');
+            const pm10Value = document.getElementById('pm10-value');
+            const co2Value = document.getElementById('co2-value');
+            const noiseValue = document.getElementById('noise-value');
+            const statusValue = document.getElementById('status-value');
+            
+            if (carData.type === 'gasoline') {
+                // ערכים גבוהים לרכב בנזין
+                currentPM25Value = (45 + Math.random() * 30); // שמור את הערך
+                pm25Value.textContent = currentPM25Value.toFixed(1) + ' μg/m³';
+                pm10Value.textContent = (80 + Math.random() * 40).toFixed(1) + ' μg/m³';
+                co2Value.textContent = (750 + Math.random() * 200).toFixed(0) + ' ppm';
+                noiseValue.textContent = (75 + Math.random() * 15).toFixed(0) + ' dB';
+                statusValue.textContent = 'זיהום גבוה';
+                
+                document.querySelectorAll('.meter-reading').forEach(reading => {
+                    reading.className = 'meter-reading danger';
+                });
+                
+                if (beepSound && !beepSound.playing()) {
+                    beepSound.play();
+                }
+            } else {
+                // ערכים נמוכים לרכב חשמלי
+                currentPM25Value = (5 + Math.random() * 8); // שמור את הערך
+                 pm25Value.textContent = currentPM25Value.toFixed(1) + ' μg/m³';
+                pm10Value.textContent = (10 + Math.random() * 10).toFixed(1) + ' μg/m³';
+                co2Value.textContent = (410 + Math.random() * 20).toFixed(0) + ' ppm';
+                noiseValue.textContent = (25 + Math.random() * 10).toFixed(0) + ' dB';
+                statusValue.textContent = 'אוויר נקי';
+                
+                document.querySelectorAll('.meter-reading').forEach(reading => {
+                    reading.className = 'meter-reading normal';
+                });
+                
+                if (beepSound && beepSound.playing()) {
+                    beepSound.stop();
+                }
+            }
+        }
+        
+function submitInspection() {
+    const input = document.getElementById('pollution-input');
+    const userInput = parseFloat(input.value);
+    const expectedLevel = currentPM25Value; // השתמש בערך PM2.5 שמור
+    const feedback = document.getElementById('form-feedback');
+    
+    if (isNaN(userInput) || userInput < 0) {
+        feedback.innerHTML = '<div class="error-message">אנא הזינו מספר תקין</div>';
+        return;
+    }
+    
+    // בדיקה אם הערך נכון (עם טווח סובלנות של ±0.2)
+    if (Math.abs(userInput - expectedLevel) <= 0.2) {
+        feedback.innerHTML = '<div class="success-message">✓ בדיקה תקינה! הרכב עבר את הבדיקה</div>';
+        
+        setTimeout(() => {
+            document.getElementById('inspection-modal').style.display = 'none';
+            
+            // עדכן מונה רכבים
+            carsChecked++;
+            document.getElementById('cars-checked').textContent = carsChecked;
+            
+            // הזז רכב ממשיך הלאה - השתמש במשתנה גלובלי
+            const currentCar = cars[currentCarIndex];
+            moveCarAway(currentCar);
+            
+            // סגור שער
+            closeGate();
+            
+            // עצור צפצוף
+            if (beepSound && beepSound.playing()) {
+                beepSound.stop();
+            }
+            
+            // עבור לרכב הבא
+            currentCarIndex++;
+            setTimeout(() => {
+                startCarInspections();
+            }, 2000);
+        }, 1500);
+        
+    } else {
+        feedback.innerHTML = '<div class="error-message">✗ הערך שגוי! הזינו את הערך המדויק מהמד PM2.5</div>';
+    }
+}
+        function moveCarAway(car) {
+            const targetPosition = new THREE.Vector3(80, 0, 0);
+            const startPosition = car.position.clone();
+            const duration = 3000;
+            const startTime = Date.now();
+            
+            function animateMovement() {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                car.position.lerpVectors(startPosition, targetPosition, progress);
+                
+                if (progress < 1) {
+                    requestAnimationFrame(animateMovement);
+                }
+            }
+            
+            animateMovement();
+        }
+        
+function endGame() {
+if (controls) {
+    controls.enabled = false;
+    controls.activeLook = false;
+    controls.moveForward = false;
+    controls.moveBackward = false;
+}
+
+// וגם אפס את המשתנים הגלובליים:
+movingForward = false;
+movingBackward = false;
+
+// עצור את צליל ההליכה
+if (isWalking && walkSound) {
+    walkSound.pause();
+    isWalking = false;
+}
+    
+    // הכן את רשימת הבעלים הנקיים
+    const cleanOwners = [];
+    carData.forEach(car => {
+        if (car.type === 'electric') {
+            cleanOwners.push(car.owner);
+        }
+    });
+    
+    showSuccessMessage(cleanOwners);
+}
+
+function showSuccessMessage(cleanOwners) {
+    document.getElementById('final-story').innerHTML = `
+        <div id="story-content">
+            <h2>יפה מאוד, הצלחתם במשימה!</h2>
+            <p style="font-size: 20px; margin: 20px 0;">כעת זוכרים את חמשת האנשים שלא מזהמים את הסביבה?</p>
+            
+            <div style="background: #059e26; padding: 20px; border-radius: 10px; margin: 20px 0;">
+                <h3>הנה הרשימה:</h3>
+                <ul style="text-align: right; font-size: 18px;">
+                    ${cleanOwners.map(owner => `<li>${owner}</li>`).join('')}
+                </ul>
+            </div>
+            
+            <button id="continue-to-story" style="padding: 15px 30px; background: #007bff; color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 16px;">
+                הבא - השלימו את הסיפור
+            </button>
+        </div>
+    `;
+    
+    document.getElementById('final-story').style.display = 'flex';
+    
+    document.getElementById('continue-to-story').addEventListener('click', showDragDropStory);
+}
+
+function showDragDropStory() {
+    const lastNames = ['פליטה', 'תחבורה', 'פקקים', 'חשמל', 'ירוקה'];
+    
+    document.getElementById('final-story').innerHTML = `
+        <div id="story-content">
+            <h2>השלימו את הסיפור</h2>
+            
+            <div id="story-with-gaps" style="font-size: 18px; line-height: 2; text-align: right; margin: 30px 0; background: white; padding: 20px; border-radius: 10px; color: #333;">
+                ביום בהיר אחד בטכנולנד, התכנסו התושבים לישיבת חירום כשהבינו שהאוויר בעיר נעשה מזוהם מדי. ראש העיר הכריז על תוכנית מהפכנית: 'עלינו להפחית באופן דרסטי את רמות ה<div class="drop-zone" data-answer="פליטה">____</div> שמקורן ברכבים!'<br><br>
+                המהנדסת הראשית הציגה תכנית לשדרוג מערך ה<div class="drop-zone" data-answer="תחבורה">____</div> הציבורית, והסבירה: 'כל אוטובוס או רכבת חדשים יחליפו 40 מכוניות פרטיות!'<br><br>
+                אבל האתגר הגדול ביותר היה פתרון בעיית ה<div class="drop-zone" data-answer="פקקים">____</div> הנוראים ברחובות, שגרמו לרכבים לעמוד שעות ארוכות ולזהם עוד יותר.<br><br>
+                לכן החליטו לעבור לרכבים חדשים שפועלים על <div class="drop-zone" data-answer="חשמל">____</div> נקי, שלא מזהמים כלל את האוויר.<br><br>
+                ולבסוף, העיר יצרה 'מהפכת התחבורה ה<div class="drop-zone" data-answer="ירוקה">____</div>' - רשת של רכבות מהירות, אוטובוסים חכמים, רציפי אופניים וכמובן מכוניות חשמליות, שהפכה את טכנולנד לעיר הנקייה והבריאה ביותר בעולם!
+            </div>
+            
+            <div id="draggable-answers" style="display: flex; justify-content: center; gap: 15px; margin: 30px 0;">
+                ${lastNames.map(name => `
+                    <div class="draggable-word" draggable="true" data-word="${name}" style="
+                        background: #007bff; 
+                        color: white; 
+                        padding: 10px 20px; 
+                        border-radius: 10px; 
+                        cursor: move; 
+                        font-weight: bold;
+                        border: 2px solid #0056b3;
+                    ">${name}</div>
+                `).join('')}
+            </div>
+            
+            <div id="completion-message" style="display: none; color: green; font-size: 20px; font-weight: bold; margin: 20px 0;">
+                מעולה! סיימתם בהצלחה את הפעילות!
+            </div>
+            
+            <button id="finish-activity" style="display: none; padding: 15px 30px; background: #28a745; color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 16px;">
+                סיום הפעילות
+            </button>
+        </div>
+    `;
+    
+    setupDragAndDrop();
+}
+
+function setupDragAndDrop() {
+    const draggables = document.querySelectorAll('.draggable-word');
+    const dropZones = document.querySelectorAll('.drop-zone');
+    let correctAnswers = 0;
+    
+    // הגדרת drag
+    draggables.forEach(draggable => {
+        draggable.addEventListener('dragstart', (e) => {
+            e.dataTransfer.setData('text/plain', e.target.dataset.word);
+            e.target.style.opacity = '0.5';
+        });
+        
+        draggable.addEventListener('dragend', (e) => {
+            e.target.style.opacity = '1';
+        });
+    });
+    
+    // הגדרת drop
+    dropZones.forEach(zone => {
+        zone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            zone.style.backgroundColor = '#e7f3ff';
+        });
+        
+        zone.addEventListener('dragleave', () => {
+            zone.style.backgroundColor = 'transparent';
+        });
+        
+        zone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const word = e.dataTransfer.getData('text/plain');
+            const correctAnswer = zone.dataset.answer;
+            
+            zone.style.backgroundColor = 'transparent';
+            
+            if (word === correctAnswer) {
+                zone.textContent = word;
+                zone.style.background = '#d4edda';
+                zone.style.color = '#155724';
+                zone.style.fontWeight = 'bold';
+                zone.innerHTML = `${word} ✓`;
+                
+                // הסר את המילה מהרשימה
+                const draggedElement = document.querySelector(`[data-word="${word}"]`);
+                if (draggedElement) {
+                    draggedElement.remove();
+                }
+                
+                correctAnswers++;
+                
+                if (correctAnswers === 5) {
+                    document.getElementById('completion-message').style.display = 'block';
+                    document.getElementById('finish-activity').style.display = 'inline-block';
+                    
+                   document.getElementById('finish-activity').addEventListener('click', returnToTechnoland);
+                }
+            } else {
+                // תשובה שגויה - החזר את המילה
+                zone.style.background = '#f8d7da';
+                zone.style.color = '#721c24';
+                zone.innerHTML = '✗ נסו שוב';
+                
+                setTimeout(() => {
+                    zone.style.background = 'transparent';
+                    zone.style.color = '#333';
+                    zone.innerHTML = '____';
+                }, 1000);
+            }
+        });
+    });
+}
+        
+        function setupGameLoop() {
+            function animate() {
+                requestAnimationFrame(animate);
+                
+                if (isLoaded && gameState === 'moving') {
+                    const delta = clock.getDelta();
+                    
+                    if (controls && controls.enabled) {
+                        controls.update(delta);
+                        camera.position.y = 2;
+                        checkCheckpointProximity();
+                    }
+                }
+                
+                renderer.render(scene, camera);
+            }
+            animate();
+        }
+        
+        // מאזינים לאירועים
+        document.getElementById('start-button').addEventListener('click', startGame);
+        document.getElementById('submit-inspection').addEventListener('click', submitInspection);
+        
+        // אירוע Enter בתיבת הטקסט
+        document.getElementById('pollution-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                submitInspection();
+            }
+        });
+        
+        // התאמה לשינוי גודל חלון
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            
+            if (controls) {
+                controls.handleResize();
+            }
+        });
+        
+        // מניעת תפריט קליק ימני
+        document.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+        });
+        
+        // אתחול המשחק כשהדף נטען
+window.addEventListener('load', () => {
+    // הגדרת משתנים שחסרים
+    const submitButton = document.getElementById('submit-inspection');
+    const pollutionInput = document.getElementById('pollution-input');
+    
+    // שנה את המאזין לכפתור הקיים
+    const startButton = document.getElementById('start-button');
+    if (startButton) {
+        startButton.addEventListener('click', () => {
+            document.getElementById('game-intro').style.display = 'none';
+            document.getElementById('video-screen').style.display = 'flex';
+            
+            const video = document.getElementById('intro-video');
+            video.play();
+            
+            video.addEventListener('ended', () => {
+                document.getElementById('start-game-after-video').style.display = 'block';
+            });
+        });
+    }
+    
+    // מאזין לכפתור התחלת משחק אחרי הסרטון
+    const startGameButton = document.getElementById('start-game-after-video');
+    if (startGameButton) {
+        startGameButton.addEventListener('click', startGame);
+    }
+
+    if (submitButton) {
+        submitButton.addEventListener('click', submitInspection);
+    }
+    
+    if (pollutionInput) {
+        pollutionInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                submitInspection();
+            }
+        });
+    }
+
+
+    // שאר הקוד...
+    window.addEventListener('resize', () => {
+        if (typeof camera !== 'undefined') {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            
+            if (controls) {
+                controls.handleResize();
+            }
+        }
+    });
+
+    document.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+    });
+
+    // טעינת GLTFLoader ואתחול המשחק
+    if (typeof THREE.GLTFLoader === 'undefined') {
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js';
+        script.onload = () => {
+            init();
+        };
+        script.onerror = () => {
+            console.error('שגיאה בטעינת GLTFLoader');
+            alert('שגיאה בטעינת רכיבי המשחק. אנא רענן את הדף.');
+        };
+        document.head.appendChild(script);
+    } else {
+        init();
+    }
+});
+
+        function returnToTechnoland() {
+            if (window.parent) {
+                window.parent.postMessage({ 
+                    type: "closeModal", 
+                    message: "closeCar" 
+                }, "*");
+            }
+        }
+    </script>
+</body>
+</html>

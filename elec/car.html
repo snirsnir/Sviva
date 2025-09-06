@@ -1,0 +1,70 @@
+<div style="font-family: Arial, sans-serif; direction: rtl;">
+    <div id="experiment-container" style="margin: 0 auto;">
+        <div style="display: flex; justify-content: space-around; max-width: 800px; margin: 0 auto;">
+            <div style="text-align: center; padding: 20px; background: white; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+                <h3 style="margin: 10px 0; font-size: 24px;">רכב בנזין ⛽</h3>
+                <hr style="border: none; border-top: 2px solid hsl(204, 70%, 53%); margin: 15px 0;">
+                <input type="number" id="gasValue" placeholder="התוצאה במספרים" style="width: 150px; padding: 10px; margin: 10px 0; border: 2px solid #3498db; border-radius: 5px; font-size: 18px;">
+            </div>
+            <div style="text-align: center; padding: 20px; background: white; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+                <h3 style="margin: 10px 0; font-size: 24px;">רכב חשמלי 🔌</h3>
+                <hr style="border: none; border-top: 2px solid #3498db; margin: 15px 0;">
+                <input type="number" id="electricValue" placeholder="התוצאה במספרים" style="width: 150px; padding: 10px; margin: 10px 0; border: 2px solid #3498db; border-radius: 5px; font-size: 18px;">
+            </div>
+        </div>
+        
+        <div style="text-align: center;">
+            <button onclick="window.checkResults()" style="background-color: #2ecc71; color: white; padding: 10px 30px; border: none; border-radius: 5px; font-size: 20px; cursor: pointer; margin-top: 20px;">בדוק תוצאות</button>
+        </div>
+
+        <div id="success-message" style="display: none; color: #27ae60; text-align: center; margin-top: 20px; font-weight: bold; font-size: 24px;">
+            כל הכבוד! הערכים נראים תקינים
+        </div>
+
+        <div id="error-message" style="display: none; color: red; text-align: center; margin-top: 20px; font-weight: bold; font-size: 20px;">
+            התוצאות לא הגיוניות! רכב בנזין אמור להראות ערכי זיהום גבוהים יותר מרכב חשמלי.
+            <br>
+            אנא בדקו את המדידות שלכם שוב.
+        </div>
+    </div>
+
+    <div id="summary" style="display: none; margin-top: 20px; padding: 20px; background: white; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+        <h2 style="color: #2c3e50; text-align: right; font-size: 28px;">סיכום הניסוי</h2>
+        <p style="color: #2c3e50; font-size: 20px;">בניסוי שערכנו ראינו הבדל משמעותי בין רכב בנזין לרכב חשמלי:</p>
+        <ul style="color: #2c3e50; font-size: 20px;">
+            <li>רכב הבנזין פלט חלקיקים מזהמים רבים לאוויר</li>
+            <li>הרכב החשמלי כמעט ולא פלט מזהמים</li>
+        </ul>
+        <p style="color: #2c3e50; font-size: 20px;">המסקנה ברורה: כדי לשמור על הסביבה ועל הבריאות שלנו, עדיף להשתמש ברכבים חשמליים ובתחבורה ציבורית!</p>
+        <div style="text-align: center; margin-top: 20px;">
+            <button onclick="window.goBack()" style="background-color: #e74c3c; color: white; padding: 10px 30px; border: none; border-radius: 5px; font-size: 20px; cursor: pointer;">סיימתם! לחצו לחזרה לטכנולנד</button>
+        </div>
+    </div>
+</div>
+
+<script>
+window.checkResults = function() {
+    const gasValue = Number(document.getElementById('gasValue').value);
+    const electricValue = Number(document.getElementById('electricValue').value);
+    const experimentContainer = document.getElementById('experiment-container');
+    const summary = document.getElementById('summary');
+    const errorMessage = document.getElementById('error-message');
+    const successMessage = document.getElementById('success-message');
+    
+    if (gasValue > electricValue && electricValue >= 0) {
+        errorMessage.style.display = 'none';
+        successMessage.style.display = 'block';
+        setTimeout(function() {
+            experimentContainer.style.display = 'none';
+            summary.style.display = 'block';
+        }, 3000);
+    } else {
+        errorMessage.style.display = 'block';
+        successMessage.style.display = 'none';
+    }
+}
+
+window.goBack = function() {
+    window.parent.postMessage({ type: "closeModal", message: "closeCar" }, "*");
+}
+</script>

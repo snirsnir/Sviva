@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta charset="utf-8">
+    <title>360° View with Modal</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://rawgit.com/mayognaise/aframe-gif-shader/master/dist/aframe-gif-shader.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+
+</head>
+<body>
+    <div class="env-meter-container">
+        <div class="env-meter-label">מדד איכות הסביבה</div>
+        <div class="env-meter">
+            <div class="env-meter-fill"></div>
+         
+                <div class="env-meter-waves"></div>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </div>
+    <div class="help-icon">
+        <button id="helpButton" class="help-button">
+            <i class="fas fa-question"></i>
+        </button>
+    </div>
+
+
+    <div id="autoModal" class="modal auto-modal" style="display:none;"> 
+        <div class="modal-content auto-modal-content" onclick="event.stopPropagation();">
+           
+            <iframe src="https://view.genially.com/67294f0b424eb8305b08fc89" frameborder="0"></iframe>
+        </div>
+    </div>
+
+    <div class="audio-control">
+        <button id="audioToggle" class="audio-button">
+            <span class="audio-icon">🔊</span>
+        </button>
+        <audio id="bgAudio" autoplay muted loop playsinline>
+            <source src="sound/city.mp3" type="audio/mpeg">
+        </audio>
+    </div>
+    <div class="progress-circles">
+        <div class="circle">
+            <img id="hospitalImg" src="img/hospital.png" alt="Hospital">
+        </div>
+        <div class="circle">
+            <img id="treesImg" src="img/trees.png" alt="Trees">
+        </div>
+        <div class="circle">
+            <img id="mifalImg" src="img/mifal.png" alt="Mifal">
+        </div>
+        <div class="circle">
+            <img id="trafficImg" src="img/traffic.png" alt="Traffic">
+        </div>
+        <div class="circle">
+            <img id="energyImg" src="img/energy.png" alt="Energy">
+        </div>
+    </div>  <!-- סגירת ה-div של progress-circles -->
+    
+    <a-scene cursor="rayOrigin: mouse" raycaster="objects: .clickable">
+        <!-- Panoramic Background -->
+        <a-sky src="3d/img.jpg" id="image360"></a-sky>
+
+        <!-- Clickable Boxes -->
+        <a-box position="-3.5 1.6 -8" rotation="0 0 0" scale="2 1 1" color="white" material="color: white; opacity: 0"
+               class="clickable" 
+               event-set__click="_event: click" 
+               onclick="document.getElementById('hospitalModal').style.display='block'">
+        </a-box>
+        <a-box position="-19.5 -0.6 -15" rotation="0 0 0" scale="3 4 1" color="white" material="color: white; opacity: 0"
+               class="clickable" 
+               event-set__click="_event: click" 
+               onclick="document.getElementById('treeModal').style.display='block'">
+        </a-box>
+        <a-box position="-9 2 5" rotation="0 90 0" scale="8 2 1" color="white" material="color: white; opacity: 0"
+               class="clickable" 
+               event-set__click="_event: click" 
+               onclick="document.getElementById('factoryModal').style.display='block'">
+        </a-box>
+        <a-box position="-15 -2 20" rotation="0 90 0" scale="38 1 1" color="white" material="color: white; opacity: 0"
+               class="clickable" 
+               event-set__click="_event: click" 
+               onclick="document.getElementById('trafficModal').style.display='block'">
+        </a-box>
+        <a-box position="26 7 30" rotation="0 40 0" scale="65 30 1" color="white" material="color: white; opacity: 0"
+               class="clickable" 
+               event-set__click="_event: click" 
+               onclick="document.getElementById('powerModal').style.display='block'">
+        </a-box>
+        <a-scene cursor="rayOrigin: mouse" raycaster="objects: .clickable">
+            <!-- שאר האלמנטים... -->
+            
+            <a-image 
+            id="arubaGif"
+            material="shader:gif;src:url(https://i.ibb.co/pfqCJjF/aruba.gif)"
+            position="15 5.5 4.5"
+            rotation="-2 80 0"
+            scale="8 9 0.5"
+            visible="false">
+        </a-image>
+        
+        <a-image 
+            id="busImage"
+            src="img/bus.png"
+            position="-14.2 -2 8"
+            rotation="0 93 0"
+            scale="14.3 5 1"
+            visible="false">
+        </a-image>
+        
+        <a-image 
+            id="treesi"
+            src="img/forest.png"
+            position="-14.2 -1.3 -11"
+            rotation="10 55 0"
+            scale="14.3 5 1"
+            visible="false">
+        </a-image>
+        
+        <a-image 
+            id="solarImage"
+            src="img/solar.png"
+            position="-8 2.7 6"
+            rotation="10 90 0"
+            scale="5.3 1 1"
+            visible="false">
+        </a-image>
+        
+        <a-image 
+            id="airP"
+            src="img/air.png"
+            position="-5.8 2.9 -6"
+            rotation="0 70 0"
+            scale="4.3 3 1"
+            visible="false">
+        </a-image>
+<a-image 
+id="notebookImage"
+src="img/notebook.png"
+position="30 -21 25.5"
+rotation="-20 180 10"
+scale="15 17 0.5"
+visible="false"
+class="clickable"
+onclick="document.getElementById('summaryModal').style.display='block'">
+</a-image>
+            <!-- שאר האלמנטים... -->
+        </a-scene>
+        
+        <!-- Camera -->
+        <a-camera wasd-controls="enabled: false"> </a-camera>
+    </a-scene>
+
+    <!-- Modals -->
+    <div id="hospitalModal" class="modal" style="display:none;" onclick="closeModalOnClickOutside(event, 'hospitalModal')">
+        <div class="modal-content" onclick="event.stopPropagation();">
+            <span class="close" onclick="document.getElementById('hospitalModal').style.display='none'">&times;</span>
+            <iframe src="med/index.html" frameborder="0"></iframe>
+        </div>
+    </div>
+
+    <div id="treeModal" class="modal" style="display:none;" onclick="closeModalOnClickOutside(event, 'treeModal')">
+        <div class="modal-content" onclick="event.stopPropagation();">
+            <span class="close" onclick="document.getElementById('treeModal').style.display='none'">&times;</span>
+            <iframe src="tree/index.html" frameborder="0"></iframe>
+        </div>
+    </div>
+
+    <div id="factoryModal" class="modal" style="display:none;" onclick="closeModalOnClickOutside(event, 'factoryModal')">
+        <div class="modal-content" onclick="event.stopPropagation();">
+            <span class="close" onclick="document.getElementById('factoryModal').style.display='none'">&times;</span>
+            <iframe src="mifal/index.html" frameborder="0"></iframe>
+        </div>
+    </div>
+
+    <div id="trafficModal" class="modal" style="display:none;" onclick="closeModalOnClickOutside(event, 'trafficModal')">
+        <div class="modal-content" onclick="event.stopPropagation();">
+            <span class="close" onclick="document.getElementById('trafficModal').style.display='none'">&times;</span>
+            <iframe src="cars/index.html" frameborder="0"></iframe>
+        </div>
+    </div>
+
+    <div id="powerModal" class="modal" style="display:none;" onclick="closeModalOnClickOutside(event, 'powerModal')">
+        <div class="modal-content" onclick="event.stopPropagation();">
+            <span class="close" onclick="document.getElementById('powerModal').style.display='none'">&times;</span>
+            <iframe src="https://view.genially.com/66db8202d805be0a58831769?idSlide=2d9ed499-3597-428d-89a2-42488056d089" frameborder="0"></iframe>
+        </div>
+    </div>
+    <div class="notebook-modal-overlay" id="summaryModal">
+        <div class="notebook-modal">
+            <div class="notebook-header">
+                <h2>🌍 משימת איכות הסביבה</h2>
+            </div>
+            <div class="notebook-content">
+                <div class="success-icon">🌟</div>
+                <div class="message-container">
+                    <h3>כל הכבוד ילדים הצלחתם ממש!</h3>
+                    <p>אתם כמעט אלופי איכות הסביבה, אבל רק עוד קצת...</p>
+                    
+                    <div class="highlight-box">
+                        <p>שמתם לב לשינויים שקרו בטכנולנד אחרי הפעילות שלנו? 👀</p>
+                    </div>
+    
+                    <div class="instructions">
+                        <p>אנו נותנים לכם צ'אנס נוסף לחזור לטכנולנד ולהביט בשינויים.</p>
+                        <p>כל לחיצה על שינוי תסביר לכם כיצד ניתן למגר את התופעה שנקראת זיהום סביבתי.</p>
+                    </div>
+    
+                    <div class="final-note">
+                        <p><strong>לחיצה על כל השינויים יוביל אתכם לסיכום השיעור ולהענקת מדליית שומרי האוויר 🥇, בהצלחה! 🎯</strong></p>
+                    </div>
+    
+                    <button class="return-btn" onclick="closeNotebookModal()">
+                        <span class="btn-icon">🔍</span>
+                        חזרה לטכנולנד
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="info-modal-overlay" id="infoModal" style="display: none;">
+        <div class="info-modal">
+            <div class="info-header">
+                <h2 id="infoTitle">כותרת</h2>
+                <button class="close-btn" onclick="closeInfoModal()">×</button>
+            </div>
+            <div class="info-content" id="infoContent">
+                <!-- תוכן דינמי -->
+            </div>
+        </div>
+    </div>
+    <div id="medalProgress" style="display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 1000;">
+        <div style="display: flex; align-items: center; gap: 15px; background: rgba(255, 255, 255, 0.9); padding: 10px 20px; border-radius: 25px; box-shadow: 0 2px 10px rgba(0,0,0,0.2);">
+            <div id="medalIcon" style="font-size: 2rem;">🏅</div>
+            <div id="progressText" style="font-family: 'Rubik', sans-serif; font-weight: 500; color: #2C5E1A;"></div>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>

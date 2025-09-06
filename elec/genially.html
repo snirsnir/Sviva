@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        /* הגדרות בסיס */
+        .container * {
+            font-family: Arial, sans-serif !important;
+            direction: rtl !important;
+        }
+
+        .container {
+            text-align: right !important;
+        }
+
+        /* כותרות */
+        .container h1 {
+            color: #2c3e50 !important;
+            text-align: center !important;
+            font-size: 22px !important;
+            margin: 15px 0 !important;
+        }
+
+        .container h2 {
+            color: #2c3e50 !important;
+            text-align: right !important;
+            font-size: 23px !important;
+            margin: 15px 0 !important;
+        }
+
+        /* טבלה */
+        .container table {
+            width: 100% !important;
+            border-collapse: collapse !important;
+            margin: 15px 0 !important;
+            background-color: white !important;
+        }
+
+        .container table th,
+        .container table td {
+            padding: 10px !important;
+            border: 1px solid #ddd !important;
+            text-align: center !important;
+            font-size: 15px !important;
+        }
+
+        .container table th {
+            background-color: #f8f9fa !important;
+            color: #2c3e50 !important;
+            font-weight: bold !important;
+        }
+
+        /* שדות קלט - עודכן */
+        .container input[type="number"] {
+            width: 100px !important;
+            padding: 8px !important;
+            border: 2px solid #3498db !important;
+            border-radius: 4px !important;
+            font-size: 16px !important;
+            text-align: center !important;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.3) !important;
+            transition: all 0.3s ease !important;
+        }
+
+        .container input[type="number"]:focus {
+            border-color: #2980b9 !important;
+            box-shadow: 0 0 8px rgba(52, 152, 219, 0.5) !important;
+            outline: none !important;
+        }
+
+        /* כפתורים */
+        .container .buttons-container {
+            text-align: center !important;
+            width: 100% !important;
+            margin: 10px 0 !important;
+        }
+
+        .container button {
+            background-color: #3498db !important;
+            color: white !important;
+            padding: 10px 20px !important;
+            border: none !important;
+            border-radius: 4px !important;
+            cursor: pointer !important;
+            margin: 8px !important;
+            display: inline-block !important;
+            font-size: 15px !important;
+            font-weight: bold !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+        }
+
+        .container .next-button {
+            background-color: #27ae60 !important;
+            display: none !important;
+        }
+
+        .container .back-button {
+            background-color: #e74c3c !important;
+        }
+
+        /* הודעות שגיאה והצלחה */
+        .container .error {
+            color: #e74c3c !important;
+            margin: 8px 0 !important;
+            font-size: 15px !important;
+            font-weight: bold !important;
+            padding: 8px !important;
+            background-color: #fde8e8 !important;
+            border-radius: 4px !important;
+            display: none;
+            text-align: center !important;
+        }
+
+        .container .success {
+            color: #27ae60 !important;
+            margin: 8px 0 !important;
+            font-size: 15px !important;
+            font-weight: bold !important;
+            padding: 8px !important;
+            background-color: #e8f8f0 !important;
+            border-radius: 4px !important;
+            display: none;
+            text-align: center !important;
+        }
+
+        /* סיכום */
+        .container .summary {
+            display: none !important;
+            text-align: right !important;
+            padding: 15px !important;
+        }
+
+        .container .summary p {
+            font-size: 15px !important;
+            line-height: 1.5 !important;
+            color: #2c3e50 !important;
+            text-align: right !important;
+            margin: 8px 0 !important;
+        }
+    </style>
+    <script>
+        window.validateData = function() {
+            const particleValues = Array.from(document.querySelectorAll('.particles')).map(input => Number(input.value));
+            
+            const errorDiv = document.querySelector('.error');
+            const successDiv = document.querySelector('.success');
+            const nextButton = document.querySelector('.next-button');
+            
+            if (particleValues.some(isNaN)) {
+                errorDiv.style.display = 'block';
+                successDiv.style.display = 'none';
+                nextButton.style.setProperty('display', 'none', 'important');
+                errorDiv.textContent = 'יש למלא את כל השדות!';
+                return;
+            }
+            
+            for (let i = 1; i < particleValues.length - 1; i++) {
+                if (particleValues[i] <= particleValues[i-1]) {
+                    errorDiv.style.display = 'block';
+                    successDiv.style.display = 'none';
+                    nextButton.style.setProperty('display', 'none', 'important');
+                    errorDiv.textContent = 'ישנם ערכים ריקים / לא הגיוניים';
+                    return;
+                }
+            }
+            
+            if (particleValues[particleValues.length-1] >= particleValues[particleValues.length-2]) {
+                errorDiv.style.display = 'block';
+                successDiv.style.display = 'none';
+                nextButton.style.setProperty('display', 'none', 'important');
+                errorDiv.textContent = 'הערך האחרון (אחרי אוורור) לא הגיוני!';
+                return;
+            }
+            
+            errorDiv.style.display = 'none';
+            successDiv.style.display = 'block';
+            nextButton.style.setProperty('display', 'inline-block', 'important');
+            successDiv.textContent = 'הניסוי הושלם בהצלחה! הערכים תקינים.';
+        };
+
+        window.goToNextStep = function() {
+            const experimentContent = document.querySelector('.experiment-content');
+            const summary = document.querySelector('.summary');
+            experimentContent.style.display = 'none';
+            summary.style.setProperty('display', 'block', 'important');
+        };
+
+        window.goBack = function() {
+            window.parent.postMessage({ type: "closeModal", message: "closeTable" }, "*");
+        };
+
+        window.onload = function() {
+            document.querySelectorAll('input[type="number"]').forEach(input => {
+                input.addEventListener('input', function() {
+                    this.value = this.value.replace(/[^0-9]/g, '');
+                });
+            });
+        };
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>מדידת איכות אוויר</h1>
+        
+        <div class="experiment-content">
+            <table>
+                <thead>
+                    <tr>
+                        <th>זמן המדידה</th>
+                        <th>חלקיקים (Particles) לליטר</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>לפני הדלקת הנר</td>
+                        <td><input type="number" class="particles" min="0"></td>
+                    </tr>
+                    <tr>
+                        <td>מיד לאחר הדלקת הנר</td>
+                        <td><input type="number" class="particles" min="0"></td>
+                    </tr>
+                    <tr>
+                        <td>כעבור 20 שניות מהדלקת הנר</td>
+                        <td><input type="number" class="particles" min="0"></td>
+                    </tr>
+                    <tr>
+                        <td>לאחר כיבוי הנר ואוורור של חצי דקה</td>
+                        <td><input type="number" class="particles" min="0"></td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="error"></div>
+            <div class="success"></div>
+            <div class="buttons-container">
+                <button onclick="window.validateData()">לחצו לבדיקה</button>
+                <button onclick="window.goToNextStep()" class="next-button">המשך לשלב הבא</button>
+            </div>
+        </div>
+
+        <div class="summary">
+            <h2>סיכום הניסוי</h2>
+            <h2>
+                בניסוי זה בדקנו את השפעת שריפת נר על איכות האוויר בסביבה.
+                ראינו כיצד רמת החלקיקים באוויר עולה בהדרגה כאשר הנר דולק,
+                וכיצד אוורור טוב מסייע להחזיר את איכות האוויר למצבה הראשוני.
+            </h2>
+            <h2>
+                זוהי המחשה פשוטה לתהליך שמתרחש בקנה מידה גדול בהרבה בתחנות כוח,
+                כאשר שורפים דלקים פוסיליים כמו פחם ונפט.
+            </h2>
+            <h2>
+                המסקנה החשובה היא שפליטת מזהמים משפיעה על איכות האוויר,
+                אך ניתן לצמצם את ההשפעה על ידי אמצעים מתאימים.
+            </h2>
+            <div class="buttons-container">
+                <button class="back-button" onclick="window.goBack()">סיימתם! לחצו לחזרה לטכנולנד</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

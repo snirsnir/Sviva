@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>360° Panoramic Tree and Bird Detection</title>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ml5@1.0.2/dist/ml5.min.js"></script>
+    <script src="https://unpkg.com/aframe-htmlembed-component@1.0.0/dist/aframe-htmlembed-component.min.js"></script>
+    <style>
+            @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&display=swap');
+            body {
+        margin: 0;
+        font-family: 'Rubik', Arial, sans-serif;
+    }
+        canvas { display: block; }
+
+        .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.9);
+        z-index: 1000;
+    }
+
+    .modal-iframe {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 90%; /* הגדלת הרוחב */
+        max-width: 1000px; /* הגדלת הרוחב המקסימלי */
+        height: 65vh; /* הקטנת הגובה */
+        border: 1px solid rgba(0, 255, 0, 0.3);
+        border-radius: 15px;
+        background: rgba(0, 0, 0, 0.95);
+        box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
+    }
+
+    @media (max-width: 768px) {
+        .modal-iframe {
+            width: 95%;
+            height: 75vh;
+        }
+    }
+    .a-enter-vr {
+    display: none !important;
+}
+.help-button {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        width: 40px;
+        height: 40px;
+        background-color: rgba(255, 255, 255, 0.9);
+        border: none;
+        border-radius: 50%;
+        font-size: 24px;
+        color: #000;
+        cursor: pointer;
+        z-index: 999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        transition: all 0.3s ease;
+    }
+
+    .help-button:hover {
+        background-color: white;
+        transform: scale(1.1);
+        box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+    }
+
+    .help-button:active {
+        transform: scale(0.95);
+    }
+
+    /* נוסיף אנימציה קטנה כשהכפתור מופיע */
+    @keyframes fadeInButton {
+        from {
+            opacity: 0;
+            transform: scale(0.8);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    .help-button {
+        animation: fadeInButton 0.5s ease forwards;
+        animation-delay: 2.5s; /* יופיע חצי שניה אחרי שהמודל נעלם */
+        opacity: 0; /* מתחיל שקוף */
+    }
+    .character-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.9);
+        z-index: 1000;
+        font-family: 'Rubik', Arial, sans-serif;
+        direction: rtl;
+        
+    }
+
+
+
+        .character-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.95);
+            padding: 2rem;
+            border-radius: 15px;
+            color: white;
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
+            border: 1px solid rgba(0, 255, 0, 0.3);
+        }
+
+        .question {
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            color: #28a745;
+        }
+
+        .info {
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            line-height: 1.5;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .character-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #666;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1.1rem;
+            text-align: center;
+            direction: rtl;
+            transition: all 0.3s ease;
+        }
+
+        .character-input:focus {
+            outline: none;
+            border-color: #28a745;
+        }
+
+        .validation-mark {
+            position: absolute;
+            right: -30px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #28a745;
+            font-size: 1.5rem;
+            display: none;
+        }
+
+        .scan-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .scan-btn.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .scan-btn.active:hover {
+            transform: scale(1.05);
+            background: #218838;
+        }
+        .camera-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.3);
+        display: none;
+        z-index: 999;
+    }
+
+    .close-camera {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        width: 40px;
+        height: 40px;
+        background: rgba(255, 255, 255, 0.9);
+        border: none;
+        border-radius: 50%;
+        font-size: 24px;
+        color: #000;
+        cursor: pointer;
+        z-index: 1002; /* עדכון ה-z-index כך שיהיה מעל המצלמה */
+        display: none;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Rubik', Arial, sans-serif;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        transition: all 0.3s ease;
+    }
+
+    .close-camera:hover {
+        background: white;
+        transform: scale(1.1);
+    }
+
+    #cameraView {
+        position: fixed !important; /* הוספת !important */
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: none;
+        opacity: 0.7;
+        z-index: 1001;
+    }
+    
+/* עיצוב כפתור הסיום */
+.finish-button {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #4CAF50;
+    color: white;
+    padding: 12px 30px;
+    border-radius: 25px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.finish-button:hover {
+    background: #388E3C;
+    transform: translateX(-50%) translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+/* עיצובים נוספים ל-Modal */
+.summary-section {
+    margin: 20px 0;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 10px;
+}
+
+.summary-section h3 {
+    color: #2c3e50;
+    margin-bottom: 10px;
+    font-size: 20px;
+}
+
+.summary-section ul {
+    padding-right: 20px;
+}
+
+.summary-section li {
+    margin: 10px 0;
+    line-height: 1.5;
+}
+
+.warning {
+    background: #fff3e0;
+    border-right: 4px solid #ff9800;
+}
+
+.back-to-techno-btn {
+    background: #2196F3;
+    color: white;
+    border: none;
+    padding: 12px 35px;
+    border-radius: 25px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.back-to-techno-btn:hover {
+    background: #1976D2;
+    transform: translateY(-2px);
+}
+/* עיצוב המודל */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+}
+
+.modal-content {
+    position: relative;
+    background-color: #ffffff;
+    margin: 5% auto;
+    padding: 20px;
+    width: 80%;
+    max-width: 800px;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    direction: rtl;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal-title {
+    font-size: 24px;
+    color: #2c3e50;
+    text-align: center;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+.summary-section {
+    margin: 20px 0;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 10px;
+}
+
+.summary-section h3 {
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+.summary-section p {
+    line-height: 1.6;
+    color: #34495e;
+}
+
+.warning {
+    background: #fff3e0;
+    border-right: 4px solid #ff9800;
+}
+
+.modal-footer {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.back-to-techno-btn {
+    background: #2196F3;
+    color: white;
+    border: none;
+    padding: 12px 35px;
+    border-radius: 25px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.back-to-techno-btn:hover {
+    background: #1976D2;
+    transform: translateY(-2px);
+}
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+#container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+canvas {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+video {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 10;
+    opacity: 0.8;
+    object-fit: cover;
+}
+
+button {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    cursor: pointer;
+    z-index: 20;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    background-color: #218838;
+    transform: translateX(-50%) scale(1.05);
+}
+
+/* Responsive Design */
+@media (max-width: 1366px) {
+    button {
+        padding: 8px 16px;
+        font-size: 14px;
+        bottom: 15px;
+    }
+}
+
+@media (max-width: 1024px) {
+    button {
+        padding: 6px 12px;
+        font-size: 12px;
+        bottom: 10px;
+    }
+}
+    </style>
+</head>
+<body>
+    <button class="help-button" onclick="showGuideModal()">?</button>
+    <div class="camera-overlay" id="cameraOverlay"></div>
+    <button class="close-camera" id="closeCamera">✕</button>
+    <div class="character-modal" id="characterModal">
+        <div class="character-content">
+            <div class="question" id="characterQuestion"></div>
+            <div class="info" id="characterInfo"></div>
+            <div class="input-group">
+                <input type="text" class="character-input" id="characterInput" placeholder="הקלד את שם החיה">
+                <span class="validation-mark">✓</span>
+            </div>
+            <button class="scan-btn" id="scanBtn" onclick="startScanning()">סרוק</button>
+        </div>
+    </div>
+    <div class="modal-overlay" id="guideModal">
+        <iframe src="tutorial.html" class="modal-iframe" frameborder="0"></iframe>
+    </div>
+    <a-scene cursor="rayOrigin: mouse" raycaster="objects: .clickable">
+        <a-assets timeout="30000">
+            <a-asset-item id="tree-obj" src="model/tree/Tree1.obj" crossorigin="anonymous"></a-asset-item>
+            <img id="tree-bark" src="model/tree/BarkDecidious0143_5_S.jpg" crossorigin="anonymous">
+            <img id="tree-leaves" src="model/tree/Leaves0120_35_S.png" crossorigin="anonymous">
+            <!-- Model -->
+            <a-asset-item id="bird-obj" src="model/bird/bird.obj" crossorigin="anonymous"></a-asset-item>
+            
+            <!-- Textures -->
+            <img id="bird-diffuse" src="model/bird/bird.jpg" crossorigin="anonymous">
+            <img id="bird-normal" src="model/bird/Map__7_Normal Bump.jpg" crossorigin="anonymous">
+
+            <a-asset-item id="monkey-obj" src="model/monkey/model.obj" crossorigin="anonymous"></a-asset-item>
+            <img id="monkey-diffuse" src="model/monkey/diffuse.png" crossorigin="anonymous">
+            <img id="monkey-normal" src="model/monkey/normal.jpeg" crossorigin="anonymous">
+            <img id="monkey-opacity" src="model/monkey/opacity.jpeg" crossorigin="anonymous">
+            
+            <a-asset-item id="deer-obj" src="model/deer/deer.obj" crossorigin="anonymous"></a-asset-item>
+            <a-asset-item id="deer-mtl" src="model/deer/deer.mtl" crossorigin="anonymous"></a-asset-item>
+            <img id="deer-texture" src="model/deer/deer.jpg" crossorigin="anonymous">
+
+            <a-asset-item id="boar-obj" src="model/boar/boar.obj" crossorigin="anonymous"></a-asset-item>
+            <a-asset-item id="boar-mtl" src="model/boar/boar.mtl" crossorigin="anonymous"></a-asset-item>
+            <img id="boar-texture" src="model/boar/boar.jpg" crossorigin="anonymous">
+
+            <a-asset-item id="fox-obj" src="model/fox/fox.obj" crossorigin="anonymous"></a-asset-item>
+            <a-asset-item id="fox-mtl" src="model/fox/fox.mtl" crossorigin="anonymous"></a-asset-item>
+            <img id="fox-texture" src="model/fox/fox.jpg" crossorigin="anonymous">
+        </a-assets>
+
+        <a-sky src="base.jpg" id="image360"></a-sky>
+
+        <a-box position="-4 2 -3" rotation="0 40 0" scale="1 1 0.1" color="green" opacity="0.3" class="clickable" 
+        event-set__click="_event: click" onclick="showCharacterModal('tree')">
+     <a-text value="" align="center" position="0 0.5 0.1" color="white"></a-text>
+ </a-box>
+ 
+ <a-box position="1.5 2 -3" rotation="0 0 0" scale="1 1 0.1" color="purple" opacity="0.3" class="clickable" 
+        event-set__click="_event: click" onclick="showCharacterModal('bird')">
+     <a-text value="" align="center" position="0 0.5 0.1" color="white"></a-text>
+ </a-box>
+ 
+ <a-box position="-1 1.5 3" rotation="0 140 0" scale="1 1 0.1" color="orange" opacity="0.3" class="clickable" 
+        event-set__click="_event: click" onclick="showCharacterModal('monkey')">
+     <a-text value="" align="center" position="0 0.5 0.1" color="white"></a-text>
+ </a-box>
+ 
+ <a-box position="4 1.5 3" rotation="0 -140 0" scale="1 1 0.1" color="brown" opacity="0.3" 
+        class="clickable" data-animal="deer"
+        event-set__click="_event: click" onclick="showCharacterModal('deer')">
+     <a-text value="" align="center" position="0 0.5 0.1" color="white"></a-text>
+ </a-box>
+ 
+ <a-box position="-13 1.5 3" rotation="0 120 0" scale="2 2 0.2" color="darkbrown" opacity="0.3" 
+        class="clickable" data-animal="boar"
+        event-set__click="_event: click" onclick="showCharacterModal('boar')">
+     <a-text value="" align="center" position="0 0.5 0.1" color="white"></a-text>
+ </a-box>
+ 
+ <a-box position="20 2 -8" rotation="0 -80 0" scale="4 4 0.6" color="orange" opacity="0.3" 
+        class="clickable" data-animal="fox"
+        event-set__click="_event: click" onclick="showCharacterModal('fox')">
+     <a-text value="" align="center" position="0 0.5 0.1" color="white"></a-text>
+ </a-box>
+
+        <a-camera></a-camera>
+    </a-scene>
+
+    <video id="cameraView" autoplay playsinline></video>
+
+    <div id="finishButton" style="display: none;" class="finish-button">
+        סיום
+    </div>
+    
+    <!-- הוספת Modal הסיכום -->
+    <div id="finishButton" style="display: none;" class="finish-button">
+        סיום
+    </div>
+    
+    <!-- מודל הסיכום -->
+    <div id="summaryModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-title">סיכום: השפעת בעלי החיים והיער על הסביבה</div>
+            
+            <div class="summary-section">
+                <h3>🌳 חשיבות היער</h3>
+                <p>היער הוא מערכת אקולוגית שלמה המהווה בית למגוון רחב של בעלי חיים וצמחים. העצים מייצרים חמצן, סופגים פחמן דו-חמצני ומסייעים במניעת התחממות כדור הארץ.</p>
+            </div>
+    
+            <div class="summary-section">
+                <h3>🦊 תרומת בעלי החיים ליער</h3>
+                <ul>
+                    <li><strong>ציפורים:</strong> מפיצות זרעים ושומרות על איזון החרקים</li>
+                    <li><strong>קופים:</strong> מפיצים זרעים ושומרים על בריאות העצים</li>
+                    <li><strong>איילים:</strong> מסייעים בהפצת זרעים ושמירה על איזון הצמחייה</li>
+                    <li><strong>חזירי בר:</strong> מערבבים את האדמה ומסייעים בהתחדשות היער</li>
+                    <li><strong>שועלים:</strong> שומרים על איזון אוכלוסיית המכרסמים</li>
+                </ul>
+            </div>
+    
+            <div class="summary-section warning">
+                <h3>⚠️ הסכנה שבכריתת יערות</h3>
+                <p>כריתת יערות פוגעת קשות במערכת האקולוגית:</p>
+                <ul>
+                    <li>אובדן בית גידול לבעלי חיים רבים</li>
+                    <li>פגיעה באיכות האוויר והאצת שינויי האקלים</li>
+                    <li>הפרת האיזון האקולוגי</li>
+                    <li>סכנת הכחדה למינים רבים</li>
+                </ul>
+            </div>
+    
+            <div class="modal-footer">
+                <button onclick="backTechnoland()" class="back-to-techno-btn">
+                    חזרה לטכנולנד
+                </button>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
