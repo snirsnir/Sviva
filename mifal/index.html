@@ -739,7 +739,7 @@
                         <div class="equipment-section">
                             <h4>
                                 🎒 שקית 1 
-                                <span class="company-badge" style="background: #2196F3;">חברת בועות</span>
+                                <span class="company-badge" style="background: #2196F3;">חברת קראנץ'</span>
                             </h4>
                             <div class="equipment-list">
                                 <div class="equipment-item">
@@ -768,7 +768,7 @@
                         <div class="equipment-section">
                             <h4>
                                 🎒 שקית 2 
-                                <span class="company-badge" style="background: #FF9800;">חברת קראנץ'</span>
+                                <span class="company-badge" style="background: #FF9800;">חברת בועות</span>
                             </h4>
                             <div class="equipment-list">
                                 <div class="equipment-item">
@@ -822,8 +822,8 @@
                     <div class="instructions-grid">
                         <div class="instruction-card">
                             <h4>
-                                🥤 ערכת חברת בועות
-                                <span class="company-badge" style="background: #2196F3;">בועות</span>
+                                🥤 ערכת חברת קראנץ'
+                                <span class="company-badge" style="background: #2196F3;">קראנץ'</span>
                             </h4>
                             <ol class="instruction-steps">
                                 <li>שפכו באמצעות המשפך לארלנמייר את החומץ שיש במבחנה</li>
@@ -834,8 +834,8 @@
 
                         <div class="instruction-card">
                             <h4>
-                                🍪 ערכת חברת קראנץ'
-                                <span class="company-badge" style="background: #FF9800;">קראנץ'</span>
+                                🍪 ערכת חברת בועות
+                                <span class="company-badge" style="background: #FF9800;">בועות</span>
                             </h4>
                             <ol class="instruction-steps">
                                 <li>שפכו באמצעות המשפך לארלנמייר את החומץ שיש במבחנה</li>
@@ -921,7 +921,7 @@
                     <div class="results-grid">
                         <div class="company-card bubbles">
                             <div class="company-header bubbles">
-                                <div class="company-name">🥤 חברת בועות</div>
+                                <div class="company-name">🥤 חברת קראנץ'</div>
                                 <div>השקית הכחולה</div>
                             </div>
                             <div class="company-content">
@@ -938,7 +938,7 @@
                         </div>
                         <div class="company-card crunch">
                             <div class="company-header crunch">
-                                <div class="company-name">🍪 חברת קראנץ'</div>
+                                <div class="company-name">🍪 חברת בועות</div>
                                 <div>השקית הכתומה</div>
                             </div>
                             <div class="company-content">
@@ -1089,7 +1089,7 @@
             const bubblesSelector = document.getElementById('bubblesSelector');
             const crunchSelector = document.getElementById('crunchSelector');
             
-            // מאזין לחברת בועות
+            // מאזין לחברת קראנץ'
             bubblesSelector.addEventListener('click', (e) => {
                 if (e.target.classList.contains('balloon-option')) {
                     // נקה בחירות קודמות
@@ -1103,7 +1103,7 @@
                 }
             });
             
-            // מאזין לחברת קראנץ'
+            // מאזין לחברת בועות
             crunchSelector.addEventListener('click', (e) => {
                 if (e.target.classList.contains('balloon-option')) {
                     // נקה בחירות קודמות
@@ -1130,7 +1130,7 @@
         // שליחת תוצאות
         function submitResults() {
             if (results.bubbles !== null && results.crunch !== null) {
-                // בדיקת תוצאות - חברת קראנץ' צריכה ליצור בלון גדול יותר
+                // בדיקת תוצאות - חברת בועות צריכה ליצור בלון גדול יותר
                 const isCorrect = results.crunch > results.bubbles;
                 
                 // הצג את התוצאות בשלב 5
@@ -1157,7 +1157,7 @@
                         <div style="font-size: 3rem; margin-bottom: 1rem;">✅</div>
                         <h3 style="color: var(--dark-green); margin-bottom: 1rem; font-size: 1.6rem;">מצוין! גילינו את הבעיה</h3>
                         <p style="font-size: 1.1rem; line-height: 1.6;">
-                            <strong>חברת קראנץ'</strong> יוצרת יותר CO₂ מחברת בועות!<br>
+                            <strong>חברת בועות</strong> יוצרת יותר CO₂ מחברת קראנץ'!<br>
                             (בלון גדול יותר = יותר פחמן דו חמצני)
                         </p>
                     </div>
@@ -1166,14 +1166,14 @@
                         <div style="background: #e3f2fd; padding: 1.2rem; border-radius: 8px; border: 2px solid #2196F3;">
                             <h4 style="color: #1976d2; margin-bottom: 0.8rem; text-align: center; font-size: 1rem;">📊 התוצאות שלכם</h4>
                             <div style="text-align: center; font-size: 0.9rem;">
-                                <p>חברת בועות: בלון בגודל ${results.bubbles}</p>
-                                <p>חברת קראנץ': בלון בגודל ${results.crunch}</p>
+                                <p>חברת קראנץ': בלון בגודל ${results.bubbles}</p>
+                                <p>חברת בועות: בלון בגודל ${results.crunch}</p>
                             </div>
                         </div>
                         <div style="background: var(--light-green); padding: 1.2rem; border-radius: 8px; border: 2px solid var(--success-green);">
                             <h4 style="color: var(--dark-green); margin-bottom: 0.8rem; text-align: center; font-size: 1rem;">🌍 המסקנה</h4>
                             <p style="text-align: center; font-size: 0.9rem;">
-                                חברת קראנץ' פולטת יותר CO₂ לאטמוספירה וגורמת לנזק סביבתי גדול יותר
+                                חברת בועות פולטת יותר CO₂ לאטמוספירה וגורמת לנזק סביבתי גדול יותר
                             </p>
                         </div>
                     </div>
@@ -1182,7 +1182,7 @@
                 finalButtons.innerHTML = `
                     <button class="btn btn-primary" onclick="showEnvironmentalSolutions()">
                         <span>🌱</span>
-                        בואו נעזור לחברת קראנץ'!
+                        בואו נעזור לחברת בועות!
                     </button>
                 `;
             } else {
@@ -1192,7 +1192,7 @@
                         <h3 style="color: #856404; margin-bottom: 1rem;">נסו שוב!</h3>
                         <p style="font-size: 1rem; line-height: 1.5; color: #856404;">
                             התוצאות לא הגיוניות. לפי כמויות החומרים,<br>
-                            הבלון של חברת קראנץ' צריך להיות גדול יותר מזה של חברת בועות.
+                            הבלון של חברת בועות צריך להיות גדול יותר מזה של חברת קראנץ'.
                         </p>
                     </div>
                 `;
@@ -1212,7 +1212,7 @@
             const modalText = document.getElementById('modalText');
             
             if (isCorrect) {
-                modalText.innerHTML = 'גילינו שחברת קראנץ\' פולטת יותר CO₂ מחברת בועות!<br>עכשיו בואו נחפש פתרונות סביבתיים.';
+                modalText.innerHTML = 'גילינו שחברת קראנץ\' פולטת יותר CO₂ מחברת קראנץ'!<br>עכשיו בואו נחפש פתרונות סביבתיים.';
             } else {
                 modalText.textContent = 'התוצאות לא הגיוניות. נסו לבצע שוב את הניסוי.';
                 document.querySelector('.modal .btn-primary').style.display = 'none';
@@ -1237,7 +1237,7 @@
                 <div style="border-top: 3px dashed var(--primary-green); margin-top: 2rem; padding-top: 2rem;">
                     <div style="text-align: center; margin-bottom: 1.5rem;">
                         <div style="font-size: 2.5rem; margin-bottom: 0.8rem;">🌱</div>
-                        <h3 style="color: var(--dark-green); font-size: 1.4rem;">איך נעזור לחברת קראנץ'?</h3>
+                        <h3 style="color: var(--dark-green); font-size: 1.4rem;">איך נעזור לחברת בועות?</h3>
                         <p style="font-size: 1rem; margin-top: 0.8rem;">בואו נחשוב על פתרונות ידידותיים לסביבה:</p>
                     </div>
                     
